@@ -1,5 +1,4 @@
 import connection from "../data/db-cover.js";
-import setImagePath from "../middlewares/imagePath.js";
 
 
 
@@ -12,18 +11,18 @@ function index(req, res) {
                 error: 'Errore lato server INDEX function',
             });
 
-            const covers = results.map(cover => {
-                return {
-                    ...cover,
-                    image: req.imagePath + cover.image_url
-                }
-            });
+        const covers = results.map(cover => {
+            return {
+                ...cover,
+                image: req.imagePath + cover.image_url,
+            }
+        });
         res.json(covers);
     });
 }
 
 function show(req, res) {
-    const {id} = req.params
+    const { id } = req.params
     const sql = 'SELECT * FROM products WHERE id = ?';
 
     connection.query(sql, [id], (err, results) => {
@@ -32,18 +31,59 @@ function show(req, res) {
                 error: 'Errore lato server SHOW function',
             });
 
-            const cover = results[0]
+        if (results.length === 0) {
+            return res.status(404).json({ error: 'Prodotto non trovato' });
+        }
 
-            res.json({ 
-                ...cover,
-                image: req.imagePath + cover.image_url,
-              });
+        const cover = results[0]
+
+        res.json({
+            ...cover,
+            image: req.imagePath + cover.image_url,
+        });
+    });
+}
+
+function search(req, res) {
+    console.log("Search route hit:", req.query);
+
+    const searchTerm = req.query.name || ''
+    console.log("searchTerm:", searchTerm);
+
+    let sql = 'SELECT * FROM products';
+    const params = [];
+
+    if (searchTerm) {
+        sql += ' WHERE name LIKE ?';
+        params.push(`%${searchTerm}%`);
+    }
+
+    console.log("SQL:", sql, params);
+
+    connection.query(sql, params, (err, results) => {
+        if (err) {
+            console.error("Errore nella query:", err);
+            return res.status(500).json({
+                error: 'Errore lato server SEARCH function',
+            });
+        }
+
+        console.log("Results:", results);
+
+        // Mappa i risultati (se serve)
+        const covers = results.map(cover => ({
+            ...cover,
+            image: req.imagePath + cover.image_url,
+            // se non serve, rimuovi questa riga
+        }));
+
+        res.json(covers);
     });
 }
 
 function storeOrder(req, res) {
 
-    
+
 
     const { coupon_id, total, shipping_address, billing_address, status } = req.body
 
@@ -66,5 +106,6 @@ function storeOrder(req, res) {
 export {
     index,
     show,
+    search,
     storeOrder
 }
