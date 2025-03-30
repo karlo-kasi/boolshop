@@ -45,12 +45,11 @@ function show(req, res) {
 }
 
 function search(req, res) {
-    console.log("Search route hit:", req.query);
 
     const searchTerm = req.query.name || ''
-    console.log("searchTerm:", searchTerm);
+    console.log("searchTerm:", searchTerm)
 
-    let sql = 'SELECT * FROM products';
+    let sql = 'SELECT * FROM products'
     const params = [];
 
     if (searchTerm) {
@@ -70,11 +69,9 @@ function search(req, res) {
 
         console.log("Results:", results);
 
-        // Mappa i risultati (se serve)
         const covers = results.map(cover => ({
             ...cover,
             image: req.imagePath + cover.image_url,
-            // se non serve, rimuovi questa riga
         }));
 
         res.json(covers);
