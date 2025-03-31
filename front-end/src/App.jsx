@@ -1,9 +1,11 @@
-import DefaultLayout from "./layouts/DefaultLayout";
-import { Routes, Route, BrowserRouter } from "react-router-dom";
-import HomePage from "./pages/HomePage";
-import ProductPage from "./pages/ProductPage";
-import CheckoutPage from "./pages/CheckoutPage";
-import Hero from "./components/Hero";
+
+
+import DefaultLayout from './layouts/DefaultLayout';
+import { Routes, Route, BrowserRouter } from 'react-router-dom';
+import HomePage from './pages/HomePage';
+import ProductPage from './pages/ProductPage';
+import CheckoutPage from './pages/CheckoutPage';
+
 
 function App() {
   return (

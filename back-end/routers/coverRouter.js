@@ -1,13 +1,17 @@
 import express from "express"
 const router = express.Router()
-import {index, show, storeOrder} from "../controllers/coverControllers.js"
+import {index, show, search, storeOrder} from "../controllers/coverControllers.js"
 
 
 router.get("/", index)
 
+router.get("/search", search)
+
 router.get("/:id", show)
 
-router.post("/", storeOrder)
+router.post("/order", storeOrder)
+
+
 
 
 export default router

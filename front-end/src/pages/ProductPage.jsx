@@ -23,17 +23,15 @@ export default function ProductPage() {
   useEffect(fetchProduct, [slug]);
 
   return (
-    <>
-      <div className="col" key={p.id}>
-        <div className="card">
-          <img src={p.image} className="card-img-top" alt={p.name} />
-          <div className="card-body">
-            <h5 className="card-title">{p.name}</h5>
-            <p className="card-text">{p.description}</p>
-            <p className="card-text">${p.price}</p>
-          </div>
-        </div>
-      </div>{" "}
-    </>
+  <div className="col" key={p.id}>
+            <div className="card">
+              <img src={p.image} className="card-img-top" alt={p.name} />
+              <div className="card-body">
+                <h5 className="card-title">{p.name}</h5>
+                <p className="card-text">{p.description}</p>
+                <p className="card-text">${p.price}</p>
+              </div>
+            </div>
+          </div>    
   );
 }
