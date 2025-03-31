@@ -12,7 +12,7 @@ function App() {
           <Route Component={DefaultLayout}>
 
             <Route path="/" Component={HomePage} />
-            <Route path="/:id" Component={ProductPage} />
+            <Route path="cover/:slug" Component={ProductPage} />
             <Route path="/checkout" Component={CheckoutPage} />
           </Route>
         </Routes>

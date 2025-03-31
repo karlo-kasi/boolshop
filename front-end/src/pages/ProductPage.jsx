@@ -1,7 +1,8 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Link } from "react-router-dom";
+
+import QuantityCounter from "../components/QuantityCounter";
 
 import divieto from "../assets/img/1.avif";
 import imballaggio from "../assets/img/2.avif";
@@ -40,23 +41,32 @@ export default function ProductPage() {
 
   return (
     <>
-      <div className="row" key={product.id}>
-        <div className="card text-decoration-none col">
+      {/* ROW SINGLE CARD */}
+      <div className="row m-5" key={product.id}>
+        <div className="card text-decoration-none col-8">
           <img
             src={product.image}
             className="card-img-top"
             alt={product.name}
           />
-    </div>
-        <div className="text-decoration-none col">
-     
+        </div>
+        <div className=" text-decoration-none col-4 d-flex flex-column gap-2">
           <div className="card-body">
             <h5 className="card-title">{product.name}</h5>
             <p className="card-text">${product.price}</p>
           </div>
+
+          <div>
+            <QuantityCounter />
+          </div>
+          <button className="btn btn-outline-secondary">
+            Aggiungi al carrello
+          </button>
         </div>
       </div>
-      <div class="accordion mt-5" id="accordionExample">
+
+      {/* ACCORDION */}
+      <div class="accordion m-5" id="accordionExample">
         <div class="accordion-item">
           <h2 class="accordion-header">
             <button
@@ -75,7 +85,9 @@ export default function ProductPage() {
             class="accordion-collapse collapse"
             data-bs-parent="#accordionExample"
           >
-            <div class="accordion-body">{product.description}</div>
+            <div class="accordion-body">
+              <strong>{product.description}</strong>
+            </div>
           </div>
         </div>
         <div class="accordion-item">
@@ -99,7 +111,7 @@ export default function ProductPage() {
             <div class="accordion-body">
               <div className="text-center">
                 <img src={divieto} alt="" width={50} />
-                <p>
+                <p className="">
                   Il prodotto non deve essere utilizzato da bambini o da persone
                   non in grado di comprendere l’eventuale pericolosità.
                 </p>
@@ -107,14 +119,14 @@ export default function ProductPage() {
               <div className="text-center">
                 <img src={imballaggio} alt="" width={50} />
 
-                <p>
+                <p className="">
                   Imballaggio dell'articolo soggetto al sistema di riciclaggio
                   "Green Dot"
                 </p>
               </div>
               <div className="text-center">
                 <img src={riciclo} alt="" width={50} />
-                <p>L'imballaggio dell'articolo è riciclabile </p>
+                <p className="">L'imballaggio dell'articolo è riciclabile </p>
               </div>
             </div>
           </div>
