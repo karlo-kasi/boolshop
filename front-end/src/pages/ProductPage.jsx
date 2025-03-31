@@ -2,12 +2,14 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
+//COMPONENTS
 import QuantityCounter from "../components/QuantityCounter";
+import BestsellersList from "../components/BestsellersList";
+
+//ICONS
 import { FaRegHeart } from "react-icons/fa";
 import { FiPackage } from "react-icons/fi";
 import { FaShippingFast } from "react-icons/fa";
-
-
 
 import divieto from "../assets/img/1.avif";
 import imballaggio from "../assets/img/2.avif";
@@ -48,14 +50,14 @@ export default function ProductPage() {
     <>
       {/* ROW SINGLE CARD */}
       <div className="row m-5" key={product.id}>
-        <div className="card text-decoration-none col-7">
+        <div className="card text-decoration-none col-sm-12 col-md-7">
           <img
             src={product.image}
             className="card-img-top"
             alt={product.name}
           />
         </div>
-        <div className=" text-decoration-none col-5 d-flex flex-column gap-4">
+        <div className=" text-decoration-none col-sm-12 col-md-5 d-flex flex-column gap-4">
           <div className="">
             <h5 className="card-title">{product.name}</h5>
             <p className="card-text">${product.price}</p>
@@ -75,14 +77,15 @@ export default function ProductPage() {
             </span>
             <FaShippingFast size={25} />
             <span className="card-text">
-            <strong>Spedizione gratutia</strong> per ordini superiori a 29,00€
+              <strong>Spedizione gratutia</strong> per ordini superiori a
+              99,00&euro;
             </span>
-            </div>
           </div>
+        </div>
       </div>
 
       {/* ACCORDION */}
-      <div class="accordion m-5" id="accordionExample">
+      <div className="accordion m-5" id="accordionExample">
         <div class="accordion-item">
           <h2 class="accordion-header">
             <button
@@ -147,6 +150,9 @@ export default function ProductPage() {
             </div>
           </div>
         </div>
+      </div>
+      <div className="text-center m-5">
+        <BestsellersList />
       </div>
     </>
   );
