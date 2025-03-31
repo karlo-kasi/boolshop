@@ -13,6 +13,7 @@ app.use(express.json())
 app.use(setImagePath)
 app.use("/cover", router)
 
+
 app.listen(port, () => {
-    console.log(`Il server cover funziona sempre sulla port ${port}`)
-})
+  console.log(`Il server cover funziona sempre sulla port ${port}`);
+});
