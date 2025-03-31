@@ -7,7 +7,7 @@ router.get("/", index)
 
 router.get("/search", search)
 
-router.get("/:id", show)
+router.get("/:slug", show)
 
 router.post("/order", storeOrder)
 

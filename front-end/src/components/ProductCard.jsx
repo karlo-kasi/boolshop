@@ -29,8 +29,8 @@ export default function ProductCard() {
     <div className="row row-cols-1 row-cols-md-2 g-4">
       {products.map((p) => {
         return (
-          <div className="col" key={p.id}>
-            <Link to={`/${p.slug}`} className="card text-decoration-none">
+          <div className="col-sm-6 col-md-4 col-lg-2 mb-5" key={p.id}>
+            <Link to={`cover/${p.slug}`} className="card text-decoration-none">
               <img src={p.image} className="card-img-top" alt={p.name} />
               <div className="card-body">
                 <h5 className="card-title">{p.name}</h5>
