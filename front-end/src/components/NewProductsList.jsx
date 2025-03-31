@@ -16,8 +16,6 @@ export default function NewProductsList() {
             .catch(err => console.log(err))
     }
 
-    console.log(newProducts)
-
     useEffect(fetchNewProducts, [])
 
     return (
