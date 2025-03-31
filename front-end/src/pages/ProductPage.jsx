@@ -3,6 +3,11 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import QuantityCounter from "../components/QuantityCounter";
+import { FaRegHeart } from "react-icons/fa";
+import { FiPackage } from "react-icons/fi";
+import { FaShippingFast } from "react-icons/fa";
+
+
 
 import divieto from "../assets/img/1.avif";
 import imballaggio from "../assets/img/2.avif";
@@ -43,26 +48,37 @@ export default function ProductPage() {
     <>
       {/* ROW SINGLE CARD */}
       <div className="row m-5" key={product.id}>
-        <div className="card text-decoration-none col-8">
+        <div className="card text-decoration-none col-7">
           <img
             src={product.image}
             className="card-img-top"
             alt={product.name}
           />
         </div>
-        <div className=" text-decoration-none col-4 d-flex flex-column gap-2">
-          <div className="card-body">
+        <div className=" text-decoration-none col-5 d-flex flex-column gap-4">
+          <div className="">
             <h5 className="card-title">{product.name}</h5>
             <p className="card-text">${product.price}</p>
           </div>
 
-          <div>
+          <div className="d-flex justify-content-around align-items-center">
             <QuantityCounter />
+            <FaRegHeart size={25} />
           </div>
           <button className="btn btn-outline-secondary">
             Aggiungi al carrello
           </button>
-        </div>
+          <div className=" d-flex flex-column gap-2">
+            <FiPackage size={25} />
+            <span className="card-text">
+              <strong>Ordina ora</strong> e ricevi in 1-2 giorni lavorativi
+            </span>
+            <FaShippingFast size={25} />
+            <span className="card-text">
+            <strong>Spedizione gratutia</strong> per ordini superiori a 29,00€
+            </span>
+            </div>
+          </div>
       </div>
 
       {/* ACCORDION */}
