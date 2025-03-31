@@ -1,5 +1,4 @@
 import connection from "../data/db-cover.js";
-import setImagePath from "../middlewares/imagePath.js";
 
 
 
@@ -12,41 +11,72 @@ function index(req, res) {
                 error: 'Errore lato server INDEX function',
             });
 
-            const covers = results.map(cover => {
-                return {
-                    ...cover,
-                    image: req.imagePath + cover.image_url
-                }
-            });
+        const covers = results.map(cover => {
+            return {
+                ...cover,
+                image: req.imagePath + cover.image_url,
+            }
+        });
         res.json(covers);
     });
 }
 
 function show(req, res) {
-    const {id} = req.params
+    const { id } = req.params
     const sql = 'SELECT * FROM products WHERE id = ?';
 
     connection.query(sql, [id], (err, results) => {
+        if (err)
+            return res.status(500).json({
+                error: 'Errore lato server SHOW function',
+            });
+
+            const cover = results[0]
+
+            res.json({ 
+                ...cover,
+                image: req.imagePath + cover.image_url,
+              });
+    });
+}
+
+function search(req, res) {
+
+    const searchTerm = req.query.name || ''
+    console.log("searchTerm:", searchTerm)
+
+    let sql = 'SELECT * FROM products'
+    const params = [];
+
+    if (searchTerm) {
+        sql += ' WHERE name LIKE ?';
+        params.push(`%${searchTerm}%`);
+    }
+
+    console.log("SQL:", sql, params);
+
+    connection.query(sql, params, (err, results) => {
         if (err) {
-            return res.status(500).json({ error: 'Errore lato server SHOW function' });
+            console.error("Errore nella query:", err);
+            return res.status(500).json({
+                error: 'Errore lato server SEARCH function',
+            });
         }
 
-        if (results.length === 0) {  
-            return res.status(404).json({ error: 'Prodotto non trovato' });
-        }
+        console.log("Results:", results);
 
-        const cover = results[0]; 
-
-        res.json({ 
+        const covers = results.map(cover => ({
             ...cover,
-            image: cover.image_url ? req.imagePath + cover.image_url : null, 
-        });
+            image: req.imagePath + cover.image_url,
+        }));
+
+        res.json(covers);
     });
 }
 
 function storeOrder(req, res) {
 
-    
+
 
     const { coupon_id, total, shipping_address, billing_address, status } = req.body
 
@@ -69,5 +99,6 @@ function storeOrder(req, res) {
 export {
     index,
     show,
+    search,
     storeOrder
 }
