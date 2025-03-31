@@ -11,6 +11,7 @@ import { FaRegHeart } from "react-icons/fa";
 import { FiPackage } from "react-icons/fi";
 import { FaShippingFast } from "react-icons/fa";
 
+//IMAGES ACCORDION
 import divieto from "../assets/img/1.avif";
 import imballaggio from "../assets/img/2.avif";
 import riciclo from "../assets/img/3.avif";
