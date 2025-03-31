@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import {Link} from "react-router-dom"
+import {Link} from "react-router-dom";
+import axios from "axios";
+import ProductCard from "./ProductCard";
 
 export default function BestsellersList() {
         const url = import.meta.env.VITE_INDEX_ROUTE;
@@ -19,18 +21,34 @@ export default function BestsellersList() {
     
         useEffect(fetchBestsellers, [])
 
+        const [loading, setLoading] = useState(true);
+
+        useEffect(() => {
+            setLoading(true);
+            axios
+                .get(url)
+                .then((response) => {
+                    const bestsellersArray = response.data.filter(d => d.id === 3 || d.id === 8 || d.id === 11 || d.id === 10 || d.id === 5);
+                    setBestsellers(bestsellersArray)
+                    setLoading(false);
+                })
+                .catch((error) => {
+                    console.error("Error fetching products:", error);
+                    setLoading(false);
+                });
+        }, []);
+    
+        if (loading) {
+            return <p>Loading...</p>;
+        }
+    
+
 
     return (
-        <div>
+        <div className="mb-4">
             <h3>I più venduti</h3>
             <ul>
-                {bestsellers.map(b => {
-                    return (
-                        <li key={b.id}>
-                            <Link to={`/${b.slug}`}>{b.name} ({b.price}&euro;)</Link>
-                        </li>
-                    ) 
-                })}
+                {bestsellers.map(p => <ProductCard key={p.id} product={p} />)}
             </ul>
         </div>
     )
