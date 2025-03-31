@@ -1,7 +1,8 @@
 export default function Footer() {
   return (
     <>
-        <section className="d-flex justify-content-between bg-dark text-white p-3">
+        <footer className="bg-dark">
+            <section className="d-flex justify-content-between text-white p-3">
             <div>
                 <ul className="list-unstyled">
                     <li><strong>AZIENDA</strong></li>
@@ -24,7 +25,16 @@ export default function Footer() {
                     <li><a className="text-white" href="#">Privacy policy</a></li>
                 </ul>
             </div>
-      </section>
+            </section>
+            <div className="d-flex justify-content-end p-2 gap-3">
+                <img src="icons/apple-pay.png" alt="apple pay" width="40px"/>
+                <img src="icons/google.png" alt="google pay" width="45px"/>
+                <img src="icons/money.png" alt="mastercard" width="40px"/>
+                <img src="icons/visa.png" alt="visa" width="40px"/>
+                <img src="icons/paypal.png" alt="paypal" width="45px"/>
+                <img src="icons/american-express.png" alt="american express" width="38px"/>
+            </div>
+        </footer>
     </>
    )
 }
