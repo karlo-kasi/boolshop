@@ -27,17 +27,20 @@ function show(req, res) {
     const sql = 'SELECT * FROM products WHERE id = ?';
 
     connection.query(sql, [id], (err, results) => {
-        if (err)
-            return res.status(500).json({
-                error: 'Errore lato server SHOW function',
-            });
+        if (err) {
+            return res.status(500).json({ error: 'Errore lato server SHOW function' });
+        }
 
-            const cover = results[0]
+        if (results.length === 0) {  
+            return res.status(404).json({ error: 'Prodotto non trovato' });
+        }
 
-            res.json({ 
-                ...cover,
-                image: req.imagePath + cover.image_url,
-              });
+        const cover = results[0]; 
+
+        res.json({ 
+            ...cover,
+            image: cover.image_url ? req.imagePath + cover.image_url : null, 
+        });
     });
 }
 
