@@ -27,7 +27,7 @@ export default function Footer() {
             </div>
             </section>
             <div className="d-flex justify-content-end p-2 gap-3">
-                <img src="icons/apple-pay.png" alt="apple pay" width="40px"/>
+                <img src="icons/apple-pay.png" alt="apple pay" width="42px"/>
                 <img src="icons/google.png" alt="google pay" width="45px"/>
                 <img src="icons/money.png" alt="mastercard" width="40px"/>
                 <img src="icons/visa.png" alt="visa" width="40px"/>
