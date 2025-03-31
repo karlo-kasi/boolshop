@@ -31,16 +31,12 @@ function show(req, res) {
                 error: 'Errore lato server SHOW function',
             });
 
-        if (results.length === 0) {
-            return res.status(404).json({ error: 'Prodotto non trovato' });
-        }
+            const cover = results[0]
 
-        const cover = results[0]
-
-        res.json({
-            ...cover,
-            image: req.imagePath + cover.image_url,
-        });
+            res.json({ 
+                ...cover,
+                image: req.imagePath + cover.image_url,
+              });
     });
 }
 
