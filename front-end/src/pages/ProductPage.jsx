@@ -23,7 +23,6 @@ export default function ProductPage() {
   useEffect(fetchProduct, [slug]);
 
   return (
-    <>
   <div className="col" key={p.id}>
             <div className="card">
               <img src={p.image} className="card-img-top" alt={p.name} />
@@ -33,6 +32,6 @@ export default function ProductPage() {
                 <p className="card-text">${p.price}</p>
               </div>
             </div>
-          </div>    </>
+          </div>    
   );
 }
