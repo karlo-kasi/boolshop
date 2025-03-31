@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import {Link} from "react-router-dom"
 
 export default function BestsellersList() {
         const url = import.meta.env.VITE_INDEX_ROUTE;
@@ -9,7 +10,7 @@ export default function BestsellersList() {
                 .then(res => res.json())
                 .then(data => {
                     const bestsellersArray = data.filter(d => {
-                        return d.id === 10 || d.id === 8 || d.id === 11 || d.id === 3 || d.id === 5
+                        return d.id === 3 || d.id === 8 || d.id === 11 || d.id === 10 || d.id === 5
                     });
                     setBestsellers(bestsellersArray)
                 })
@@ -17,13 +18,18 @@ export default function BestsellersList() {
         }
     
         useEffect(fetchBestsellers, [])
-        
+
+
     return (
         <div>
             <h3>I più venduti</h3>
             <ul>
                 {bestsellers.map(b => {
-                    return <li key={b.id}>{b.name}</li>
+                    return (
+                        <li key={b.id}>
+                            <Link to={`/${b.slug}`}>{b.name} ({b.price}&euro;)</Link>
+                        </li>
+                    ) 
                 })}
             </ul>
         </div>

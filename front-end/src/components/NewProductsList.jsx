@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import {Link} from "react-router-dom"
 
 export default function NewProductsList() {
     const url = import.meta.env.VITE_INDEX_ROUTE
@@ -23,7 +24,11 @@ export default function NewProductsList() {
             <h3>Ultimi arrivi</h3>
             <ul>
                 {newProducts.map(p => {
-                    return <li key={p.id}>{p.name}</li>
+                    return (
+                        <li key={p.id}>
+                            <Link to={`/${p.slug}`}>{p.name} ({p.price}&euro;)</Link>
+                        </li>
+                    ) 
                 })}
             </ul>
         </div>
