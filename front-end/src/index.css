@@ -1,15 +1,31 @@
-.card-body p {
-    display: -webkit-box;
-    max-width: 200px;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+
+* {
+    font-family: "Rubik", sans-serif;
+}
+
+body {
+    background-color: #F2F2F2;
+}
+
+.card {
+    border: none !important;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(8px 8px 10px gray);
+    transition: all 0.5s ease-in-out;
+}
 
 .logo{
-    width: 2rem;
-    height: 2rem;
+    width: 100px;
 }
 
 .hero-img{
     width: 100%;
+}
+
+footer ul a {
+    text-decoration: none;
 }

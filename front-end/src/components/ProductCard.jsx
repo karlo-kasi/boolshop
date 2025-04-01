@@ -6,12 +6,11 @@ export default function ProductCard({ product }) {
   return (
     <div className="row col g-3">
       <div className="col" key={p.id}>
-        <Link to={`/${p.slug}`} className="card text-decoration-none">
-          <img src={p.image} className="card-img-top" alt={p.name} />
+        <Link to={`/cover/${p.slug}`} className="card text-decoration-none">
+          <img src={p.image} className="card-img-top py-3" alt={p.name} />
           <div className="card-body">
             <h5 className="card-title">{p.name}</h5>
-            <p className="card-text">{p.description}</p>
-            <p className="card-text">${p.price}</p>
+            <p className="card-text"><strong>{p.price}&euro;</strong></p>
           </div>
         </Link>
       </div>

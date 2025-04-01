@@ -4,6 +4,7 @@ export default function Hero() {
   const images = [
     "../public/Slider-desk_16e.jpg",
     "../public/SLIDER-DESK_TITANIUM.jpg",
+    "../public/slider_cover_copia_1.jpg",
   ];
   const [currentImage, setCurrentImage] = useState(0);
 
@@ -15,18 +16,18 @@ export default function Hero() {
   }, []);
 
   return (
-    <>
-      <h3 className="d-flex justify-content-center">
-        ★ ESPRIMI IL TUO STILE, PROTEGGI IL TUO DEVICE ★
-      </h3>
-      <div className="hero w-full flex justify-center items-center overflow-hidden">
+    <div className="mb-5">
+      <div className="hero overflow-hidden mt-4 shadow-lg rounded-4 gap-4">
         <img
           src={images[currentImage]}
           alt="Hero Image"
-          className="hero-img"
+          className="hero-img rounded-4"
           style={{ objectFit: "scale-down" }}
         />
       </div>
-    </>
+      <h3 className="text-center mt-4">
+        ESPRIMI IL TUO STILE, PROTEGGI IL TUO DEVICE
+      </h3>
+    </div>
   );
 }

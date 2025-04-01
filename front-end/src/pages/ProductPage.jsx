@@ -58,10 +58,10 @@ export default function ProductPage() {
             alt={product.name}
           />
         </div>
-        <div className=" text-decoration-none col-sm-12 col-md-5 d-flex flex-column gap-4">
+        <div className="text-decoration-none col-sm-12 col-md-5 d-flex flex-column gap-4 p-4">
           <div className="">
             <h5 className="card-title">{product.name}</h5>
-            <p className="card-text">${product.price}</p>
+            <p className="card-text">{product.price}&euro;</p>
           </div>
 
           <div className="d-flex justify-content-around align-items-center">
@@ -79,7 +79,7 @@ export default function ProductPage() {
             <FaShippingFast size={25} />
             <span className="card-text">
               <strong>Spedizione gratutia</strong> per ordini superiori a
-              99,00&euro;
+              29,99&euro;
             </span>
           </div>
         </div>
