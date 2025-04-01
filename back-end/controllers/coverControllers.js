@@ -1,7 +1,6 @@
 import connection from "../data/db-cover.js";
 
 
-
 function index(req, res) {
     const sql = 'SELECT * FROM products';
 
@@ -11,32 +10,35 @@ function index(req, res) {
                 error: 'Errore lato server INDEX function',
             });
 
-        const covers = results.map(cover => {
-            return {
-                ...cover,
-                image: req.imagePath + cover.image_url,
-            }
-        });
+            const covers = results.map(cover => {
+                return {
+                    ...cover,
+                    image: req.imagePath + cover.image_url
+                }
+            });
         res.json(covers);
     });
 }
 
-function show(req, res) {
-    const { id } = req.params
-    const sql = 'SELECT * FROM products WHERE id = ?';
+function show (req, res) {
+    const {slug} = req.params
+    const sql = 'SELECT * FROM products WHERE slug = ?';
 
-    connection.query(sql, [id], (err, results) => {
-        if (err)
-            return res.status(500).json({
-                error: 'Errore lato server SHOW function',
-            });
+    connection.query(sql, [slug], (err, results) => {
+        if (err) {
+            return res.status(500).json({ error: 'Errore lato server SHOW function' });
+        }
 
-            const cover = results[0]
+        if (results.length === 0) {  
+            return res.status(404).json({ error: 'Prodotto non trovato' });
+        }
 
-            res.json({ 
-                ...cover,
-                image: req.imagePath + cover.image_url,
-              });
+        const cover = results[0]; 
+
+        res.json({ 
+            ...cover,
+            image: cover.image_url ? req.imagePath + cover.image_url : null, 
+        });
     });
 }
 
