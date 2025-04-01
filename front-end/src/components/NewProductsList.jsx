@@ -27,11 +27,11 @@ export default function NewProductsList() {
     }
 
     return (
-        <div className="mb-4">
-            <h3>Ultimi arrivi</h3>
-            <ul>
+        <div className="mb-5">
+            <h2>Ultimi arrivi</h2>
+            <div className="row row-cols-2 row-cols-md-3 row-cols-lg-5 justify-content-center">
                 {newProducts.map(p => <ProductCard key={p.id} product={p} />)}
-            </ul>
+            </div>
         </div>
 
     )

@@ -1,12 +1,10 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
 import { Link } from "react-router-dom";
 
 export default function ProductCard({ product }) {
   const p = product;
   
   return (
-    <div className="row row-cols-1 row-cols-md-2 g-4">
+    <div className="row col g-3">
       <div className="col" key={p.id}>
         <Link to={`/${p.slug}`} className="card text-decoration-none">
           <img src={p.image} className="card-img-top" alt={p.name} />

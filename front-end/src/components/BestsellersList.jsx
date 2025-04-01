@@ -45,11 +45,11 @@ export default function BestsellersList() {
 
 
     return (
-        <div className="mb-4">
-            <h3>I più venduti</h3>
-            <ul>
+        <div className="mb-5">
+            <h2>I più venduti</h2>
+            <div className="row row-cols-2 row-cols-md-3 row-cols-lg-5 justify-content-center">
                 {bestsellers.map(p => <ProductCard key={p.id} product={p} />)}
-            </ul>
+            </div>
         </div>
     )
 }
