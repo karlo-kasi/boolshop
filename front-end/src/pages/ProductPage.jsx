@@ -11,6 +11,7 @@ import BestsellersList from "../components/BestsellersList";
 import { FaRegHeart } from "react-icons/fa";
 import { FiPackage } from "react-icons/fi";
 import { FaShippingFast } from "react-icons/fa";
+import { FiShoppingCart } from "react-icons/fi";
 
 //IMAGES ACCORDION
 import divieto from "../assets/img/1.avif";

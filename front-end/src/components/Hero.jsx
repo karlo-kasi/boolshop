@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 
 export default function Hero() {
   const images = [
-    "../public/Slider-desk_16e.jpg",
-    "../public/SLIDER-DESK_TITANIUM.jpg",
-    "../public/slider_cover_copia_1.jpg",
+    "../Slider-desk_16e.jpg",
+    "../SLIDER-DESK_TITANIUM.jpg",
+    "../slider_cover_copia_1.jpg",
   ];
   const [currentImage, setCurrentImage] = useState(0);
 
