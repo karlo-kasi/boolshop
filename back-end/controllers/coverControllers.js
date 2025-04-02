@@ -76,31 +76,30 @@ function search(req, res) {
     });
 }
 
-function storeOrder(req, res) {
+//function storeOrder(req, res) {
 
 
 
-    const { coupon_id, total, shipping_address, billing_address, status } = req.body
+//    const { coupon_id, total, shipping_address, billing_address, status } = req.body
 
-    const sql = 'INSERT INTO orders ( coupon_id, total, shipping_address, billing_address, status ) VALUES (?,?,?,?,?)'
+//    const sql = 'INSERT INTO orders ( coupon_id, total, shipping_address, billing_address, status ) VALUES (?,?,?,?,?)'
 
-    connection.query(sql, [coupon_id, total, shipping_address, billing_address, status], (err, results) => {
-        if (err)
-            return res.status(500).json({
-                error: 'Database Errore StoreOrders',
-            })
+//    connection.query(sql, [coupon_id, total, shipping_address, billing_address, status], (err, results) => {
+//        if (err)
+//            return res.status(500).json({
+//                error: 'Database Errore StoreOrders',
+//            })
 
-        res.status(201);
-        res.json({
-            message: 'Order Added',
-            id: results.insertId,
-        });
-    })
-}
+//        res.status(201);
+//        res.json({
+//            message: 'Order Added',
+//            id: results.insertId,
+//        });
+//    })
+//}
 
 export {
     index,
     show,
-    search,
-    storeOrder
+    search
 }
