@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 //COMPONENTS
 import QuantityCounter from "../components/QuantityCounter";
@@ -10,6 +11,7 @@ import BestsellersList from "../components/BestsellersList";
 import { FaRegHeart } from "react-icons/fa";
 import { FiPackage } from "react-icons/fi";
 import { FaShippingFast } from "react-icons/fa";
+import { FiShoppingCart } from "react-icons/fi";
 
 //IMAGES ACCORDION
 import divieto from "../assets/img/1.avif";
@@ -20,6 +22,7 @@ export default function ProductPage() {
   const { slug } = useParams();
   const [product, setProduct] = useState(null);
   const [error, setError] = useState(null);
+  const [quantity, setQuantity] = useState(1); // Stato per la quantità
 
   useEffect(() => {
     console.log("Product ID:", slug);
@@ -38,6 +41,44 @@ export default function ProductPage() {
         console.error(error);
       });
   }, [slug]);
+
+  // Funzione per aggiornare la quantità
+  const handleQuantityChange = (newQuantity) => {
+    setQuantity(newQuantity);
+  };
+
+  // Funzione per aggiungere il prodotto al carrello
+  const addToCart = () => {
+    // Recupera gli elementi esistenti dal localStorage
+    const storedCartItems = localStorage.getItem("cartItems");
+    const existingCartItems = storedCartItems
+      ? JSON.parse(storedCartItems)
+      : [];
+
+    // Verifica se il prodotto è già nel carrello
+    const existingProductIndex = existingCartItems.findIndex(
+      (item) => item.id === product.id
+    );
+
+    if (existingProductIndex > -1) {
+      // Se il prodotto è già nel carrello, aggiorna la quantità
+      existingCartItems[existingProductIndex].quantity += quantity;
+    } else {
+      // Altrimenti, aggiungi il prodotto al carrello
+      const cartItem = {
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        description: product.description,
+        image: product.image,
+        quantity: quantity,
+      };
+      existingCartItems.push(cartItem);
+    }
+
+    // Salva il carrello aggiornato nel localStorage
+    localStorage.setItem("cartItems", JSON.stringify(existingCartItems));
+  };
 
   if (error) {
     return <div>{error}</div>;
@@ -65,10 +106,17 @@ export default function ProductPage() {
           </div>
 
           <div className="d-flex justify-content-around align-items-center">
-            <QuantityCounter />
-            <FaRegHeart size={25} />
+            <QuantityCounter onQuantityChange={handleQuantityChange} />
+            <div className="d-flex gap-4">
+              <NavLink className="text-black">
+                <FaRegHeart size={25}/>
+              </NavLink>
+            </div>
           </div>
-          <button className="btn btn-outline-secondary">
+          <button
+            className="custom-btnCarmelo rounded w-100"
+            onClick={addToCart}
+          >
             Aggiungi al carrello
           </button>
           <div className=" d-flex flex-column gap-2">
@@ -78,7 +126,7 @@ export default function ProductPage() {
             </span>
             <FaShippingFast size={25} />
             <span className="card-text">
-              <strong>Spedizione gratutia</strong> per ordini superiori a
+              <strong>Spedizione gratuita</strong> per ordini superiori a
               29,99&euro;
             </span>
           </div>
