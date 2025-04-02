@@ -1,31 +1,60 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap");
 
 * {
-    font-family: "Rubik", sans-serif;
+  font-family: "Rubik", sans-serif;
+
 }
 
 body {
-    background-color: #F2F2F2;
+  background-color: #f2f2f2;
 }
 
 .card {
-    border: none !important;
+  border: none !important;
 }
 
 .card:hover {
-    transform: scale(1.05);
-    filter: drop-shadow(8px 8px 10px gray);
-    transition: all 0.5s ease-in-out;
+  transform: scale(1.05);
+  filter: drop-shadow(8px 8px 10px gray);
+  transition: all 0.5s ease-in-out;
 }
 
-.logo{
-    width: 100px;
+.logo {
+  width: 100px;
 }
 
-.hero-img{
-    width: 100%;
+.hero-img {
+  width: 100%;
 }
 
 footer ul a {
-    text-decoration: none;
+  text-decoration: none;
 }
+
+
+
+/* Button - Carmelo !!! Attenzione, questi Button sono presenti in ProductPage, CartPage */
+.custom-btnCarmelo {
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1.2rem;
+    border: 1px solid gray;
+    padding: 0.6rem;
+    color: #000;
+    background-color: #fff;
+    background-image: linear-gradient(to right, rgba(49, 131, 231, 0.715) 0%, rgba(49, 131, 231, 0.715) 100%);
+    background-size: 0% 100%;
+    background-repeat: no-repeat;
+    transition: background-size 0.45s cubic-bezier(0.785, 0.135, 0.15, 0.86), color 0.45s ease-in-out;
+  }
+  
+  
+
+  .custom-btnCarmelo:hover {
+    background-color: rgba(49, 131, 231, 0.715);
+    color: #fff;
+
+
+}
+  
+ 
