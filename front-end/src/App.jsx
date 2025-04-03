@@ -8,10 +8,15 @@ import ThankYouPage from "./pages/ThankYouPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import SearchPage from "./components/SearchPage";
 
+import { ModalProvider } from "./context/ModalContext"; // Import del provider
+
+
 function App() {
   return (
     <>
       <BrowserRouter>
+      <ModalProvider>
+
         <Routes>
           <Route Component={DefaultLayout}>
             <Route path="/search" element={<SearchPage />} />
@@ -23,6 +28,7 @@ function App() {
             <Route path="*" Component={NotFoundPage} />
           </Route>
         </Routes>
+        </ ModalProvider>
       </BrowserRouter>
     </>
   );

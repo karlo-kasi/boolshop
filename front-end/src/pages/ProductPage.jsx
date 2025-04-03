@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Link, NavLink } from "react-router-dom";
+import { useModal } from "../context/ModalContext"; // Import del contesto
 
 //COMPONENTS
 import QuantityCounter from "../components/QuantityCounter";
@@ -23,6 +24,7 @@ export default function ProductPage() {
   const [product, setProduct] = useState(null);
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1); // Stato per la quantità
+  const { openModal } = useModal(); // Usa il contesto
 
   useEffect(() => {
     console.log("Product ID:", slug);
@@ -49,35 +51,45 @@ export default function ProductPage() {
 
   // Funzione per aggiungere il prodotto al carrello
   const addToCart = () => {
-    // Recupera gli elementi esistenti dal localStorage
-    const storedCartItems = localStorage.getItem("cartItems");
-    const existingCartItems = storedCartItems
-      ? JSON.parse(storedCartItems)
-      : [];
+    if (!product || !product.id || !product.slug) {
+      console.error("Prodotto non valido o slug mancante");
+      return;
+    }
 
-    // Verifica se il prodotto è già nel carrello
-    const existingProductIndex = existingCartItems.findIndex(
-      (item) => item.id === product.id
-    );
-
-    if (existingProductIndex > -1) {
-      // Se il prodotto è già nel carrello, aggiorna la quantità
-      existingCartItems[existingProductIndex].quantity += quantity;
-    } else {
-      // Altrimenti, aggiungi il prodotto al carrello
+    try {
       const cartItem = {
         id: product.id,
         name: product.name,
         price: product.price,
         description: product.description,
         image: product.image,
+        slug: product.slug, // Assicurati che slug sia presente
         quantity: quantity,
       };
-      existingCartItems.push(cartItem);
-    }
 
-    // Salva il carrello aggiornato nel localStorage
-    localStorage.setItem("cartItems", JSON.stringify(existingCartItems));
+      const storedCartItems = localStorage.getItem("cartItems");
+      const existingCartItems = storedCartItems
+        ? JSON.parse(storedCartItems)
+        : [];
+
+      const existingProductIndex = existingCartItems.findIndex(
+        (item) => item.id === product.id
+      );
+
+      if (existingProductIndex > -1) {
+        existingCartItems[existingProductIndex].quantity += quantity;
+      } else {
+        existingCartItems.push(cartItem);
+      }
+
+      localStorage.setItem("cartItems", JSON.stringify(existingCartItems));
+      console.log("Prodotto aggiunto al carrello:", cartItem); // Debug per verificare lo slug
+
+      // Passa lo stato aggiornato del LocalStorage alla modale
+      openModal({ cartItems: existingCartItems });
+    } catch (error) {
+      console.error("Errore nell'aggiunta al carrello:", error);
+    }
   };
 
   if (error) {
@@ -109,7 +121,7 @@ export default function ProductPage() {
             <QuantityCounter onQuantityChange={handleQuantityChange} />
             <div className="d-flex gap-4">
               <NavLink className="text-black">
-                <FaRegHeart size={25}/>
+                <FaRegHeart size={25} />
               </NavLink>
             </div>
           </div>
