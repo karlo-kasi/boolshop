@@ -3,7 +3,9 @@ import { Routes, Route, BrowserRouter } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import ProductPage from "./pages/ProductPage";
 import CheckoutPage from "./pages/CheckoutPage";
-import CartPage from "./pages/CartPage"; // Importa CartPage
+import CartPage from "./pages/CartPage";
+import ThankYouPage from "./pages/ThankYouPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 function App() {
   return (
@@ -14,7 +16,9 @@ function App() {
             <Route path="/" Component={HomePage} />
             <Route path="/cover/:slug" Component={ProductPage} />
             <Route path="/checkout" Component={CheckoutPage} />
-            <Route path="/cart" Component={CartPage} />{" "}
+            <Route path="/cart" Component={CartPage} />
+            <Route path="/thank-you" Component={ThankYouPage} />
+            <Route path="*" Component={NotFoundPage} />
             {/* Aggiungi la route per CartPage */}
           </Route>
         </Routes>

@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function Checkout() {
+    const navigate = useNavigate();
+
     const initalData = {
         name: "",
         surname: "",
@@ -46,13 +49,14 @@ export default function Checkout() {
                 'Content-Type': 'application/json',
             },
         })
-            //.then((response) => {
-            //    console.log("Response:", response.data);
-            //    // Gestisci la risposta del server qui, ad esempio, reindirizza l'utente a una pagina di conferma
-            //    localStorage.removeItem("cartItems");
-            //    setCart([]);
-            //    setFormData(initalData);
-            //})
+            .then((response) => {
+                console.log("Response:", response.data);
+                // Gestisci la risposta del server qui, ad esempio, reindirizza l'utente a una pagina di conferma
+                localStorage.removeItem("cartItems");
+                setCart([]);
+                setFormData(initalData);
+                navigate("/thank-you");
+            })
             .catch((error) => {
                 console.error("Error:", error);
                 // Gestisci l'errore qui, ad esempio, mostra un messaggio di errore all'utente
@@ -63,23 +67,88 @@ export default function Checkout() {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+    
+        // Aggiorna il valore del form
         setFormData({
             ...formData,
             [name]: value,
         });
+    
+        // Aggiorna gli errori in modo che non sovrascrivano quelli esistenti
+        setErrors(() => {
+            const newErrors = { ...errors };
+    
+            if (name === "name") {
+                if (value.length < 3) {
+                    newErrors.name = "Il nome deve essere lungo almeno 3 caratteri.";
+                } else {
+                    newErrors.name = ""; // Rimuove l'errore se la condizione è soddisfatta
+                }
+            }
+    
+            if (name === "surname") {
+                if (value.length < 3) {
+                    newErrors.surname = "Il cognome deve essere lungo almeno 3 caratteri.";
+                } else {
+                    newErrors.surname = ""; // Rimuove l'errore se la condizione è soddisfatta
+                }
+            }
 
-        if (name === "name" && value.length < 3) {
-            setErrors({ ...errors, name: "Il nome deve essere lungo almeno 3 caratteri." });
-        } else {
-            setErrors({ ...errors, name: "" });
-        }
+            if (name === "email") {
+                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailPattern.test(value)) {
+                    newErrors.email = "Inserisci un'email valida.";
+                } else {
+                    newErrors.email = ""; // Rimuove l'errore se la condizione è soddisfatta
+                }
+            }
 
-        if (name === "surname" && value.length < 3) {
-            setErrors({ ...errors, surname: "Il cognome deve essere lungo almeno 3 caratteri." });
-        } else {
-            setErrors({ ...errors, surname: "" });
-        }
-    }
+            if (name === "phone_number") {
+                const phonePattern = /^\d{10}$/; // Modifica il pattern in base al formato desiderato
+                if (!phonePattern.test(value)) {
+                    newErrors.phone_number = "Il numero di telefono deve essere lungo 10 cifre.";
+                } else {
+                    newErrors.phone_number = ""; // Rimuove l'errore se la condizione è soddisfatta
+                }
+            }
+
+            if (name === "shipping_address") {
+                if (value.length < 5) {
+                    newErrors.shipping_address = "L'indirizzo deve essere lungo almeno 5 caratteri.";
+                } else {
+                    newErrors.shipping_address = ""; // Rimuove l'errore se la condizione è soddisfatta
+                }
+            }
+
+            if (name === "city") {
+                if (value.length < 3) {
+                    newErrors.city = "La città deve essere lunga almeno 3 caratteri.";
+                } else {
+                    newErrors.city = ""; // Rimuove l'errore se la condizione è soddisfatta
+                }
+            }
+
+            if (name === "zip") {
+                const zipPattern = /^\d{5}$/; // Modifica il pattern in base al formato desiderato
+                if (!zipPattern.test(value)) {
+                    newErrors.zip = "Il CAP deve essere lungo 5 cifre.";
+                } else {
+                    newErrors.zip = ""; // Rimuove l'errore se la condizione è soddisfatta
+                }
+            }
+
+            if (name === "province") {
+                if (value === "") {
+                    newErrors.province = "Seleziona una provincia.";
+                } else {
+                    newErrors.province = ""; // Rimuove l'errore se la condizione è soddisfatta
+                }
+            }   
+
+    
+            return newErrors;
+        });
+    };
 
     useEffect(() => {
         const storedCart = localStorage.getItem("cartItems");
@@ -193,7 +262,7 @@ export default function Checkout() {
                                         </label>
                                         <input
                                             type="email"
-                                            className="form-control"
+                                            className={`form-control ${errors.email ? 'is-invalid' : ''}`}
                                             id="email"
                                             placeholder="you@example.com"
                                             name="email"
@@ -212,9 +281,9 @@ export default function Checkout() {
                                         </label>
                                         <input
                                             type="tel"
-                                            className="form-control"
+                                            className={`form-control ${errors.phone_number ? 'is-invalid' : ''}`}
                                             id="phone_number"
-                                            placeholder="333333333"
+                                            placeholder="3333333333"
                                             name="phone_number"
                                             value={formData.phone_number}
                                             onChange={handleChange}
@@ -230,7 +299,7 @@ export default function Checkout() {
                                         <label htmlFor="shipping_address" className="form-label">Indirizzo</label>
                                         <input
                                             type="text"
-                                            className="form-control"
+                                            className={`form-control ${errors.shipping_address ? 'is-invalid' : ''}`}
                                             id="shipping_address"
                                             placeholder="1234 Main St"
                                             name="shipping_address"
@@ -249,7 +318,7 @@ export default function Checkout() {
                                         <label htmlFor="city" className="form-label">Città</label>
                                         <input
                                             type="text"
-                                            className="form-control"
+                                            className={`form-control ${errors.city ? 'is-invalid' : ''}`}
                                             id="city"
                                             placeholder=""
                                             name="city"
@@ -266,7 +335,7 @@ export default function Checkout() {
                                         <label htmlFor="zip" className="form-label">CAP</label>
                                         <input
                                             type="text"
-                                            className="form-control"
+                                            className={`form-control ${errors.zip ? 'is-invalid' : ''}`}
                                             id="zip"
                                             placeholder=""
                                             name="zip"
@@ -280,7 +349,7 @@ export default function Checkout() {
                                     </div>
 
                                     <div className="col-md-4">
-                                        <label htmlFor="province" className="form-label">Provincia</label>
+                                        <label htmlFor="province" className={`form-label ${errors.province ? 'is-invalid' : ''}`}>Provincia</label>
                                         <select
                                             className="form-select"
                                             id="province"
