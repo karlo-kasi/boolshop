@@ -1,8 +1,8 @@
 import express from "express"
 const router = express.Router()
-import {index, show, search} from "../controllers/coverControllers.js"
+import {index, show } from "../controllers/coverControllers.js"
 import storeOrder from "../controllers/orderController.js"
-
+import search from "../controllers/searchControllers.js"
 
 router.get("/", index)
 
