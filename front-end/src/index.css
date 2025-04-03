@@ -31,20 +31,50 @@ footer ul a {
 }
 
 
-
 /* Button - Carmelo !!! Attenzione, questi Button sono presenti in ProductPage, CartPage */
 .custom-btnCarmelo {
   text-decoration: none;
+}
+
+.custom-btnCarmelo {
+  background-color: #8a9098;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.custom-btnCarmelo:hover {
+  background-color: rgba(49, 131, 231, 0.715);
+  color: #fff;
+}
+
+/* css modale del carrello */
+
+.btn-modal {
+  display: flex;
+  background-color: #8a9098 !important;
+  color: #fff !important;
+  padding: 10px 20px !important;
+  border-radius: 5px !important;
+  text-align: center !important;
+}
+.btn-modal:hover {
+  background-color: rgba(49, 131, 231, 0.715) !important;
+  color: #fff !important;
+}
+
+.title-modal{
+  font-size: 2rem;
+  font-weight: 600;
 
 }
 
-
-/* css modale del carrello */
 .custom-modal {
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
-  justify-content: flex-end;
-  /* Posiziona il pannello a destra */
+  justify-content: flex-end; /* Posiziona il pannello a destra */
   align-items: stretch;
   position: fixed;
   top: 0;
@@ -55,37 +85,33 @@ footer ul a {
 }
 
 .custom-modal-dialog {
-  background-color: #fff;
-  border-radius: 10px 0 0 10px;
-  /* Arrotonda solo i bordi sinistri */
+  background-color: #f8f8f8e7;
+  border-radius: 10px 0 0 10px; /* Arrotonda solo i bordi sinistri */
   box-shadow: -4px 0 15px rgba(0, 0, 0, 0.2);
-  width: 400px;
-  /* Larghezza del pannello */
-  height: 100%;
-  /* Altezza del pannello */
+  width: 400px; /* Larghezza del pannello */
+  height: 100%; /* Altezza del pannello */
   animation: slideIn 0.3s ease-in-out;
   display: flex;
   flex-direction: column;
 }
 
 .custom-modal-header {
-  background-color: #5e656d;
-  color: #fff;
+  background-color: lightgrey;
+  color: black;
   padding: 15px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-top-left-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.475);
 }
 
 .custom-modal-body {
   padding: 20px;
   font-size: 1rem;
-  color: #1e1d1d;
-  flex-grow: 1;
-  /* Permette al corpo di occupare lo spazio rimanente */
-  overflow-y: auto;
-  /* Aggiunge uno scroll se il contenuto è troppo lungo */
+  color: #393333;
+  flex-grow: 1; /* Permette al corpo di occupare lo spazio rimanente */
+  overflow-y: auto; /* Aggiunge uno scroll se il contenuto è troppo lungo */
 }
 
 .custom-modal-footer {
@@ -95,8 +121,6 @@ footer ul a {
 }
 
 .custom-modal-footer button {
-  background-color: #343a40;
-  color: #fff;
   border: none;
   padding: 10px 20px;
   border-radius: 5px;
@@ -108,40 +132,6 @@ footer ul a {
   background-color: #495057;
 }
 
-@keyframes slideIn {
-  from {
-    transform: translateX(100%);
-    from {
-        transform: translateX(100%);
-    }
-    to {
-        transform: translateX(0);
-    }
-}
-  
-.custom-btnCarmelo{
-    font-weight: 500;
-    font-size: 1.2rem;
-    border: 1px solid gray;
-    padding: 0.6rem;
-    color: #000;
-    background-color: #fff;
-    background-image: linear-gradient(to right, rgba(49, 131, 231, 0.715) 0%, rgba(49, 131, 231, 0.715) 100%);
-    background-size: 0% 100%;
-    background-repeat: no-repeat;
-    transition: background-size 0.45s cubic-bezier(0.785, 0.135, 0.15, 0.86), color 0.45s ease-in-out;
-  }
-
-  to {
-    transform: translateX(0);
-  }
-}
-
-
-.custom-btnCarmelo:hover {
-  background-color: rgba(49, 131, 231, 0.715);
-  color: #fff;
-}
 
 .thank-you-page, .not-found {
   height: 60vh;

@@ -1,31 +1,31 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
-export default function QuantityCounter({ onQuantityChange }) {
-  const [quantity, setQuantity] = useState(1); // Stato iniziale della quantità
+const QuantityCounter = ({ initialValue = 1, onQuantityChange }) => {
+  const [count, setCount] = useState(initialValue);
 
-  useEffect(() => {
-    onQuantityChange(quantity); // Comunica la quantità al componente padre
-  }, [quantity, onQuantityChange]);
-
-  const handleIncrease = () => {
-    setQuantity(quantity + 1); // Incrementa la quantità
+  const handleIncrement = () => {
+    const newCount = count + 1;
+    setCount(newCount);
+    onQuantityChange(newCount); // Chiama onQuantityChange solo qui
   };
 
-  const handleDecrease = () => {
-    if (quantity > 1) {
-      setQuantity(quantity - 1); // Decrementa la quantità, ma non scendere sotto 1
-    }
+  const handleDecrement = () => {
+    const newCount = Math.max(1, count - 1);
+    setCount(newCount);
+    onQuantityChange(newCount); // Chiama onQuantityChange solo qui
   };
 
   return (
-    <div className="d-flex align-items-center">
-      <button className="btn btn-outline-secondary" onClick={handleDecrease}>
+    <div className="d-flex align-items-center gap-3">
+      <button onClick={handleDecrement} className="btn btn-outline-dark">
         -
       </button>
-      <span className="mx-3">{quantity}</span>
-      <button className="btn btn-outline-secondary" onClick={handleIncrease}>
+      <span>{count}</span>
+      <button onClick={handleIncrement} className="btn btn-outline-dark">
         +
       </button>
     </div>
   );
-}
+};
+
+export default QuantityCounter;

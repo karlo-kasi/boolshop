@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 
 //ICON
@@ -9,111 +9,110 @@ import QuantityCounter from "../components/QuantityCounter";
 import OrderSummary from "../components/OrderSummary"; // Importa OrderSummary
 
 export default function CartPage() {
-  // Stato per memorizzare gli elementi nel carrello (esempio)
   const [cartItems, setCartItems] = useState(() => {
-    // Inizializza da localStorage o da un array vuoto
     const storedCartItems = localStorage.getItem("cartItems");
-    return storedCartItems ? JSON.parse(storedCartItems) : [];
+    const parsedItems = storedCartItems ? JSON.parse(storedCartItems) : [];
+    console.log("Cart Items:", parsedItems); // Verifica che slug sia presente
+    return parsedItems;
   });
 
-  useEffect(() => {
-    // Salva gli elementi del carrello nel localStorage ogni volta che cambiano
-    localStorage.setItem("cartItems", JSON.stringify(cartItems));
-  }, [cartItems]);
-
-  // Funzione per rimuovere un elemento dal carrello
-  const removeFromCart = (productId) => {
-    setCartItems(cartItems.filter((item) => item.id !== productId));
-  };
-
-  // Funzione per calcolare il totale del carrello
-  const calculateTotal = () => {
-    return cartItems.reduce(
-      (total, item) => total + item.price * item.quantity,
-      0
-    );
-  };
-
-  const [amountLeftForFreeShipping, setAmountLeftForFreeShipping] = useState(
-    (29.99 - calculateTotal()).toFixed(2)
+  // Calcola i valori una volta sola per render
+  const subtotal = cartItems.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
   );
+  const shippingCost = subtotal > 29.99 ? 0 : 13;
+  const total = subtotal + shippingCost;
 
-  useEffect(() => {
-    setAmountLeftForFreeShipping((29.99 - calculateTotal()).toFixed(2));
-  }, [cartItems, calculateTotal]);
+  // Funzione stabile per aggiornare la quantità
+  const handleQuantityUpdate = useCallback((itemId, newQuantity) => {
+    setCartItems((prevItems) => {
+      const updatedItems = prevItems.map((item) =>
+        item.id === itemId ? { ...item, quantity: newQuantity } : item
+      );
+      localStorage.setItem("cartItems", JSON.stringify(updatedItems));
+      return updatedItems;
+    });
+  }, []);
 
-  const shippingCost = calculateTotal() > 29.99 ? 0 : 13;
+  // Funzione stabile per rimuovere dal carrello
+  const removeFromCart = useCallback((productId) => {
+    setCartItems((prevItems) => {
+      const updatedItems = prevItems.filter((item) => item.id !== productId);
+      localStorage.setItem("cartItems", JSON.stringify(updatedItems));
+      return updatedItems;
+    });
+  }, []);
 
-  const totalWithShipping = calculateTotal() + shippingCost;
-
-  const formatPrice = (price) => {
-    return price.toFixed(2);
-  };
-
-  const isCartEmpty = cartItems.length === 0;
+  const formatPrice = (price) => Number(price).toFixed(2);
 
   return (
     <div className="container mb-5 mx-0">
       <h1 className="text-center mt-3">Il tuo carrello</h1>
-      <div className="row ">
+      <div className="row">
         <div className="col-md-8">
           <div className="bg-light p-3 mb-4">
-            <div className="">
-              <h5 className="mb-3">Prodotti nel tuo carrello</h5>
-              {cartItems.length === 0 ? (
-                <p className="mb-3">Il tuo carrello è vuoto.</p>
-              ) : (
-                <div className=" d-flex flex-column gap-4">
-                  {cartItems.map((item) => (
-                    <div key={item.id} className="container">
-                      <div className="row justify-content-between align-items-center gap-2">
-                        <div className="col-md-3">
-                          <img
-                            src={item.image}
-                            className="img-fluid float-start rounded w-100"
-                            alt={item.name}
-                          />
-                        </div>
-                        <div className="col-md-8 d-flex flex-column justify-content-between">
-                          <div className="">
-                            <h5 className="">{item.name}</h5>
-                            <p className="">Prezzo: {item.price}€</p>
-                            <p className="">Quantità: {item.quantity}</p>
-                            <div className="d-flex justify-content-between align-items-center">
-                              <QuantityCounter
-                                onQuantityChange={(quantity) => {
-                                  const updatedItems = cartItems.map(
-                                    (cartItem) =>
-                                      cartItem.id === item.id
-                                        ? { ...cartItem, quantity }
-                                        : cartItem
-                                  );
-                                  setCartItems(updatedItems);
-                                }}
-                              />
-                              <button
-                                className="btn btn-trasparent border-0 "
-                                onClick={() => removeFromCart(item.id)}
-                              >
-                                Rimuovi
-                              </button>
+            <h5 className="mb-3">Prodotti nel tuo carrello</h5>
+            {cartItems.length === 0 ? (
+              <p className="mb-3">Il tuo carrello è vuoto.</p>
+            ) : (
+              <div className="d-flex flex-column gap-4">
+                {cartItems.map(
+                  (item) => (
+                    console.log(item),
+                    (
+                      <div className="container">
+                        <div className="row justify-content-between align-items-center gap-2">
+                          <Link
+                            to={`/cover/${item.slug}`}
+                            key={item.id}
+                            className="text-decoration-none col-md-3"
+                          >
+                            <img
+                              src={item.image}
+                              className="img-fluid float-start rounded w-100"
+                              alt={item.name}
+                            />
+                          </Link>
+                          <div className="col-md-8 d-flex flex-column justify-content-between text-black">
+                            <div className="">
+                              <h5 className="">{item.name}</h5>
+                              <p className="">Prezzo: {item.price}€</p>
+                              <p className="">Quantità: {item.quantity}</p>
+                              <div className="d-flex justify-content-between align-items-center">
+                                <QuantityCounter
+                                  initialValue={item.quantity}
+                                  onQuantityChange={(newQuantity) =>
+                                    handleQuantityUpdate(item.id, newQuantity)
+                                  }
+                                />
+                                <button
+                                  className="btn btn-transparent border-0"
+                                  onClick={(e) => {
+                                    e.preventDefault(); // Previene il redirect quando si clicca su "Rimuovi"
+                                    removeFromCart(item.id);
+                                  }}
+                                >
+                                  Rimuovi
+                                </button>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+                    )
+                  )
+                )}
+              </div>
+            )}
           </div>
         </div>
         <OrderSummary
-          calculateTotal={calculateTotal}
+          calculateTotal={() => subtotal}
           shippingCost={shippingCost}
-          totalWithShipping={totalWithShipping}
+          totalWithShipping={total}
           formatPrice={formatPrice}
-          isCartEmpty={isCartEmpty}
+          isCartEmpty={cartItems.length === 0}
         />
       </div>
     </div>
