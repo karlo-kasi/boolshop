@@ -13,6 +13,7 @@ export default function Header() {
   const handleSearchClick = () => {
     setShowSearchModal(true);
   };
+  
 
   const handleCloseModal = () => {
     setShowSearchModal(false);
