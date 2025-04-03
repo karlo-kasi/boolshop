@@ -1,8 +1,8 @@
 import connection from "../data/db-cover.js";
 
 function search(req, res) {
-    const searchTerm = req.query.name || '';
-    const sort = req.query.sort || ''; // es: "price_asc", "recent", ecc.
+    const searchTerm = req.query.name || req.query.description || '';
+    const filter = req.query.filter || ''; 
 
     let sql = 'SELECT * FROM products';
     const params = [];
@@ -13,9 +13,11 @@ function search(req, res) {
         params.push(`%${searchTerm}%`, `%${searchTerm}%`);
     }
 
+    
+
     // 2) Ordinamento in base al parametro "sort"
     let orderClause = '';
-    switch (sort) {
+    switch (filter) {
       case 'price_asc':
         orderClause = 'ORDER BY price ASC';
         break;
