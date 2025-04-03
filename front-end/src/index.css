@@ -2,7 +2,6 @@
 
 * {
   font-family: "Rubik", sans-serif;
-
 }
 
 body {
@@ -113,17 +112,6 @@ footer ul a {
 }
   
 
-    font-weight: 500;
-    font-size: 1.2rem;
-    border: 1px solid gray;
-    padding: 0.6rem;
-    color: #000;
-    background-color: #fff;
-    background-image: linear-gradient(to right, rgba(49, 131, 231, 0.715) 0%, rgba(49, 131, 231, 0.715) 100%);
-    background-size: 0% 100%;
-    background-repeat: no-repeat;
-    transition: background-size 0.45s cubic-bezier(0.785, 0.135, 0.15, 0.86), color 0.45s ease-in-out;
-  }
   
   
 
