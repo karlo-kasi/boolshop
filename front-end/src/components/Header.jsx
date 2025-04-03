@@ -55,14 +55,11 @@ export default function Header() {
               <button className="btn btn-outline-dark m-1">Products</button>
               <button className="btn btn-outline-dark m-1">Contact</button>
             </div>
-            <div className="d-flex gap-2">
-              <NavLink onClick={handleSearchClick}>
-                <FaSearch className="fs-3 text-black" />
-              </NavLink>
-              <NavLink>
-                <FaRegHeart className="fs-3 text-black" />
-              </NavLink>
-              <NavLink>
+            <div className="d-flex gap-3">
+              <NavLink><FaSearch className="fs-3 text-black" /></NavLink>
+              <NavLink><FaRegHeart className="fs-3 text-black" /></NavLink>
+              <NavLink onClick={handleCartClick}>
+
                 <FiShoppingCart className="fs-3 text-black" />
               </NavLink>
             </div>
