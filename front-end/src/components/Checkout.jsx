@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function Checkout() {
+    const navigate = useNavigate();
+
     const initalData = {
         name: "",
         surname: "",
@@ -13,10 +16,19 @@ export default function Checkout() {
         phone_number: "",
     };
 
-
-
     const [cart, setCart] = useState([]);
     const [formData, setFormData] = useState(initalData);
+    const [isFormValid, setIsFormValid] = useState(true);
+    const [errors, setErrors] = useState({
+        name: "",
+        surname: "",
+        email: "",
+        shipping_address: "",
+        city: "",
+        province: "",
+        zip: "",
+        phone_number: "",
+    });
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -29,7 +41,7 @@ export default function Checkout() {
             shipping_address: shippingAddress,
             billing_address: shippingAddress,
             coupon_id: 1,
-            products: products
+            products: productsToSend
         };
 
         axios.post("http://localhost:3000/cover/order", dataToSubmit, {
@@ -37,40 +49,127 @@ export default function Checkout() {
                 'Content-Type': 'application/json',
             },
         })
+            .then((response) => {
+                console.log("Response:", response.data);
+                // Gestisci la risposta del server qui, ad esempio, reindirizza l'utente a una pagina di conferma
+                localStorage.removeItem("cartItems");
+                setCart([]);
+                setFormData(initalData);
+                navigate("/thank-you");
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+                // Gestisci l'errore qui, ad esempio, mostra un messaggio di errore all'utente
+                setIsFormValid(false);
+            });
+
     }
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+
+        // Aggiorna il valore del form
         setFormData({
             ...formData,
             [name]: value,
         });
-    }
+
+        // Aggiorna gli errori in modo che non sovrascrivano quelli esistenti
+        setErrors(() => {
+            const newErrors = { ...errors };
+
+            if (name === "name") {
+                if (value.length < 3) {
+                    newErrors.name = "Il nome deve essere lungo almeno 3 caratteri.";
+                } else {
+                    newErrors.name = ""; // Rimuove l'errore se la condizione è soddisfatta
+                }
+            }
+
+            if (name === "surname") {
+                if (value.length < 3) {
+                    newErrors.surname = "Il cognome deve essere lungo almeno 3 caratteri.";
+                } else {
+                    newErrors.surname = ""; // Rimuove l'errore se la condizione è soddisfatta
+                }
+            }
+
+            if (name === "email") {
+                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailPattern.test(value)) {
+                    newErrors.email = "Inserisci un'email valida.";
+                } else {
+                    newErrors.email = ""; // Rimuove l'errore se la condizione è soddisfatta
+                }
+            }
+
+            if (name === "phone_number") {
+                const phonePattern = /^\d{10}$/; // Modifica il pattern in base al formato desiderato
+                if (!phonePattern.test(value)) {
+                    newErrors.phone_number = "Il numero di telefono deve essere lungo 10 cifre.";
+                } else {
+                    newErrors.phone_number = ""; // Rimuove l'errore se la condizione è soddisfatta
+                }
+            }
+
+            if (name === "shipping_address") {
+                if (value.length < 5) {
+                    newErrors.shipping_address = "L'indirizzo deve essere lungo almeno 5 caratteri.";
+                } else {
+                    newErrors.shipping_address = ""; // Rimuove l'errore se la condizione è soddisfatta
+                }
+            }
+
+            if (name === "city") {
+                if (value.length < 3) {
+                    newErrors.city = "La città deve essere lunga almeno 3 caratteri.";
+                } else {
+                    newErrors.city = ""; // Rimuove l'errore se la condizione è soddisfatta
+                }
+            }
+
+            if (name === "zip") {
+                const zipPattern = /^\d{5}$/; // Modifica il pattern in base al formato desiderato
+                if (!zipPattern.test(value)) {
+                    newErrors.zip = "Il CAP deve essere lungo 5 cifre.";
+                } else {
+                    newErrors.zip = ""; // Rimuove l'errore se la condizione è soddisfatta
+                }
+            }
+
+            if (name === "province") {
+                if (value === "") {
+                    newErrors.province = "Seleziona una provincia.";
+                } else {
+                    newErrors.province = ""; // Rimuove l'errore se la condizione è soddisfatta
+                }
+            }
+
+
+            return newErrors;
+        });
+    };
 
     useEffect(() => {
-        axios
-            .get("http://localhost:3000/cover")
-            .then((response) => {
-                const products = response.data.filter(d => d.id > 10 && d.id < 16);
-                setCart(products);
-            })
-            .catch((error) => {
-                console.error("Error fetching products:", error);
-            });
+        const storedCart = localStorage.getItem("cartItems");
+        if (storedCart) {
+            setCart(JSON.parse(storedCart));
+        }
     }, []);
 
     let totalPrice = 0;
-    const products = cart.map((product) => {
-        totalPrice += parseFloat(product.price);
+    let totalQuantity = 0;
+    const productsToSend = cart.map((product) => {
+        totalPrice += parseFloat(product.price) * product.quantity;
+        totalQuantity += product.quantity;
         return {
             product_id: product.id,
-            name: product.name,
-            price: product.price,
-            quantity: 1,
+            quantity: product.quantity,
         };
     })
+    totalPrice = totalPrice.toFixed(2);
 
-    console.log(products)
+    console.log(typeof totalPrice )
 
     return (
         <>
@@ -80,53 +179,75 @@ export default function Checkout() {
                         <div className="col-md-5 col-lg-4 order-md-last">
                             <h4 className="d-flex justify-content-between align-items-center mb-3">
                                 <span className="text-primary">Your cart</span>
-                                <span className="badge bg-primary rounded-pill">{products.length}</span>
+                                <span className="badge bg-primary rounded-pill">{totalQuantity}</span>
                             </h4>
 
                             <ul className="list-group mb-3">
                                 {
-                                    products.map(product => {
+                                    cart.map(product => {
                                         return (
-                                            <li key={product.product_id} className="list-group-item d-flex justify-content-between lh-sm">
+                                            <li key={product.id} className="list-group-item d-flex justify-content-between lh-sm">
                                                 <div>
                                                     <h6 className="my-0">{product.name}</h6>
                                                 </div>
-                                                <span className="text-body-secondary">{product.price}&euro;</span>
+                                                <span className="text-body-secondary">{product.quantity} x {product.price}&euro;</span>
                                             </li>
                                         )
                                     }
-                                )}
-                                <li className="list-group-item d-flex justify-content-between bg-body-tertiary">
+                                    )}
+                                {
+                                    totalPrice < 29.99 ? (
+                                        <li className="list-group-item d-flex justify-content-between lh-sm">
+                                            <div>
+                                                <h6 className="my-0">Costi di spedizione</h6>
+                                            </div>
+                                            <span className="text-body-secondary">13&euro;</span>
+                                        </li>
+                                    ) : (
+                                        <li className="list-group-item d-flex justify-content-between lh-sm">
+                                            <div>
+                                                <h6 className="my-0">Spedizione gratuita</h6>
+                                            </div>
+                                            <span className="text-body-secondary"></span>
+                                        </li>
+                                    )
+                                }
+                                {/*<li className="list-group-item d-flex justify-content-between bg-body-tertiary">
                                     <div className="text-success">
                                         <h6 className="my-0">Promo code</h6>
                                         <small>EXAMPLECODE</small>
                                     </div>
                                     <span className="text-success">−$5</span>
-                                </li>
+                                </li>*/}
                                 <li className="list-group-item d-flex justify-content-between">
                                     <span>Totale</span>
-                                    <strong>{totalPrice}</strong>
+                                    {totalPrice < 29.99 ? <span className="text-body-secondary">{(parseFloat(totalPrice) + 13.00).toFixed(2)}&euro;</span>
+                                        : <span className="text-success">{totalPrice}&euro;</span>}
                                 </li>
                             </ul>
 
-                            <form className="card p-2">
+                            {/*<form className="card p-2">
                                 <div className="input-group">
                                     <input type="text" className="form-control" placeholder="Promo code" />
                                     <button type="submit" className="btn btn-secondary">Redeem</button>
                                 </div>
-                            </form>
+                            </form>*/}
                         </div>
 
                         <div className="col-md-7 col-lg-8">
-                            <h4 className="mb-3">Billing address</h4>
+                            <h4 className="mb-1">Inserisci i tuoi dati</h4>
                             {/* Aggiungi noValidate per disabilitare la validazione HTML di default */}
                             <form className="needs-validation" onSubmit={handleSubmit} noValidate>
+                                {!isFormValid && (
+                                    <div className="alert alert-danger" role="alert">
+                                        *Tutti i campi sono obbligatori.
+                                    </div>)}
                                 <div className="row g-3">
                                     <div className="col-sm-6">
                                         <label htmlFor="firstName" className="form-label">Nome</label>
                                         <input
                                             type="text"
-                                            className="form-control"
+                                            className={`form-control ${errors.name ? 'is-invalid' : ''}`}
                                             id="firstName"
                                             placeholder=""
                                             name="name"
@@ -135,15 +256,16 @@ export default function Checkout() {
                                             required
                                         />
                                         <div className="invalid-feedback">
-                                            Valid first name is required.
+                                            Scrivi un nome valido.
                                         </div>
+
                                     </div>
 
                                     <div className="col-sm-6">
                                         <label htmlFor="lastName" className="form-label">Cognome</label>
                                         <input
                                             type="text"
-                                            className="form-control"
+                                            className={`form-control ${errors.surname ? 'is-invalid' : ''}`}
                                             id="lastName"
                                             placeholder=""
                                             name="surname"
@@ -152,7 +274,7 @@ export default function Checkout() {
                                             required
                                         />
                                         <div className="invalid-feedback">
-                                            Valid last name is required.
+                                            Scrivi un cognome valido.
                                         </div>
                                     </div>
 
@@ -162,7 +284,7 @@ export default function Checkout() {
                                         </label>
                                         <input
                                             type="email"
-                                            className="form-control"
+                                            className={`form-control ${errors.email ? 'is-invalid' : ''}`}
                                             id="email"
                                             placeholder="you@example.com"
                                             name="email"
@@ -171,7 +293,7 @@ export default function Checkout() {
                                             required
                                         />
                                         <div className="invalid-feedback">
-                                            Please enter a valid email address for shipping updates.
+                                            Scrivi un indirizzo email valido.
                                         </div>
                                     </div>
 
@@ -181,16 +303,16 @@ export default function Checkout() {
                                         </label>
                                         <input
                                             type="tel"
-                                            className="form-control"
+                                            className={`form-control ${errors.phone_number ? 'is-invalid' : ''}`}
                                             id="phone_number"
-                                            placeholder="333333333"
+                                            placeholder="3333333333"
                                             name="phone_number"
                                             value={formData.phone_number}
                                             onChange={handleChange}
                                             required
                                         />
                                         <div className="invalid-feedback">
-                                            Please enter a valid phone number for shipping updates.
+                                            Scrivi un numero di telefono valido.
                                         </div>
                                     </div>
 
@@ -199,7 +321,7 @@ export default function Checkout() {
                                         <label htmlFor="shipping_address" className="form-label">Indirizzo</label>
                                         <input
                                             type="text"
-                                            className="form-control"
+                                            className={`form-control ${errors.shipping_address ? 'is-invalid' : ''}`}
                                             id="shipping_address"
                                             placeholder="1234 Main St"
                                             name="shipping_address"
@@ -208,7 +330,7 @@ export default function Checkout() {
                                             required
                                         />
                                         <div className="invalid-feedback">
-                                            Please enter your shipping address.
+                                            Scrivi un indirizzo valido.
                                         </div>
                                     </div>
 
@@ -218,7 +340,7 @@ export default function Checkout() {
                                         <label htmlFor="city" className="form-label">Città</label>
                                         <input
                                             type="text"
-                                            className="form-control"
+                                            className={`form-control ${errors.city ? 'is-invalid' : ''}`}
                                             id="city"
                                             placeholder=""
                                             name="city"
@@ -227,7 +349,7 @@ export default function Checkout() {
                                             required
                                         />
                                         <div className="invalid-feedback">
-                                            Please enter a valid city.
+                                            Scrivi una città valida.
                                         </div>
                                     </div>
 
@@ -235,7 +357,7 @@ export default function Checkout() {
                                         <label htmlFor="zip" className="form-label">CAP</label>
                                         <input
                                             type="text"
-                                            className="form-control"
+                                            className={`form-control ${errors.zip ? 'is-invalid' : ''}`}
                                             id="zip"
                                             placeholder=""
                                             name="zip"
@@ -244,12 +366,12 @@ export default function Checkout() {
                                             required
                                         />
                                         <div className="invalid-feedback">
-                                            Zip code required.
+                                            Il CAP è obbligatorio.
                                         </div>
                                     </div>
 
                                     <div className="col-md-4">
-                                        <label htmlFor="province" className="form-label">Provincia</label>
+                                        <label htmlFor="province" className={`form-label ${errors.province ? 'is-invalid' : ''}`}>Provincia</label>
                                         <select
                                             className="form-select"
                                             id="province"
@@ -363,7 +485,7 @@ export default function Checkout() {
                                             <option value="VT">Viterbo (VT)</option>
                                         </select>
                                         <div className="invalid-feedback">
-                                            Please provide a valid province.
+                                            Scegli una provincia.
                                         </div>
                                     </div>
                                 </div>
@@ -500,7 +622,7 @@ export default function Checkout() {
                                 <hr className="my-4" />*/}
 
                                 <button className="w-100 btn btn-primary btn-lg" type="submit">
-                                    Continue to checkout
+                                    Continua al checkout
                                 </button>
                             </form>
                         </div>

@@ -13,23 +13,6 @@ export default function OrderSummary({
       <div className="p-5">
         <h5 className=" mb-5 mt-2 pt-1 h3">Riepilogo ordine</h5>
 
-        {/* Codice promozionale */}
-        <div className="mb-3">
-          <label htmlFor="promoCode" className="form-label">
-            Codice promozionale
-          </label>
-          <div className="input-group">
-            <input
-              type="text"
-              className="form-control"
-              id="promoCode"
-              placeholder="Inserisci il codice"
-            />
-            <button className="btn btn-outline-secondary" type="button">
-              Applica
-            </button>
-          </div>
-        </div>
 
         <p>Totale parziale: {formatPrice(calculateTotal())}€</p>
         <p>
