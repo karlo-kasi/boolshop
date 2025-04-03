@@ -67,17 +67,17 @@ export default function Checkout() {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-    
+
         // Aggiorna il valore del form
         setFormData({
             ...formData,
             [name]: value,
         });
-    
+
         // Aggiorna gli errori in modo che non sovrascrivano quelli esistenti
         setErrors(() => {
             const newErrors = { ...errors };
-    
+
             if (name === "name") {
                 if (value.length < 3) {
                     newErrors.name = "Il nome deve essere lungo almeno 3 caratteri.";
@@ -85,7 +85,7 @@ export default function Checkout() {
                     newErrors.name = ""; // Rimuove l'errore se la condizione è soddisfatta
                 }
             }
-    
+
             if (name === "surname") {
                 if (value.length < 3) {
                     newErrors.surname = "Il cognome deve essere lungo almeno 3 caratteri.";
@@ -143,9 +143,9 @@ export default function Checkout() {
                 } else {
                     newErrors.province = ""; // Rimuove l'errore se la condizione è soddisfatta
                 }
-            }   
+            }
 
-    
+
             return newErrors;
         });
     };
@@ -158,14 +158,18 @@ export default function Checkout() {
     }, []);
 
     let totalPrice = 0;
+    let totalQuantity = 0;
     const productsToSend = cart.map((product) => {
         totalPrice += parseFloat(product.price) * product.quantity;
+        totalQuantity += product.quantity;
         return {
             product_id: product.id,
             quantity: product.quantity,
         };
     })
     totalPrice = totalPrice.toFixed(2);
+
+    console.log(typeof totalPrice )
 
     return (
         <>
@@ -175,7 +179,7 @@ export default function Checkout() {
                         <div className="col-md-5 col-lg-4 order-md-last">
                             <h4 className="d-flex justify-content-between align-items-center mb-3">
                                 <span className="text-primary">Your cart</span>
-                                <span className="badge bg-primary rounded-pill">{cart.length}</span>
+                                <span className="badge bg-primary rounded-pill">{totalQuantity}</span>
                             </h4>
 
                             <ul className="list-group mb-3">
@@ -191,6 +195,23 @@ export default function Checkout() {
                                         )
                                     }
                                     )}
+                                {
+                                    totalPrice < 29.99 ? (
+                                        <li className="list-group-item d-flex justify-content-between lh-sm">
+                                            <div>
+                                                <h6 className="my-0">Costi di spedizione</h6>
+                                            </div>
+                                            <span className="text-body-secondary">13&euro;</span>
+                                        </li>
+                                    ) : (
+                                        <li className="list-group-item d-flex justify-content-between lh-sm">
+                                            <div>
+                                                <h6 className="my-0">Spedizione gratuita</h6>
+                                            </div>
+                                            <span className="text-body-secondary"></span>
+                                        </li>
+                                    )
+                                }
                                 {/*<li className="list-group-item d-flex justify-content-between bg-body-tertiary">
                                     <div className="text-success">
                                         <h6 className="my-0">Promo code</h6>
@@ -200,7 +221,8 @@ export default function Checkout() {
                                 </li>*/}
                                 <li className="list-group-item d-flex justify-content-between">
                                     <span>Totale</span>
-                                    <strong>{totalPrice}&euro;</strong>
+                                    {totalPrice < 29.99 ? <span className="text-body-secondary">{(parseFloat(totalPrice) + 13.00).toFixed(2)}&euro;</span>
+                                        : <span className="text-success">{totalPrice}&euro;</span>}
                                 </li>
                             </ul>
 
@@ -217,9 +239,9 @@ export default function Checkout() {
                             {/* Aggiungi noValidate per disabilitare la validazione HTML di default */}
                             <form className="needs-validation" onSubmit={handleSubmit} noValidate>
                                 {!isFormValid && (
-                                <div className="alert alert-danger" role="alert">
-                                    *Tutti i campi sono obbligatori.
-                                </div>)}
+                                    <div className="alert alert-danger" role="alert">
+                                        *Tutti i campi sono obbligatori.
+                                    </div>)}
                                 <div className="row g-3">
                                     <div className="col-sm-6">
                                         <label htmlFor="firstName" className="form-label">Nome</label>
@@ -236,7 +258,7 @@ export default function Checkout() {
                                         <div className="invalid-feedback">
                                             Scrivi un nome valido.
                                         </div>
-                                        
+
                                     </div>
 
                                     <div className="col-sm-6">

@@ -107,8 +107,24 @@ function storeOrder(req, res) {
     let { products } = req.body;
 
     // Validazione dei dati dell'ordine
-    if (!name || !email || !surname || !shipping_address || !phone_number || !products) {
-        return res.status(400).json({ error: 'Tutti i campi sono obbligatori' });
+    //if (!name || !email || !surname || !shipping_address || !phone_number || !products) {
+    //    return res.status(400).json({ error: 'Tutti i campi sono obbligatori' });
+    //}
+
+    if (!name || name.length < 3) {
+        return res.status(400).json({ error: 'Il nome deve contenere almeno 3 caratteri' });
+    }
+    if (!surname || surname.length < 3) {
+        return res.status(400).json({ error: 'Il cognome deve contenere almeno 3 caratteri' });
+    }
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+        return res.status(400).json({ error: 'Email non valida' });
+    }
+    if (!shipping_address || shipping_address.length < 10) {
+        return res.status(400).json({ error: 'L\'indirizzo di spedizione deve contenere almeno 5 caratteri' });
+    }
+    if (phone_number && /^\d{10}$/.test(phone_number) === false) {
+        return res.status(400).json({ error: 'Il numero di telefono deve contenere 10 cifre' });
     }
 
     // Logica per ottenere i prodotti dal carrello
@@ -149,6 +165,9 @@ function storeOrder(req, res) {
             total += element.price * element.quantity;
         });
 
+        if (total < 29.99) {
+            total += 13;
+        }
 
         connection.query(sqlOrder, [name, email, surname, shipping_address, billing_address, phone_number, coupon_id, total], (err, results) => {
             if (err) {

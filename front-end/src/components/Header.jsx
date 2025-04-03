@@ -76,7 +76,7 @@ export default function Header() {
 
               <button className="btn btn-outline-dark m-1">Contact</button>
             </div>
-            <div className="d-flex gap-2">
+            <div className="d-flex gap-3">
               <NavLink><FaSearch className="fs-3 text-black" /></NavLink>
               <NavLink><FaRegHeart className="fs-3 text-black" /></NavLink>
               <NavLink onClick={handleCartClick}>
