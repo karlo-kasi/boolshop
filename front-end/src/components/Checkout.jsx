@@ -16,6 +16,16 @@ export default function Checkout() {
     const [cart, setCart] = useState([]);
     const [formData, setFormData] = useState(initalData);
     const [isFormValid, setIsFormValid] = useState(true);
+    const [errors, setErrors] = useState({
+        name: "",
+        surname: "",
+        email: "",
+        shipping_address: "",
+        city: "",
+        province: "",
+        zip: "",
+        phone_number: "",
+    });
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -57,6 +67,18 @@ export default function Checkout() {
             ...formData,
             [name]: value,
         });
+
+        if (name === "name" && value.length < 3) {
+            setErrors({ ...errors, name: "Il nome deve essere lungo almeno 3 caratteri." });
+        } else {
+            setErrors({ ...errors, name: "" });
+        }
+
+        if (name === "surname" && value.length < 3) {
+            setErrors({ ...errors, surname: "Il cognome deve essere lungo almeno 3 caratteri." });
+        } else {
+            setErrors({ ...errors, surname: "" });
+        }
     }
 
     useEffect(() => {
@@ -134,7 +156,7 @@ export default function Checkout() {
                                         <label htmlFor="firstName" className="form-label">Nome</label>
                                         <input
                                             type="text"
-                                            className="form-control"
+                                            className={`form-control ${errors.name ? 'is-invalid' : ''}`}
                                             id="firstName"
                                             placeholder=""
                                             name="name"
@@ -145,13 +167,14 @@ export default function Checkout() {
                                         <div className="invalid-feedback">
                                             Scrivi un nome valido.
                                         </div>
+                                        
                                     </div>
 
                                     <div className="col-sm-6">
                                         <label htmlFor="lastName" className="form-label">Cognome</label>
                                         <input
                                             type="text"
-                                            className="form-control"
+                                            className={`form-control ${errors.surname ? 'is-invalid' : ''}`}
                                             id="lastName"
                                             placeholder=""
                                             name="surname"
