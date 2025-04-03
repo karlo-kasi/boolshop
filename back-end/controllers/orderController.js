@@ -103,43 +103,76 @@ function sendConfirmationEmail(name, email, orderId, total) {
 
 
 function storeOrder(req, res) {
-    const { name, surname, email, coupon_id, shipping_address, billing_address, phone_number, products } = req.body;
+    const { name, surname, email, coupon_id, shipping_address, billing_address, phone_number } = req.body;
+    let { products } = req.body;
 
     // Validazione dei dati dell'ordine
     if (!name || !email || !surname || !shipping_address || !phone_number || !products) {
         return res.status(400).json({ error: 'Tutti i campi sono obbligatori' });
     }
 
-    // Logica per memorizzare l'ordine nel database
-    const sqlOrder = 'INSERT INTO orders (name, email, surname, shipping_address, billing_address, phone_number, coupon_id, total) VALUES (?,?,?,?,?,?,?,?)';
-
-    let total = 0;
-    products.forEach(element => {
-        total += element.price * element.quantity;
+    // Logica per ottenere i prodotti dal carrello
+    let productsIds = products.map(element => {
+        return element.product_id;
     });
 
-    connection.query(sqlOrder, [name, email, surname, shipping_address, billing_address, phone_number, coupon_id, total], (err, results) => {
+    const sqlProducts = 'SELECT * FROM products WHERE id IN (?)';
+
+    connection.query(sqlProducts, [productsIds], (err, results) => {
         if (err) {
             console.error("Errore nella query:", err);
             return res.status(500).json({ error: 'Errore lato server' });
         }
 
-        const orderId = results.insertId;
+        // Verifica se i prodotti esistono
+        if (results.length !== products.length) {
+            return res.status(404).json({ error: 'Alcuni prodotti non sono stati trovati' });
+        }
 
-        // Ora inseriamo i prodotti nell'ordine
-        const sqlOrderItems = 'INSERT INTO order_items (order_id, product_id, quantity, price, name) VALUES ?';
-        const orderItems = products.map(product => [orderId, product.product_id, product.quantity, product.price, product.name]);
+        // Memorizza l'ordine
+        const arrayProducts = results.map((product) => {
+            const productInCart = products.find(p => p.product_id === product.id);
+            return {
+                ...product,
+                quantity: productInCart.quantity,
+                price: product.price,
+                name: product.name,
+                product_id: product.id,
+            };
+        })
 
-        connection.query(sqlOrderItems, [orderItems], (err, results) => {
+        // Logica per memorizzare l'ordine nel database
+        const sqlOrder = 'INSERT INTO orders (name, email, surname, shipping_address, billing_address, phone_number, coupon_id, total) VALUES (?,?,?,?,?,?,?,?)';
+
+        let total = 0;
+        arrayProducts.forEach(element => {
+            total += element.price * element.quantity;
+        });
+
+
+        connection.query(sqlOrder, [name, email, surname, shipping_address, billing_address, phone_number, coupon_id, total], (err, results) => {
             if (err) {
-                console.error("Errore nell'inserimento dei prodotti:", err);
-                return res.status(500).json({ error: 'Errore nell\'aggiunta dei prodotti all\'ordine' });
+                console.error("Errore nella query:", err);
+                return res.status(500).json({ error: 'Errore lato server' });
             }
 
-            // Se l'ordine e i prodotti sono stati memorizzati con successo, invia l'email di conferma
-            sendConfirmationEmail(name, email, orderId, total);
+            const orderId = results.insertId;
 
-            res.status(201).json({ message: 'Ordine creato con successo' });
+            // Ora inseriamo i prodotti nell'ordine
+            const sqlOrderItems = 'INSERT INTO order_items (order_id, product_id, quantity, price, name) VALUES ?';
+            const orderItems = arrayProducts.map(product => [orderId, product.product_id, product.quantity, product.price, product.name]);
+
+            connection.query(sqlOrderItems, [orderItems], (err, results) => {
+                if (err) {
+                    console.error("Errore nell'inserimento dei prodotti:", err);
+                    return res.status(500).json({ error: 'Errore nell\'aggiunta dei prodotti all\'ordine' });
+                }
+
+                // Se l'ordine e i prodotti sono stati memorizzati con successo, invia l'email di conferma
+                sendConfirmationEmail(name, email, orderId, total);
+
+                res.status(201).json({ message: 'Ordine creato con successo' });
+            });
         });
     });
 }

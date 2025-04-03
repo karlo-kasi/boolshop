@@ -13,10 +13,9 @@ export default function Checkout() {
         phone_number: "",
     };
 
-
-
     const [cart, setCart] = useState([]);
     const [formData, setFormData] = useState(initalData);
+    const [isFormValid, setIsFormValid] = useState(true);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -29,7 +28,7 @@ export default function Checkout() {
             shipping_address: shippingAddress,
             billing_address: shippingAddress,
             coupon_id: 1,
-            products: products
+            products: productsToSend
         };
 
         axios.post("http://localhost:3000/cover/order", dataToSubmit, {
@@ -37,6 +36,19 @@ export default function Checkout() {
                 'Content-Type': 'application/json',
             },
         })
+            //.then((response) => {
+            //    console.log("Response:", response.data);
+            //    // Gestisci la risposta del server qui, ad esempio, reindirizza l'utente a una pagina di conferma
+            //    localStorage.removeItem("cartItems");
+            //    setCart([]);
+            //    setFormData(initalData);
+            //})
+            .catch((error) => {
+                console.error("Error:", error);
+                // Gestisci l'errore qui, ad esempio, mostra un messaggio di errore all'utente
+                setIsFormValid(false);
+            });
+
     }
 
     const handleChange = (e) => {
@@ -48,29 +60,21 @@ export default function Checkout() {
     }
 
     useEffect(() => {
-        axios
-            .get("http://localhost:3000/cover")
-            .then((response) => {
-                const products = response.data.filter(d => d.id > 10 && d.id < 16);
-                setCart(products);
-            })
-            .catch((error) => {
-                console.error("Error fetching products:", error);
-            });
+        const storedCart = localStorage.getItem("cartItems");
+        if (storedCart) {
+            setCart(JSON.parse(storedCart));
+        }
     }, []);
 
     let totalPrice = 0;
-    const products = cart.map((product) => {
-        totalPrice += parseFloat(product.price);
+    const productsToSend = cart.map((product) => {
+        totalPrice += parseFloat(product.price) * product.quantity;
         return {
             product_id: product.id,
-            name: product.name,
-            price: product.price,
-            quantity: 1,
+            quantity: product.quantity,
         };
     })
-
-    console.log(products)
+    totalPrice = totalPrice.toFixed(2);
 
     return (
         <>
@@ -80,47 +84,51 @@ export default function Checkout() {
                         <div className="col-md-5 col-lg-4 order-md-last">
                             <h4 className="d-flex justify-content-between align-items-center mb-3">
                                 <span className="text-primary">Your cart</span>
-                                <span className="badge bg-primary rounded-pill">{products.length}</span>
+                                <span className="badge bg-primary rounded-pill">{cart.length}</span>
                             </h4>
 
                             <ul className="list-group mb-3">
                                 {
-                                    products.map(product => {
+                                    cart.map(product => {
                                         return (
-                                            <li key={product.product_id} className="list-group-item d-flex justify-content-between lh-sm">
+                                            <li key={product.id} className="list-group-item d-flex justify-content-between lh-sm">
                                                 <div>
                                                     <h6 className="my-0">{product.name}</h6>
                                                 </div>
-                                                <span className="text-body-secondary">{product.price}&euro;</span>
+                                                <span className="text-body-secondary">{product.quantity} x {product.price}&euro;</span>
                                             </li>
                                         )
                                     }
-                                )}
-                                <li className="list-group-item d-flex justify-content-between bg-body-tertiary">
+                                    )}
+                                {/*<li className="list-group-item d-flex justify-content-between bg-body-tertiary">
                                     <div className="text-success">
                                         <h6 className="my-0">Promo code</h6>
                                         <small>EXAMPLECODE</small>
                                     </div>
                                     <span className="text-success">−$5</span>
-                                </li>
+                                </li>*/}
                                 <li className="list-group-item d-flex justify-content-between">
                                     <span>Totale</span>
-                                    <strong>{totalPrice}</strong>
+                                    <strong>{totalPrice}&euro;</strong>
                                 </li>
                             </ul>
 
-                            <form className="card p-2">
+                            {/*<form className="card p-2">
                                 <div className="input-group">
                                     <input type="text" className="form-control" placeholder="Promo code" />
                                     <button type="submit" className="btn btn-secondary">Redeem</button>
                                 </div>
-                            </form>
+                            </form>*/}
                         </div>
 
                         <div className="col-md-7 col-lg-8">
-                            <h4 className="mb-3">Billing address</h4>
+                            <h4 className="mb-1">Inserisci i tuoi dati</h4>
                             {/* Aggiungi noValidate per disabilitare la validazione HTML di default */}
                             <form className="needs-validation" onSubmit={handleSubmit} noValidate>
+                                {!isFormValid && (
+                                <div className="alert alert-danger" role="alert">
+                                    *Tutti i campi sono obbligatori.
+                                </div>)}
                                 <div className="row g-3">
                                     <div className="col-sm-6">
                                         <label htmlFor="firstName" className="form-label">Nome</label>
@@ -135,7 +143,7 @@ export default function Checkout() {
                                             required
                                         />
                                         <div className="invalid-feedback">
-                                            Valid first name is required.
+                                            Scrivi un nome valido.
                                         </div>
                                     </div>
 
@@ -152,7 +160,7 @@ export default function Checkout() {
                                             required
                                         />
                                         <div className="invalid-feedback">
-                                            Valid last name is required.
+                                            Scrivi un cognome valido.
                                         </div>
                                     </div>
 
@@ -171,7 +179,7 @@ export default function Checkout() {
                                             required
                                         />
                                         <div className="invalid-feedback">
-                                            Please enter a valid email address for shipping updates.
+                                            Scrivi un indirizzo email valido.
                                         </div>
                                     </div>
 
@@ -190,7 +198,7 @@ export default function Checkout() {
                                             required
                                         />
                                         <div className="invalid-feedback">
-                                            Please enter a valid phone number for shipping updates.
+                                            Scrivi un numero di telefono valido.
                                         </div>
                                     </div>
 
@@ -208,7 +216,7 @@ export default function Checkout() {
                                             required
                                         />
                                         <div className="invalid-feedback">
-                                            Please enter your shipping address.
+                                            Scrivi un indirizzo valido.
                                         </div>
                                     </div>
 
@@ -227,7 +235,7 @@ export default function Checkout() {
                                             required
                                         />
                                         <div className="invalid-feedback">
-                                            Please enter a valid city.
+                                            Scrivi una città valida.
                                         </div>
                                     </div>
 
@@ -244,7 +252,7 @@ export default function Checkout() {
                                             required
                                         />
                                         <div className="invalid-feedback">
-                                            Zip code required.
+                                            Il CAP è obbligatorio.
                                         </div>
                                     </div>
 
@@ -363,7 +371,7 @@ export default function Checkout() {
                                             <option value="VT">Viterbo (VT)</option>
                                         </select>
                                         <div className="invalid-feedback">
-                                            Please provide a valid province.
+                                            Scegli una provincia.
                                         </div>
                                     </div>
                                 </div>
@@ -500,7 +508,7 @@ export default function Checkout() {
                                 <hr className="my-4" />*/}
 
                                 <button className="w-100 btn btn-primary btn-lg" type="submit">
-                                    Continue to checkout
+                                    Continua al checkout
                                 </button>
                             </form>
                         </div>
