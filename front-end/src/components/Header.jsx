@@ -100,8 +100,16 @@ export default function Header() {
             <div className="d-flex gap-3">
               <NavLink onClick={handleSearchClick}><FaSearch className="fs-3 text-black" /></NavLink>
               <NavLink><FaRegHeart className="fs-3 text-black" /></NavLink>
-              <NavLink onClick={() => openModal()}>
+              <NavLink onClick={() => openModal()} className="position-relative">
                 <FiShoppingCart className="fs-3 text-black" />
+                {cartItems.length > 0 && (
+                  <span
+                    className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                    style={{ fontSize: "0.75rem" }}
+                  >
+                    {cartItems.reduce((total, item) => total + item.quantity, 0)}
+                  </span>
+                )}
               </NavLink>
             </div>
           </div>
@@ -186,21 +194,51 @@ export default function Header() {
                     >
                       <div className="row justify-content-between align-items-center gap-2">
                         <div className="col-md-3">
-                          
+                            <Link to={`/cover/${item.slug}`}>
                             <img
                               src={item.image}
                               className="img-fluid rounded w-100"
                               alt={item.name}
                             />
-                          
+                            </Link>
                         </div>
                         <div className="col-md-8 d-flex flex-column justify-content-between">
                           <div>
-                            <h5>{item.name}</h5>
+                            <Link to={`/cover/${item.slug}`} className="text-decoration-none text-dark">
+                              <h5>{item.name}</h5>
+                            </Link>
                             <p>Prezzo: {item.price}€</p>
-                            <p>Quantità: {item.quantity}</p>
+                            <div className="d-flex align-items-center gap-2">
+                              <button
+                                className="btn btn-outline-secondary btn-sm"
+                                onClick={() => {
+                                  const updatedItems = cartItems.map((cartItem) =>
+                                    cartItem.id === item.id && cartItem.quantity > 1
+                                      ? { ...cartItem, quantity: cartItem.quantity - 1 }
+                                      : cartItem
+                                  );
+                                  setCartItems(updatedItems);
+                                }}
+                              >
+                                -
+                              </button>
+                              <span>{item.quantity}</span>
+                              <button
+                                className="btn btn-outline-secondary btn-sm"
+                                onClick={() => {
+                                  const updatedItems = cartItems.map((cartItem) =>
+                                    cartItem.id === item.id
+                                      ? { ...cartItem, quantity: cartItem.quantity + 1 }
+                                      : cartItem
+                                  );
+                                  setCartItems(updatedItems);
+                                }}
+                              >
+                                +
+                              </button>
+                            </div>
                             <button
-                              className="btn btn-transparent border-0"
+                              className="btn btn-transparent border-0 mt-2"
                               onClick={() => removeFromCart(item.id)}
                             >
                               Rimuovi
