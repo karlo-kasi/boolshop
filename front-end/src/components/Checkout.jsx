@@ -14,6 +14,8 @@ export default function Checkout() {
         province: "",
         zip: "",
         phone_number: "",
+        sameBillingAddress: true,
+        billing_address: "", 
         acceptTerms: false,
     };
 
@@ -99,19 +101,20 @@ export default function Checkout() {
             newErrors.acceptTerms = "Devi accettare i termini e condizioni.";
             isValid = false;
         }
-    
-    
+
         setErrors(newErrors);
-    
+
         if (!isValid) {
             setIsFormValid(false);
-            return; // blocca l'invio
+            return;
         }
 
         const dataToSubmit = {
             ...formData,
             coupon_id: 1,
-            billing_address: formData.shipping_address,
+            billing_address: formData.sameBillingAddress
+                ? formData.shipping_address
+                : formData.billing_address,
             products: productsToSend
         };
 
@@ -146,15 +149,13 @@ export default function Checkout() {
     }
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const { name, type, value, checked } = e.target;
 
-        // Aggiorna il valore del form
         setFormData({
             ...formData,
-            [name]: value,
+            [name]: type === 'checkbox' ? checked : value,
         });
 
-        // Aggiorna gli errori in modo che non sovrascrivano quelli esistenti
         setErrors(() => {
             const newErrors = { ...errors };
 
@@ -236,6 +237,14 @@ export default function Checkout() {
                     newErrors.province = "Seleziona una provincia.";
                 } else {
                     newErrors.province = ""; // Rimuove l'errore se la condizione è soddisfatta
+                }
+            }
+
+            if (name === "billing_address" && !formData.sameBillingAddress) {
+                if (value.trim().length < 5) {
+                    newErrors.billing_address = "L'indirizzo di fatturazione deve essere lungo almeno 5 caratteri.";
+                } else {
+                    newErrors.billing_address = "";
                 }
             }
 
@@ -582,134 +591,34 @@ export default function Checkout() {
 
                                 <hr className="my-4" />
 
-                                {/*<div className="form-check">
+                                <div className="mb-3 form-check">
                                     <input
                                         type="checkbox"
                                         className="form-check-input"
-                                        id="same-address"
+                                        id="sameBillingAddress"
+                                        name="sameBillingAddress"
+                                        checked={formData.sameBillingAddress}
+                                        onChange={handleChange}
                                     />
-                                    <label className="form-check-label" htmlFor="same-address">
-                                        Shipping address is the same as my billing address
+                                    <label className="form-check-label" htmlFor="sameBillingAddress">
+                                        Usa lo stesso indirizzo per la fatturazione
                                     </label>
                                 </div>
 
-                                <div className="form-check">
-                                    <input
-                                        type="checkbox"
-                                        className="form-check-input"
-                                        id="save-info"
-                                    />
-                                    <label className="form-check-label" htmlFor="save-info">
-                                        Save this information for next time
-                                    </label>
-                                </div>
-
-                                <hr className="my-4" />
-
-                                <h4 className="mb-3">Payment</h4>
-
-                                <div className="my-3">
-                                    <div className="form-check">
-                                        <input
-                                            id="credit"
-                                            name="paymentMethod"
-                                            type="radio"
-                                            className="form-check-input"
-                                            defaultChecked
-                                            required
-                                        />
-                                        <label className="form-check-label" htmlFor="credit">
-                                            Credit card
-                                        </label>
-                                    </div>
-                                    <div className="form-check">
-                                        <input
-                                            id="debit"
-                                            name="paymentMethod"
-                                            type="radio"
-                                            className="form-check-input"
-                                            required
-                                        />
-                                        <label className="form-check-label" htmlFor="debit">
-                                            Debit card
-                                        </label>
-                                    </div>
-                                    <div className="form-check">
-                                        <input
-                                            id="paypal"
-                                            name="paymentMethod"
-                                            type="radio"
-                                            className="form-check-input"
-                                            required
-                                        />
-                                        <label className="form-check-label" htmlFor="paypal">
-                                            PayPal
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <div className="row gy-3">
-                                    <div className="col-md-6">
-                                        <label htmlFor="cc-name" className="form-label">Name on card</label>
+                                {!formData.sameBillingAddress && (
+                                    <div className="mb-3">
+                                        <label htmlFor="billing_address" className="form-label">Indirizzo di fatturazione</label>
                                         <input
                                             type="text"
-                                            className="form-control"
-                                            id="cc-name"
-                                            placeholder=""
-                                            required
+                                            className={`form-control ${errors.billing_address ? "is-invalid" : ""}`}
+                                            id="billing_address"
+                                            name="billing_address"
+                                            value={formData.billing_address}
+                                            onChange={handleChange}
                                         />
-                                        <small className="text-body-secondary">
-                                            Full name as displayed on card
-                                        </small>
-                                        <div className="invalid-feedback">
-                                            Name on card is required
-                                        </div>
+                                        {errors.billing_address && <div className="invalid-feedback">{errors.billing_address}</div>}
                                     </div>
-
-                                    <div className="col-md-6">
-                                        <label htmlFor="cc-number" className="form-label">Credit card number</label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            id="cc-number"
-                                            placeholder=""
-                                            required
-                                        />
-                                        <div className="invalid-feedback">
-                                            Credit card number is required
-                                        </div>
-                                    </div>
-
-                                    <div className="col-md-3">
-                                        <label htmlFor="cc-expiration" className="form-label">Expiration</label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            id="cc-expiration"
-                                            placeholder=""
-                                            required
-                                        />
-                                        <div className="invalid-feedback">
-                                            Expiration date required
-                                        </div>
-                                    </div>
-
-                                    <div className="col-md-3">
-                                        <label htmlFor="cc-cvv" className="form-label">CVV</label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            id="cc-cvv"
-                                            placeholder=""
-                                            required
-                                        />
-                                        <div className="invalid-feedback">
-                                            Security code required
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <hr className="my-4" />*/}
+                                )}
 
                                 <div className="form-check my-3">
                                     <input

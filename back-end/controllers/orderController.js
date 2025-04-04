@@ -107,7 +107,7 @@ function sendConfirmationEmail(name, email, orderId, total, arrayProducts) {
     // Configura i dettagli dell'email
     let mailOptions = {
         from: '"BoolShop" <info@boolshop.com>', // Il mittente dell'email
-        to: email,                 // Il destinatario
+        to: email, // Il destinatario
         subject: `Conferma Ordine id: #${orderId}`,
         //text: `Ciao ${name}, questo è il tuo ordine ${orderId} e il prezzo totale è: ${total}`,       // Corpo del messaggio in testo semplice
         html: htmlContent // Corpo del messaggio in HTML
@@ -124,8 +124,8 @@ function sendConfirmationEmail(name, email, orderId, total, arrayProducts) {
 
 
 function storeOrder(req, res) {
-    const { name, surname, email, coupon_id, city, province, zip, phone_number } = req.body;
-    let { products, shipping_address, billing_address } = req.body;
+    const { name, surname, email, coupon_id, city, province, zip, phone_number, billing_address } = req.body;
+    let { products, shipping_address } = req.body;
 
     // Validazione dei dati dell'ordine
     //if (!name || !email || !surname || !shipping_address || !phone_number || !products) {
@@ -158,7 +158,6 @@ function storeOrder(req, res) {
     }
 
     shipping_address = `${shipping_address}, ${city}(${province}), ${zip}`;
-    billing_address = `${billing_address}, ${city}(${province}), ${zip}`;
 
     // Logica per ottenere i prodotti dal carrello
     let productsIds = products.map(element => {
