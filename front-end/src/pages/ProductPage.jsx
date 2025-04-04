@@ -20,6 +20,7 @@ import imballaggio from "../assets/img/2.avif";
 import riciclo from "../assets/img/3.avif";
 
 export default function ProductPage() {
+
   const { slug } = useParams();
   const [product, setProduct] = useState(null);
   const [error, setError] = useState(null);

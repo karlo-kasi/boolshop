@@ -186,11 +186,13 @@ export default function Header() {
                     >
                       <div className="row justify-content-between align-items-center gap-2">
                         <div className="col-md-3">
-                          <img
-                            src={item.image}
-                            className="img-fluid rounded w-100"
-                            alt={item.name}
-                          />
+                          
+                            <img
+                              src={item.image}
+                              className="img-fluid rounded w-100"
+                              alt={item.name}
+                            />
+                          
                         </div>
                         <div className="col-md-8 d-flex flex-column justify-content-between">
                           <div>
