@@ -33,7 +33,7 @@ export default function Checkout() {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        const shippingAddress = `${formData.shipping_address}, ${formData.city}, ${formData.province}, ${formData.zip}`;
+        const shippingAddress = `${formData.shipping_address}, ${formData.city}(${formData.province}), ${formData.zip}`;
 
 
         const dataToSubmit = {
@@ -165,11 +165,12 @@ export default function Checkout() {
         return {
             product_id: product.id,
             quantity: product.quantity,
+            image: product.image
         };
     })
     totalPrice = totalPrice.toFixed(2);
 
-    console.log(typeof totalPrice )
+    console.log(productsToSend)
 
     return (
         <>
@@ -178,7 +179,7 @@ export default function Checkout() {
                     <div className="row g-5">
                         <div className="col-md-5 col-lg-4 order-md-last">
                             <h4 className="d-flex justify-content-between align-items-center mb-3">
-                                <span className="text-primary">Your cart</span>
+                                <span className="text-primary">Il tuo carrello</span>
                                 <span className="badge bg-primary rounded-pill">{totalQuantity}</span>
                             </h4>
 

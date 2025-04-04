@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer';
 import connection from '../data/db-cover.js';
 
-function sendConfirmationEmail(name, email, orderId, total) {
+function sendConfirmationEmail(name, email, orderId, total, arrayProducts) {
     // Crea un trasportatore SMTP usando le credenziali di Mailtrap
     let transporter = nodemailer.createTransport({
         host: 'sandbox.smtp.mailtrap.io',  // Server SMTP di Mailtrap
@@ -10,6 +10,16 @@ function sendConfirmationEmail(name, email, orderId, total) {
             user: 'c4b706acf77fab',    // Il tuo username di Mailtrap
             pass: '26b215ce533dec'     // La tua password di Mailtrap
         },
+    });
+
+    let productListHtml = '';
+    arrayProducts.forEach(product => {
+        productListHtml += `
+        <li>
+            <img src="${product.image}" alt="${product.name}" style="width: 50px; height: 50px; margin-right: 10px; vertical-align: middle;" />
+            <strong>${product.name}</strong> x ${product.quantity}
+        </li>
+        `;
     });
 
     let htmlContent = `
@@ -60,6 +70,15 @@ function sendConfirmationEmail(name, email, orderId, total) {
                     color: #777;
                     margin-top: 30px;
                 }
+                ul {
+                    list-style-type: none;
+                    padding: 0;
+                    margin: 0;
+                }
+                li {
+                    text-align: justify;
+                    margin-bottom: 10px;
+                }
             </style>
         </head>
         <body>
@@ -73,11 +92,13 @@ function sendConfirmationEmail(name, email, orderId, total) {
                 </div>
                 <div class="order-summary">
                     <p><strong>Dettaglio Ordine:</strong></p>
-                    <p>Totale dell'ordine: <span class="total">${total.toFixed(2)} €</span></p>
+                    <ul>${productListHtml}<ul/>
+                    <h3>Totale dell'ordine: <span class="total">${total.toFixed(2)}€</span></h3>
                 </div>
                 <div class="footer">
                     <p>Se hai domande o hai bisogno di assistenza, non esitare a contattarci.</p>
                     <p>BoolShop - Il tuo negozio online di fiducia.</p>
+                    <img src="http://localhost:3000/boolshop-logo.svg" alt="Logo BoolShop" style="width: 150px; height: auto; margin-top: 10px; text-align: center" />
                 </div>
             </div>
         </body>
@@ -151,11 +172,13 @@ function storeOrder(req, res) {
             return {
                 ...product,
                 quantity: productInCart.quantity,
+                image: productInCart.image,
                 price: product.price,
                 name: product.name,
                 product_id: product.id,
             };
         })
+
 
         // Logica per memorizzare l'ordine nel database
         const sqlOrder = 'INSERT INTO orders (name, email, surname, shipping_address, billing_address, phone_number, coupon_id, total) VALUES (?,?,?,?,?,?,?,?)';
@@ -188,7 +211,7 @@ function storeOrder(req, res) {
                 }
 
                 // Se l'ordine e i prodotti sono stati memorizzati con successo, invia l'email di conferma
-                sendConfirmationEmail(name, email, orderId, total);
+                sendConfirmationEmail(name, email, orderId, total, arrayProducts);
 
                 res.status(201).json({ message: 'Ordine creato con successo' });
             });
