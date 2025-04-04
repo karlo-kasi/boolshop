@@ -41,7 +41,7 @@ footer ul a {
   color: #000000 !important;
   border: 1px solid #8a9098 !important;
   border-radius: 5px !important;
-padding: 7px;
+  padding: 7px;
   cursor: pointer !important;
   text-align: center !important;
   text-decoration: none !important; /* Aggiungi questa regola dalla definizione duplicata */
@@ -68,8 +68,9 @@ padding: 7px;
 }
 
 .title-modal {
-  font-size: 2rem;
+  font-size: 1.6rem;
   font-weight: 600;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .custom-modal {
@@ -178,8 +179,94 @@ padding: 7px;
   transition: all 0.5s ease-in-out;
 }
 
+.wishlist-icon:hover {
+  fill: #ff0101;
+  transition: all 0.5s ease-in-out;
+}
+
 /* Modale per la ricerca */
 
 .searchModal {
   animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Modale Wishlist */
+.wishlist-modal {
+  position: fixed;
+  top: 14vh; /* Posiziona sotto l'Header */
+  right: 20px;
+  width: 90%;
+  max-width: 400px;
+  z-index: 1050;
+  animation: slideDownCompact 0.4s ease-in-out;
+}
+
+.wishlist-modal-dialog {
+  background-color: #f2f2f2;
+  border-radius: 10px;
+  box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.539);
+  max-height: 80vh; /* Altezza massima */
+  display: flex;
+  flex-direction: column;
+}
+
+.wishlist-modal-header {
+  background-color: rgba(49, 131, 231, 0.715);
+  color: white;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+}
+
+.wishlist-modal-body {
+  padding: 15px;
+  overflow-y: auto;
+}
+
+.wishlist-item {
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+.wishlist-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.wishlist-item-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.wishlist-item-details {
+  flex-grow: 1;
+}
+
+@keyframes slideDownCompact {
+  0% {
+    transform: translateY(-20%);
+    opacity: 0;
+  }
+  80% {
+    transform: translateY(5%);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+
+.btn-wishlist {
+  font-size: 0.7rem !important;
+  border: none;
+  background-color: #848d982f !important;
+  padding: 7px 10px !important;
+  border-radius: 10px;
 }

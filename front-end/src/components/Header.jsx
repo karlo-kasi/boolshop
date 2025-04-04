@@ -1,9 +1,11 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { FaSearch, FaHeart } from "react-icons/fa";
 import { FiShoppingCart } from "react-icons/fi";
 import { useModal } from "../context/ModalContext";
+import { useWishlist } from "../context/WishlistContext";
+import WishlistModal from "./WishlistModal";
 
 export default function Header() {
   const [showSearchModal, setShowSearchModal] = useState(false);
@@ -14,7 +16,6 @@ export default function Header() {
   const handleSearchClick = () => {
     setShowSearchModal(true);
   };
-
 
   const handleCloseModal = () => {
     setShowSearchModal(false);
@@ -42,37 +43,38 @@ export default function Header() {
   });
 
   useEffect(() => {
-    if (modalData) {
-      setCartItems(modalData.cartItems || []); // Aggiorna i dati del carrello dalla modale
+    // Sincronizza il carrello con il localStorage
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+  }, [cartItems]);
+
+  useEffect(() => {
+    // Sincronizza il carrello con il localStorage e il contesto modale
+    if (modalData && modalData.cartItems) {
+      setCartItems(modalData.cartItems);
     }
   }, [modalData]);
 
-  useEffect(() => {
-    // Salva gli elementi del carrello nel localStorage ogni volta che cambiano
-    localStorage.setItem("cartItems", JSON.stringify(cartItems));
-    console.log("Cart Items Updated:", cartItems); // Log per il debug
-  }, [cartItems]);
+  const addToCart = (product) => {
+    setCartItems((prevItems) => {
+      const existingItem = prevItems.find((item) => item.id === product.id);
+      const updatedCart = existingItem
+        ? prevItems.map((item) =>
+            item.id === product.id
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
+          )
+        : [...prevItems, { ...product, quantity: 1 }];
+      localStorage.setItem("cartItems", JSON.stringify(updatedCart));
+      return updatedCart;
+    });
+  };
 
   const removeFromCart = (id) => {
-    const updatedItems = cartItems.filter((item) => item.id !== id);
-    setCartItems(updatedItems);
-    localStorage.setItem("cartItems", JSON.stringify(updatedItems));
+    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
   };
 
-  const addToCart = (product) => {
-    const existingItem = cartItems.find((item) => item.id === product.id);
-    if (existingItem) {
-      // Aggiorna la quantità se il prodotto esiste già
-      const updatedItems = cartItems.map((item) =>
-        item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
-      );
-      setCartItems(updatedItems);
-    } else {
-      // Aggiungi un nuovo prodotto
-      setCartItems([...cartItems, { ...product, quantity: 1 }]);
-    }
-    console.log("Product added to cart:", product); // Log per il debug
-  };
+  const { wishlist } = useWishlist();
+  const [showWishlistModal, setShowWishlistModal] = useState(false);
 
   return (
     <>
@@ -98,8 +100,12 @@ export default function Header() {
               <button className="btn btn-outline-dark m-1">Contact</button>
             </div>
             <div className="d-flex gap-4">
-              <NavLink onClick={handleSearchClick}><FaSearch className="fs-5 text-black" /></NavLink>
-              <NavLink><FaHeart className="fs-5 text-black" /></NavLink>
+              <NavLink onClick={handleSearchClick}>
+                <FaSearch className="fs-5 text-black" />
+              </NavLink>
+              <NavLink onClick={() => setShowWishlistModal(true)}>
+                <FaHeart className="fs-5 text-black" />
+              </NavLink>
               <NavLink onClick={() => openModal()}>
                 <FiShoppingCart className="fs-5 text-black" />
               </NavLink>
@@ -108,8 +114,7 @@ export default function Header() {
         </nav>
       </header>
 
-
-{/* MODALE PER LA RICERCA */}
+      {/* MODALE PER LA RICERCA */}
       {showSearchModal && (
         <div className="modal searchModal d-block" tabIndex="-1">
           <div className="modal-dialog">
@@ -181,11 +186,7 @@ export default function Header() {
               ) : (
                 <div className="d-flex flex-column gap-4">
                   {cartItems.map((item) => (
-                    <div
-                      key={item.id}
-                      className="container"
-                      style={{ maxWidth: "540px" }}
-                    >
+                    <div key={item.id} className="container">
                       <div className="row justify-content-between align-items-center gap-2">
                         <div className="col-md-3">
                           <img
@@ -214,8 +215,12 @@ export default function Header() {
               )}
             </div>
             <div className="custom-modal-footer">
-              <Link to="/cart" >
-                <button type="button" className="custom-btnCarmelo" onClick={closeModal}>
+              <Link to="/cart">
+                <button
+                  type="button"
+                  className="custom-btnCarmelo"
+                  onClick={closeModal}
+                >
                   Vai al carrello
                 </button>
               </Link>
@@ -223,6 +228,23 @@ export default function Header() {
           </div>
         </div>
       )}
+
+      <WishlistModal
+        show={showWishlistModal}
+        onClose={() => setShowWishlistModal(false)}
+        addToCart={(product) => {
+          const existingItem = wishlist.find((item) => item.id === product.id);
+          if (existingItem) {
+            // Aggiorna la quantità se il prodotto esiste già
+            const updatedItems = wishlist.map((item) =>
+              item.id === product.id
+                ? { ...item, quantity: item.quantity + 1 }
+                : item
+            );
+            setWishlist(updatedItems);
+          }
+        }}
+      />
     </>
   );
 }
