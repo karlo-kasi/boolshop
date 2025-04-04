@@ -9,6 +9,7 @@ import WishlistModal from "../components/WishlistModal";
 //COMPONENTS
 import QuantityCounter from "../components/QuantityCounter";
 import BestsellersList from "../components/BestsellersList";
+import PressAndHoldButton from "../components/PressAndHoldButton";
 
 //ICONS
 import { FaHeart } from "react-icons/fa";
@@ -144,12 +145,13 @@ export default function ProductPage() {
               </NavLink>
             </div>
           </div>
-          <button
-            className="custom-btnCarmelo rounded w-100"
-            onClick={addToCart}
+          <PressAndHoldButton
+            className="btn-wishlist rounded w-100"
+            onHoldComplete={addToCart}
           >
             Aggiungi al carrello
-          </button>
+          </PressAndHoldButton>
+
           <div className=" d-flex flex-column align-items-center gap-2">
             <div className="d-flex gap-2">
               <FiPackage size={30} />

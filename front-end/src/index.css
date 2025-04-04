@@ -47,10 +47,10 @@ footer ul a {
   text-decoration: none !important; /* Aggiungi questa regola dalla definizione duplicata */
 }
 
-.custom-btnCarmelo:hover {
+/* .custom-btnCarmelo:hover {
   background-color: rgba(49, 131, 231, 0.796) !important;
   color: #fff !important;
-}
+} */
 
 /* css modale del carrello */
 
@@ -68,9 +68,10 @@ footer ul a {
 }
 
 .title-modal {
-  font-size: 1.6rem;
-  font-weight: 600;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  margin: 10px;
+  font-size: 1.3rem;
+  text-shadow: 0.5px 0.5px 1.3px rgba(0, 0, 0, 0.518);
+  color: rgb(0, 0, 0);
 }
 
 .custom-modal {
@@ -211,9 +212,8 @@ footer ul a {
 }
 
 .wishlist-modal-header {
-  background-color: rgba(49, 131, 231, 0.715);
-  color: white;
-  padding: 15px;
+  background-color: #f2f2f2;
+  color: grey;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -262,11 +262,39 @@ footer ul a {
   }
 }
 
-
 .btn-wishlist {
   font-size: 0.7rem !important;
-  border: none;
-  background-color: #848d982f !important;
-  padding: 7px 10px !important;
-  border-radius: 10px;
+
+  background-color: #fefefe !important;
+  color: #000000 !important;
+  border: 1px solid #8a9098 !important;
+  border-radius: 5px !important;
+  padding: 7px;
+  cursor: pointer !important;
+  text-align: center !important;
+  text-decoration: none !important;
+}
+
+.btn-wishlist.hold-progress {
+  background-color: red !important;
+  color: white !important;
+  text-shadow: 2px 2px 5px #000000 !important;
+  transition: background-color 3s ease-in, color 1.3s ease-in,
+    text-shadow 3s ease-in !important;
+}
+
+.btn-wishlist.hold-progress-green {
+  background-color: green !important;
+  color: white !important;
+  text-shadow: 2px 2px 5px #000000 !important;
+  transition: background-color 3s ease-in, color 1.3s ease-in,
+    text-shadow 3s ease-in !important;
+}
+
+.btn-wishlist.hold-progress-red {
+  background-color: red !important;
+  color: white !important;
+  text-shadow: 2px 2px 5px #000000 !important;
+  transition: background-color 3s ease-in, color 1.3s ease-in,
+    text-shadow 3s ease-in !important;
 }

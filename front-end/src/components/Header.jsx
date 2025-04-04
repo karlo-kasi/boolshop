@@ -76,6 +76,11 @@ export default function Header() {
   const { wishlist } = useWishlist();
   const [showWishlistModal, setShowWishlistModal] = useState(false);
 
+  const handleCartClick = () => {
+    setShowWishlistModal(false); // Chiudi la modale Wishlist
+    openModal(); // Apri la modale Carrello
+  };
+
   return (
     <>
       <header className="position-sticky top-0 z-3">
@@ -106,7 +111,7 @@ export default function Header() {
               <NavLink onClick={() => setShowWishlistModal(true)}>
                 <FaHeart className="fs-5 text-black" />
               </NavLink>
-              <NavLink onClick={() => openModal()}>
+              <NavLink onClick={handleCartClick}>
                 <FiShoppingCart className="fs-5 text-black" />
               </NavLink>
             </div>

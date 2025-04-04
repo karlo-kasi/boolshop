@@ -1,10 +1,12 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { useWishlist } from "../context/WishlistContext";
 import { useModal } from "../context/ModalContext";
+import PressAndHoldButton from "./PressAndHoldButton"; // Importa il nuovo componente
 
 export default function WishlistModal({ show, onClose }) {
   const { wishlist, removeFromWishlist } = useWishlist();
-  const { openModal } = useModal(); // Usa openModal per aprire il carrello
+  const { openModal } = useModal();
+  const modalRef = useRef(null);
 
   const addToCart = useCallback(
     (item) => {
@@ -21,20 +23,34 @@ export default function WishlistModal({ show, onClose }) {
         : [...cartItems, { ...item, quantity: 1 }];
       localStorage.setItem("cartItems", JSON.stringify(updatedCart));
 
-      // Chiudi la wishlist e apri il carrello con i dati aggiornati
       onClose();
       openModal({ cartItems: updatedCart });
     },
     [onClose, openModal]
   );
 
+  const handleClickOutside = (event) => {
+    if (modalRef.current && !modalRef.current.contains(event.target)) {
+      onClose();
+    }
+  };
+
+  useEffect(() => {
+    if (show) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [show]);
+
   if (!show) return null;
 
   return (
     <div className="wishlist-modal">
-      <div className="wishlist-modal-dialog">
-        <div className="wishlist-modal-header">
-          <p className="title-modal">Preferiti</p>
+      <div className="wishlist-modal-dialog" ref={modalRef}>
+        <div className="wishlist-modal-header d-flex justify-content-around align-items-center">
+          <p className="title-modal ">Preferiti</p>
           <button
             type="button"
             className="btn-close text-dark bold"
@@ -58,18 +74,18 @@ export default function WishlistModal({ show, onClose }) {
                       <h5>{item.name}</h5>
                       <p>Prezzo: {item.price}€</p>
                       <div className="d-flex gap-4 justify-content-center">
-                        <button
+                        <PressAndHoldButton
                           className="btn-wishlist"
-                          onClick={() => addToCart(item)}
+                          onHoldComplete={() => addToCart(item)}
                         >
                           Aggiungi al carrello
-                        </button>
-                        <button
-                          className="btn-wishlist"
-                          onClick={() => removeFromWishlist(item.id)}
+                        </PressAndHoldButton>
+                        <PressAndHoldButton
+                          className="btn-wishlist btn-wishlist-red"
+                          onHoldComplete={() => removeFromWishlist(item.id)}
                         >
                           Rimuovi dai preferiti
-                        </button>
+                        </PressAndHoldButton>
                       </div>
                     </div>
                   </div>
