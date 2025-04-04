@@ -8,6 +8,10 @@ body {
   background-color: #f2f2f2;
 }
 
+main {
+  min-height: 60vh;
+}
+
 .card {
   border: none !important;
 }
@@ -19,7 +23,7 @@ body {
 }
 
 .logo {
-  width: 100px;
+  width: 120px;
 }
 
 .hero-img {
@@ -30,24 +34,22 @@ footer ul a {
   text-decoration: none;
 }
 
-
 /* Button - Carmelo !!! Attenzione, questi Button sono presenti in ProductPage, CartPage */
-.custom-btnCarmelo {
-  text-decoration: none;
-}
 
 .custom-btnCarmelo {
-  background-color: #8a9098;
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  text-align: center;
+  background-color: #fefefe !important;
+  color: #000000 !important;
+  border: 1px solid #8a9098 !important;
+  border-radius: 5px !important;
+padding: 7px;
+  cursor: pointer !important;
+  text-align: center !important;
+  text-decoration: none !important; /* Aggiungi questa regola dalla definizione duplicata */
 }
 
 .custom-btnCarmelo:hover {
-  background-color: rgba(49, 131, 231, 0.715);
-  color: #fff;
+  background-color: rgba(49, 131, 231, 0.796) !important;
+  color: #fff !important;
 }
 
 /* css modale del carrello */
@@ -65,10 +67,9 @@ footer ul a {
   color: #fff !important;
 }
 
-.title-modal{
+.title-modal {
   font-size: 2rem;
   font-weight: 600;
-
 }
 
 .custom-modal {
@@ -82,6 +83,39 @@ footer ul a {
   width: 100%;
   height: 100%;
   z-index: 1050;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .custom-modal-dialog {
@@ -132,16 +166,20 @@ footer ul a {
   background-color: #495057;
 }
 
-  
-  
-
-  .custom-btnCarmelo:hover {
-    background-color: rgba(49, 131, 231, 0.715);
-    color: #fff;
-  }
-
-
-
-.thank-you-page, .not-found {
+.thank-you-page,
+.not-found {
   height: 60vh;
+}
+
+/* ICON */
+
+.heart-icon:hover {
+  fill: #ff0101;
+  transition: all 0.5s ease-in-out;
+}
+
+/* Modale per la ricerca */
+
+.searchModal {
+  animation: fadeIn 0.3s ease-in-out;
 }

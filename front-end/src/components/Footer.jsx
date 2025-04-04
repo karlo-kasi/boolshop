@@ -1,3 +1,15 @@
+
+//PAGAMENTI
+import americanExpress from "../assets/img/american-express.png";
+
+import applePay from "../assets/img/apple-pay.png";
+import google from "../assets/img/google.png";
+import money from "../assets/img/money.png";
+import paypal from "../assets/img/paypal.png";
+import visa from "../assets/img/visa.png";
+
+
+
 export default function Footer() {
     return (
         <>
@@ -28,12 +40,12 @@ export default function Footer() {
                         </div>
                     </section>
                     <div className="d-flex justify-content-end p-2 gap-3">
-                        <img src="icons/apple-pay.png" alt="apple pay" width="42px" />
-                        <img src="icons/google.png" alt="google pay" width="45px" />
-                        <img src="icons/money.png" alt="mastercard" width="40px" />
-                        <img src="icons/visa.png" alt="visa" width="40px" />
-                        <img src="icons/paypal.png" alt="paypal" width="45px" />
-                        <img src="icons/american-express.png" alt="american express" width="38px" />
+                        <img src={americanExpress} alt="apple pay" width={25} height={25}/>
+                        <img src={applePay} alt="mastercard" width={25} height={25} />
+                        <img src={google} alt="visa" width={25} height={25} />
+                        <img src={money} alt="paypal" width={25} height={25} />
+                        <img src={paypal} alt="american express" width={25} height={25} />
+                        <img src={visa} alt="google pay" width={25} height={25} />
                     </div>
                 </div>
             </footer>

@@ -9,7 +9,7 @@ import QuantityCounter from "../components/QuantityCounter";
 import BestsellersList from "../components/BestsellersList";
 
 //ICONS
-import { FaRegHeart } from "react-icons/fa";
+import { FaHeart } from "react-icons/fa";
 import { FiPackage } from "react-icons/fi";
 import { FaShippingFast } from "react-icons/fa";
 import { FiShoppingCart } from "react-icons/fi";
@@ -103,8 +103,8 @@ export default function ProductPage() {
   return (
     <>
       {/* ROW SINGLE CARD */}
-      <div className="row m-5" key={product.id}>
-        <div className="card text-decoration-none col-sm-12 col-md-7">
+      <div className="row m-5 justify-content-center" key={product.id}>
+        <div className="card text-decoration-none justify-content-center col-sm-12 col-md-7">
           <img
             src={product.image}
             className="card-img-top"
@@ -121,7 +121,7 @@ export default function ProductPage() {
             <QuantityCounter onQuantityChange={handleQuantityChange} />
             <div className="d-flex gap-4">
               <NavLink className="text-black">
-                <FaRegHeart size={25} />
+                <FaHeart className="heart-icon" size={25} />
               </NavLink>
             </div>
           </div>
@@ -131,16 +131,21 @@ export default function ProductPage() {
           >
             Aggiungi al carrello
           </button>
-          <div className=" d-flex flex-column gap-2">
-            <FiPackage size={25} />
-            <span className="card-text">
-              <strong>Ordina ora</strong> e ricevi in 1-2 giorni lavorativi
-            </span>
-            <FaShippingFast size={25} />
-            <span className="card-text">
-              <strong>Spedizione gratuita</strong> per ordini superiori a
-              29,99&euro;
-            </span>
+          <div className=" d-flex flex-column align-items-center gap-2">
+            <div className="d-flex gap-2">
+              <FiPackage size={30} />
+              <p className="card-text">
+                <strong>Ordina ora</strong>
+                <p>e ricevi in 1-2 giorni lavorativi</p>
+              </p>
+            </div>
+            <div className="d-flex gap-2">
+              <FaShippingFast size={30} />
+              <p className="card-text">
+                <strong>Spedizione Gratuita</strong>
+                <p>per ordini superiori a 29,99&euro;</p>
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -213,7 +218,13 @@ export default function ProductPage() {
         </div>
       </div>
       <div className="text-center m-5">
-        <BestsellersList />
+        <NavLink
+          to={`/cover${product.slug}`}
+          className="text-decoration-none text-black"
+          onClick={() => window.scrollTo(0, 0)}
+        >
+          <BestsellersList />
+        </NavLink>
       </div>
     </>
   );

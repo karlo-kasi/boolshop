@@ -1,7 +1,7 @@
 import React, { useState,useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { FaSearch, FaRegHeart } from "react-icons/fa";
+import { FaSearch, FaHeart } from "react-icons/fa";
 import { FiShoppingCart } from "react-icons/fi";
 import { useModal } from "../context/ModalContext";
 
@@ -97,19 +97,21 @@ export default function Header() {
               <button className="btn btn-outline-dark m-1">Products</button>
               <button className="btn btn-outline-dark m-1">Contact</button>
             </div>
-            <div className="d-flex gap-3">
-              <NavLink onClick={handleSearchClick}><FaSearch className="fs-3 text-black" /></NavLink>
-              <NavLink><FaRegHeart className="fs-3 text-black" /></NavLink>
+            <div className="d-flex gap-4">
+              <NavLink onClick={handleSearchClick}><FaSearch className="fs-5 text-black" /></NavLink>
+              <NavLink><FaHeart className="fs-5 text-black" /></NavLink>
               <NavLink onClick={() => openModal()}>
-                <FiShoppingCart className="fs-3 text-black" />
+                <FiShoppingCart className="fs-5 text-black" />
               </NavLink>
             </div>
           </div>
         </nav>
       </header>
 
+
+{/* MODALE PER LA RICERCA */}
       {showSearchModal && (
-        <div className="modal d-block" tabIndex="-1">
+        <div className="modal searchModal d-block" tabIndex="-1">
           <div className="modal-dialog">
             <div className="modal-content">
               <div className="modal-header">
@@ -151,7 +153,7 @@ export default function Header() {
                 </button>
                 <button
                   type="button"
-                  className="btn btn-primary"
+                  className="custom-btnCarmelo"
                   onClick={handleSearch} // Naviga alla SearchPage
                 >
                   Search
@@ -213,7 +215,7 @@ export default function Header() {
             </div>
             <div className="custom-modal-footer">
               <Link to="/cart" >
-                <button type="button" className="btn-modal" onClick={closeModal}>
+                <button type="button" className="custom-btnCarmelo" onClick={closeModal}>
                   Vai al carrello
                 </button>
               </Link>
