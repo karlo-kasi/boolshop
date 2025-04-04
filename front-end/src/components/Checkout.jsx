@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { data, useNavigate } from "react-router-dom";
+import { CardNumberElement, CardExpiryElement, CardCvcElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
 export default function Checkout() {
     const navigate = useNavigate();
@@ -30,41 +31,59 @@ export default function Checkout() {
         phone_number: "",
     });
 
-    const handleSubmit = (e) => {
+    const stripe = useStripe();
+    const elements = useElements();
+
+    const [clientSecret, setClientSecret] = useState("");
+    const [paymentError, setPaymentError] = useState('');
+    const [paymentSuccess, setPaymentSuccess] = useState(false);
+
+    const submitOrder = async (dataToSubmit) => {
+        try {
+            const response = await axios.post("http://localhost:3000/cover/order", dataToSubmit, {
+                headers: { 'Content-Type': 'application/json' },
+            });
+            console.log("Order Response:", response.data);
+            // Azioni in caso di successo: svuotare il carrello, resettare il form, reindirizzare l'utente, ecc.
+            localStorage.removeItem("cartItems");
+            setCart([]);
+            setFormData(initalData);
+            navigate("/thank-you");
+        } catch (error) {
+            console.error("Errore nell'invio dell'ordine:", error);
+            setIsFormValid(false);
+        }
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // Costruisci l'indirizzo di spedizione combinando i vari campi
         const shippingAddress = `${formData.shipping_address}, ${formData.city}, ${formData.province}, ${formData.zip}`;
 
-
+        // Prepara i dati dell'ordine da inviare al backend
         const dataToSubmit = {
             ...formData,
             shipping_address: shippingAddress,
             billing_address: shippingAddress,
             coupon_id: 1,
-            products: productsToSend
+            products: productsToSend,
         };
 
-        axios.post("http://localhost:3000/cover/order", dataToSubmit, {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-            .then((response) => {
-                console.log("Response:", response.data);
-                // Gestisci la risposta del server qui, ad esempio, reindirizza l'utente a una pagina di conferma
-                localStorage.removeItem("cartItems");
-                setCart([]);
-                setFormData(initalData);
-                navigate("/thank-you");
-            })
-            .catch((error) => {
-                console.error("Error:", error);
-                // Gestisci l'errore qui, ad esempio, mostra un messaggio di errore all'utente
-                setIsFormValid(false);
-            });
+        // Primo step: gestisci il pagamento
+        const paymentSuccessful = await handlePayment();
 
-    }
+        if (paymentSuccessful) {
+            // Se il pagamento va a buon fine, invia l'ordine
+            await submitOrder(dataToSubmit);
+        } else {
+            // Gestisci il caso in cui il pagamento fallisca (ad es. mostra un messaggio di errore)
+            console.error("Il pagamento non è andato a buon fine. L'ordine non verrà inviato.");
+        }
+    };
 
+
+    //validazione dei campi
     const handleChange = (e) => {
         const { name, value } = e.target;
 
@@ -150,6 +169,62 @@ export default function Checkout() {
         });
     };
 
+
+    //Logica per il pagamaneto 
+    // Funzione per gestire il pagamento
+    const handlePayment = async () => {
+        if (!stripe || !elements) return false;
+      
+        const cardNumber = elements.getElement(CardNumberElement);
+        const cardExpiry = elements.getElement(CardExpiryElement);
+        const cardCvc = elements.getElement(CardCvcElement);
+      
+        if (!cardNumber || !cardExpiry || !cardCvc) {
+          console.error("Uno dei campi della carta non è stato trovato.");
+          return false;
+        }
+      
+        try {
+          const response = await axios.post("http://localhost:3000/cover/payment", {
+            amount: amountInCents,
+            currency: "eur",
+            description: "Acquisto prodotti",
+          });
+      
+          const clientSecret = response.data.clientSecret;
+          setClientSecret(clientSecret);
+      
+          const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+            payment_method: {
+              card: cardNumber,
+              billing_details: {
+                name: `${formData.name} ${formData.surname}`,
+                email: formData.email,
+                phone: formData.phone_number,
+              },
+            },
+          });
+      
+          if (error) {
+            console.error("Errore nel pagamento:", error.message);
+            setPaymentError(error.message);
+            return false;
+          } else {
+            console.log("Pagamento completato:", paymentIntent);
+            setPaymentSuccess(true);
+            return true;
+          }
+        } catch (error) {
+          console.error("Errore durante la creazione del pagamento:", error);
+          setPaymentError("Errore nella creazione del pagamento");
+          return false;
+        }
+      };
+
+
+
+
+    // Recupera il carrello dal localStorage all'avvio
     useEffect(() => {
         const storedCart = localStorage.getItem("cartItems");
         if (storedCart) {
@@ -157,6 +232,9 @@ export default function Checkout() {
         }
     }, []);
 
+
+
+    // Calcola il totale e prepara i prodotti da inviare all'ordine
     let totalPrice = 0;
     let totalQuantity = 0;
     const productsToSend = cart.map((product) => {
@@ -166,10 +244,13 @@ export default function Checkout() {
             product_id: product.id,
             quantity: product.quantity,
         };
-    })
-    totalPrice = totalPrice.toFixed(2);
+    });
+    // Stripe richiede l'importo in centesimi come intero
+    const amountInCents = Math.round(totalPrice * 100);
 
-    console.log(typeof totalPrice )
+    console.log("il prezzo per stripe è:", amountInCents)
+    console.log("Total Price:", totalPrice, "Total Quantity:", totalQuantity);
+    
 
     return (
         <>
@@ -178,7 +259,7 @@ export default function Checkout() {
                     <div className="row g-5">
                         <div className="col-md-5 col-lg-4 order-md-last">
                             <h4 className="d-flex justify-content-between align-items-center mb-3">
-                                <span className="text-primary">Your cart</span>
+                                <span className="text-primary">Carrello</span>
                                 <span className="badge bg-primary rounded-pill">{totalQuantity}</span>
                             </h4>
 
@@ -492,31 +573,10 @@ export default function Checkout() {
 
                                 <hr className="my-4" />
 
-                                {/*<div className="form-check">
-                                    <input
-                                        type="checkbox"
-                                        className="form-check-input"
-                                        id="same-address"
-                                    />
-                                    <label className="form-check-label" htmlFor="same-address">
-                                        Shipping address is the same as my billing address
-                                    </label>
-                                </div>
+                                
 
-                                <div className="form-check">
-                                    <input
-                                        type="checkbox"
-                                        className="form-check-input"
-                                        id="save-info"
-                                    />
-                                    <label className="form-check-label" htmlFor="save-info">
-                                        Save this information for next time
-                                    </label>
-                                </div>
-
-                                <hr className="my-4" />
-
-                                <h4 className="mb-3">Payment</h4>
+                                <h4 className="mb-3">Pagamento</h4>
+                                <p>Tutte le transazioni sono sicure e crittografate.</p>
 
                                 <div className="my-3">
                                     <div className="form-check">
@@ -529,100 +589,94 @@ export default function Checkout() {
                                             required
                                         />
                                         <label className="form-check-label" htmlFor="credit">
-                                            Credit card
-                                        </label>
-                                    </div>
-                                    <div className="form-check">
-                                        <input
-                                            id="debit"
-                                            name="paymentMethod"
-                                            type="radio"
-                                            className="form-check-input"
-                                            required
-                                        />
-                                        <label className="form-check-label" htmlFor="debit">
-                                            Debit card
-                                        </label>
-                                    </div>
-                                    <div className="form-check">
-                                        <input
-                                            id="paypal"
-                                            name="paymentMethod"
-                                            type="radio"
-                                            className="form-check-input"
-                                            required
-                                        />
-                                        <label className="form-check-label" htmlFor="paypal">
-                                            PayPal
+                                            Carta di credito
                                         </label>
                                     </div>
                                 </div>
+
+                                
 
                                 <div className="row gy-3">
-                                    <div className="col-md-6">
-                                        <label htmlFor="cc-name" className="form-label">Name on card</label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            id="cc-name"
-                                            placeholder=""
-                                            required
-                                        />
-                                        <small className="text-body-secondary">
-                                            Full name as displayed on card
-                                        </small>
-                                        <div className="invalid-feedback">
-                                            Name on card is required
+                                    <div className="col-md-12">
+                                        <label htmlFor="card-number" className="form-label">Numero della carta</label>
+                                        <div className="form-control py-2">
+                                            <CardNumberElement
+                                                id="card-number"
+                                                options={{
+                                                    style: {
+                                                        base: {
+                                                            fontSize: '16px',
+                                                            color: '#495057',
+                                                            fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+                                                            '::placeholder': {
+                                                                color: '#6c757d',
+                                                            },
+                                                        },
+                                                        invalid: {
+                                                            color: '#dc3545',
+                                                            iconColor: '#dc3545',
+                                                        },
+                                                    },
+                                                }}
+                                            />
                                         </div>
                                     </div>
 
                                     <div className="col-md-6">
-                                        <label htmlFor="cc-number" className="form-label">Credit card number</label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            id="cc-number"
-                                            placeholder=""
-                                            required
-                                        />
-                                        <div className="invalid-feedback">
-                                            Credit card number is required
+                                        <label htmlFor="card-expiry" className="form-label">Data di scadenza</label>
+                                        <div className="form-control py-2">
+                                            <CardExpiryElement
+                                                id="card-expiry"
+                                                options={{
+                                                    style: {
+                                                        base: {
+                                                            fontSize: '16px',
+                                                            color: '#495057',
+                                                            fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+                                                            '::placeholder': {
+                                                                color: '#6c757d',
+                                                            },
+                                                        },
+                                                        invalid: {
+                                                            color: '#dc3545',
+                                                            iconColor: '#dc3545',
+                                                        },
+                                                    },
+                                                }}
+                                            />
                                         </div>
                                     </div>
 
-                                    <div className="col-md-3">
-                                        <label htmlFor="cc-expiration" className="form-label">Expiration</label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            id="cc-expiration"
-                                            placeholder=""
-                                            required
-                                        />
-                                        <div className="invalid-feedback">
-                                            Expiration date required
-                                        </div>
-                                    </div>
-
-                                    <div className="col-md-3">
-                                        <label htmlFor="cc-cvv" className="form-label">CVV</label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            id="cc-cvv"
-                                            placeholder=""
-                                            required
-                                        />
-                                        <div className="invalid-feedback">
-                                            Security code required
+                                    <div className="col-md-6">
+                                        <label htmlFor="card-cvc" className="form-label">CVV</label>
+                                        <div className="form-control py-2">
+                                            <CardCvcElement
+                                                id="card-cvc"
+                                                options={{
+                                                    style: {
+                                                        base: {
+                                                            fontSize: '16px',
+                                                            color: '#495057',
+                                                            fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+                                                            '::placeholder': {
+                                                                color: '#6c757d',
+                                                            },
+                                                        },
+                                                        invalid: {
+                                                            color: '#dc3545',
+                                                            iconColor: '#dc3545',
+                                                        },
+                                                    },
+                                                }}
+                                            />
                                         </div>
                                     </div>
                                 </div>
 
-                                <hr className="my-4" />*/}
+                                <hr className="my-4" />
 
                                 <button className="w-100 btn btn-primary btn-lg" type="submit">
-                                    Continua al checkout
+                                    Acquista ora
                                 </button>
                             </form>
                         </div>
