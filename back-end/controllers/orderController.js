@@ -91,7 +91,7 @@ function sendConfirmationEmail(name, email, orderId, total, arrayProducts) {
                     <p>Il tuo ordine è stato registrato con successo e sarà elaborato al più presto.</p>
                 </div>
                 <div class="order-summary">
-                    <p><strong>Dettaglio Ordine:</strong></p>
+                    <p><strong>Dettagli Ordine:</strong></p>
                     <ul>${productListHtml}<ul/>
                     <h3>Totale dell'ordine: <span class="total">${total.toFixed(2)}€</span></h3>
                 </div>
@@ -124,29 +124,41 @@ function sendConfirmationEmail(name, email, orderId, total, arrayProducts) {
 
 
 function storeOrder(req, res) {
-    const { name, surname, email, coupon_id, shipping_address, billing_address, phone_number } = req.body;
-    let { products } = req.body;
+    const { name, surname, email, coupon_id, city, province, zip, phone_number } = req.body;
+    let { products, shipping_address, billing_address } = req.body;
 
     // Validazione dei dati dell'ordine
     //if (!name || !email || !surname || !shipping_address || !phone_number || !products) {
     //    return res.status(400).json({ error: 'Tutti i campi sono obbligatori' });
     //}
 
-    if (!name || name.length < 3) {
+    if (!name || name.trim().length < 3) {
         return res.status(400).json({ error: 'Il nome deve contenere almeno 3 caratteri' });
     }
-    if (!surname || surname.length < 3) {
+    if (!surname || surname.trim().length < 3) {
         return res.status(400).json({ error: 'Il cognome deve contenere almeno 3 caratteri' });
     }
     if (!email || !/\S+@\S+\.\S+/.test(email)) {
         return res.status(400).json({ error: 'Email non valida' });
     }
-    if (!shipping_address || shipping_address.length < 10) {
+    if (!shipping_address || shipping_address.trim().length < 5) {
         return res.status(400).json({ error: 'L\'indirizzo di spedizione deve contenere almeno 5 caratteri' });
     }
-    if (phone_number && /^\d{10}$/.test(phone_number) === false) {
+    if (!city || city.trim().length < 3) {
+        return res.status(400).json({ error: 'La città deve contenere almeno 3 caratteri' });
+    }
+    if (!province || province.trim().length !== 2) {
+        return res.status(400).json({ error: 'Scegli una provincia' });
+    }
+    if (!zip || zip.trim().length !== 5) {
+        return res.status(400).json({ error: 'Il CAP deve essere composto da 5 caratteri' });
+    }    
+    if (!phone_number && /^\d{10}$/.test(phone_number) === false) {
         return res.status(400).json({ error: 'Il numero di telefono deve contenere 10 cifre' });
     }
+
+    shipping_address = `${shipping_address}, ${city}(${province}), ${zip}`;
+    billing_address = `${billing_address}, ${city}(${province}), ${zip}`;
 
     // Logica per ottenere i prodotti dal carrello
     let productsIds = products.map(element => {
