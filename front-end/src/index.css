@@ -145,3 +145,7 @@ footer ul a {
 .thank-you-page, .not-found {
   height: 60vh;
 }
+
+.small-text{
+  font-size: 0.7rem;
+}

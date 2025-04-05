@@ -27,14 +27,23 @@ export default function Footer() {
                             </ul>
                         </div>
                     </section>
-                    <div className="d-flex justify-content-end p-2 gap-3">
-                        <img src="icons/apple-pay.png" alt="apple pay" width="42px" />
-                        <img src="icons/google.png" alt="google pay" width="45px" />
-                        <img src="icons/money.png" alt="mastercard" width="40px" />
-                        <img src="icons/visa.png" alt="visa" width="40px" />
-                        <img src="icons/paypal.png" alt="paypal" width="45px" />
-                        <img src="icons/american-express.png" alt="american express" width="38px" />
-                    </div>
+                    <section className="d-flex justify-content-between align-items-center">
+                        <div>
+                            <img className="logo" src="../public/logo-footer.png" alt="boolshop-footer" width="350px"/>
+                            <p className="text-white small-text">
+                                Boolshop® | BL s.p.a P.IVA e CF 01888310032 <br />
+                                Via Circonvallazione s/n 28010 Milano - Italia Tel. +39 0322980909 - Fax. +39 0322980910
+                            </p>
+                        </div>
+                        <div className="d-flex align-items-center gap-3">
+                            <img src="icons/apple-pay.png" alt="apple pay" width="40px" height="40px"/>
+                            <img src="icons/google.png" alt="google pay" width="45px" height="48px"/>
+                            <img src="icons/money.png" alt="mastercard" width="45px" height="42px"/>
+                            <img src="icons/visa.png" alt="visa" width="40px" height="42px"/>
+                            <img src="icons/paypal.png" alt="paypal" width="40px" height="38px"/>
+                            <img src="icons/american-express.png" alt="american express" width="40px" height="40px"/>
+                        </div>
+                    </section>
                 </div>
             </footer>
         </>
