@@ -6,6 +6,7 @@ import { FiShoppingCart } from "react-icons/fi";
 import { useModal } from "../context/ModalContext";
 import { useWishlist } from "../context/WishlistContext";
 import WishlistModal from "./WishlistModal";
+import { useCart } from "../context/CartContext";
 
 export default function Header() {
   const [showSearchModal, setShowSearchModal] = useState(false);
@@ -36,60 +37,14 @@ export default function Header() {
   };
 
   const { isModalOpen, modalData, closeModal, openModal } = useModal(); // Usa modalData dal contesto
-
-  const [cartItems, setCartItems] = useState(() => {
-    const storedCartItems = localStorage.getItem("cartItems");
-    return storedCartItems ? JSON.parse(storedCartItems) : [];
-  });
-
-  useEffect(() => {
-    // Sincronizza il carrello con il localStorage
-    const storedCartItems = localStorage.getItem("cartItems");
-    setCartItems(storedCartItems ? JSON.parse(storedCartItems) : []);
-  }, []);
-
-  useEffect(() => {
-    // Svuota il carrello se il localStorage è vuoto (ad esempio, dopo un pagamento)
-    const handleStorageChange = () => {
-      const storedCartItems = localStorage.getItem("cartItems");
-      if (!storedCartItems) {
-        setCartItems([]);
-      }
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
-  }, []);
-
-  useEffect(() => {
-    // Sincronizza il carrello con il localStorage
-    localStorage.setItem("cartItems", JSON.stringify(cartItems));
-  }, [cartItems]);
-
-  useEffect(() => {
-    // Sincronizza il carrello con il localStorage e il contesto modale
-    if (modalData && modalData.cartItems) {
-      setCartItems(modalData.cartItems);
-    }
-  }, [modalData]);
-
-  const addToCart = (product) => {
-    setCartItems((prevItems) => {
-      const existingItem = prevItems.find((item) => item.id === product.id);
-      const updatedCart = existingItem
-        ? prevItems.map((item) =>
-            item.id === product.id
-              ? { ...item, quantity: item.quantity + 1 }
-              : item
-          )
-        : [...prevItems, { ...product, quantity: 1 }];
-      localStorage.setItem("cartItems", JSON.stringify(updatedCart));
-      return updatedCart;
-    });
-  };
+  const {
+    cartItems,
+    setCartItems: setCartItemsContext,
+    removeFromCart: removeFromCartContext,
+  } = useCart();
 
   const removeFromCart = (id) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
+    removeFromCartContext(id);
   };
 
   const { wishlist } = useWishlist();
@@ -263,7 +218,7 @@ export default function Header() {
                                           }
                                         : cartItem
                                   );
-                                  setCartItems(updatedItems);
+                                  setCartItemsContext(updatedItems);
                                 }}
                               >
                                 -
@@ -281,7 +236,7 @@ export default function Header() {
                                           }
                                         : cartItem
                                   );
-                                  setCartItems(updatedItems);
+                                  setCartItemsContext(updatedItems);
                                 }}
                               >
                                 +

@@ -5,6 +5,7 @@ import { Link, NavLink } from "react-router-dom";
 import { useModal } from "../context/ModalContext"; // Import del contesto
 import { useWishlist } from "../context/WishlistContext";
 import WishlistModal from "../components/WishlistModal";
+import { useCart } from "../context/CartContext";
 
 //COMPONENTS
 import QuantityCounter from "../components/QuantityCounter";
@@ -23,7 +24,6 @@ import imballaggio from "../assets/img/2.avif";
 import riciclo from "../assets/img/3.avif";
 
 export default function ProductPage() {
-
   const { slug } = useParams();
   const [product, setProduct] = useState(null);
   const [error, setError] = useState(null);
@@ -31,6 +31,7 @@ export default function ProductPage() {
   const { openModal } = useModal(); // Usa il contesto
   const { addToWishlist, wishlist } = useWishlist(); // Importiamo la wishlist
   const [showWishlistModal, setShowWishlistModal] = useState(false);
+  const { addToCart: addToCartContext } = useCart();
 
   useEffect(() => {
     console.log("Product ID:", slug);
@@ -80,26 +81,8 @@ export default function ProductPage() {
         quantity: quantity,
       };
 
-      const storedCartItems = localStorage.getItem("cartItems");
-      const existingCartItems = storedCartItems
-        ? JSON.parse(storedCartItems)
-        : [];
-
-      const existingProductIndex = existingCartItems.findIndex(
-        (item) => item.id === product.id
-      );
-
-      if (existingProductIndex > -1) {
-        existingCartItems[existingProductIndex].quantity += quantity;
-      } else {
-        existingCartItems.push(cartItem);
-      }
-
-      localStorage.setItem("cartItems", JSON.stringify(existingCartItems));
-      console.log("Prodotto aggiunto al carrello:", cartItem); // Debug per verificare lo slug
-
-      // Passa lo stato aggiornato del LocalStorage alla modale
-      openModal({ cartItems: existingCartItems });
+      addToCartContext(cartItem, quantity);
+      openModal();
     } catch (error) {
       console.error("Errore nell'aggiunta al carrello:", error);
     }
