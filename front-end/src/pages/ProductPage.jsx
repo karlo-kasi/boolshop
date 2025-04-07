@@ -3,10 +3,13 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Link, NavLink } from "react-router-dom";
 import { useModal } from "../context/ModalContext"; // Import del contesto
+import { useWishlist } from "../context/WishlistContext";
+import WishlistModal from "../components/WishlistModal";
 
 //COMPONENTS
 import QuantityCounter from "../components/QuantityCounter";
 import BestsellersList from "../components/BestsellersList";
+import PressAndHoldButton from "../components/PressAndHoldButton";
 
 //ICONS
 import { FaHeart } from "react-icons/fa";
@@ -25,6 +28,8 @@ export default function ProductPage() {
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1); // Stato per la quantità
   const { openModal } = useModal(); // Usa il contesto
+  const { addToWishlist, wishlist } = useWishlist(); // Importiamo la wishlist
+  const [showWishlistModal, setShowWishlistModal] = useState(false);
 
   useEffect(() => {
     console.log("Product ID:", slug);
@@ -43,6 +48,13 @@ export default function ProductPage() {
         console.error(error);
       });
   }, [slug]);
+
+  // Apri la modale quando la wishlist cambia
+  useEffect(() => {
+    if (showWishlistModal) {
+      setShowWishlistModal(true);
+    }
+  }, [wishlist]);
 
   // Funzione per aggiornare la quantità
   const handleQuantityChange = (newQuantity) => {
@@ -92,6 +104,11 @@ export default function ProductPage() {
     }
   };
 
+  const handleAddToWishlist = (product) => {
+    addToWishlist(product);
+    setShowWishlistModal(true); // Apri la modale della wishlist
+  };
+
   if (error) {
     return <div>{error}</div>;
   }
@@ -120,17 +137,21 @@ export default function ProductPage() {
           <div className="d-flex justify-content-around align-items-center">
             <QuantityCounter onQuantityChange={handleQuantityChange} />
             <div className="d-flex gap-4">
-              <NavLink className="text-black">
+              <NavLink
+                className="text-black"
+                onClick={() => handleAddToWishlist(product)}
+              >
                 <FaHeart className="heart-icon" size={25} />
               </NavLink>
             </div>
           </div>
-          <button
-            className="custom-btnCarmelo rounded w-100"
-            onClick={addToCart}
+          <PressAndHoldButton
+            className="btn-wishlist rounded w-100"
+            onHoldComplete={addToCart}
           >
             Aggiungi al carrello
-          </button>
+          </PressAndHoldButton>
+
           <div className=" d-flex flex-column align-items-center gap-2">
             <div className="d-flex gap-2">
               <FiPackage size={30} />
@@ -226,6 +247,23 @@ export default function ProductPage() {
           <BestsellersList />
         </NavLink>
       </div>
+
+      <WishlistModal
+        show={showWishlistModal}
+        onClose={() => setShowWishlistModal(false)}
+        addToCart={(product) => {
+          const existingItem = wishlist.find((item) => item.id === product.id);
+          if (existingItem) {
+            // Aggiorna la quantità se il prodotto esiste già
+            const updatedItems = wishlist.map((item) =>
+              item.id === product.id
+                ? { ...item, quantity: item.quantity + 1 }
+                : item
+            );
+            setWishlist(updatedItems);
+          }
+        }}
+      />
     </>
   );
 }
