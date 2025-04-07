@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { data, useNavigate } from "react-router-dom";
+import { CardNumberElement, CardExpiryElement, CardCvcElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
 export default function Checkout() {
     const navigate = useNavigate();
@@ -45,6 +46,36 @@ export default function Checkout() {
         acceptTerms: "",
     });
 
+
+    const stripe = useStripe();
+    const elements = useElements();
+
+    const [clientSecret, setClientSecret] = useState("");
+    const [paymentError, setPaymentError] = useState('');
+    const [paymentSuccess, setPaymentSuccess] = useState(false);
+
+    const [isLoading, setIsLoading] = useState(false);
+
+
+    const submitOrder = async (dataToSubmit) => {
+        try {
+            const response = await axios.post("http://localhost:3000/cover/order", dataToSubmit, {
+                headers: { 'Content-Type': 'application/json' },
+            });
+            console.log("Order Response:", response.data);
+            // Azioni in caso di successo: svuotare il carrello, resettare il form, reindirizzare l'utente, ecc.
+            localStorage.removeItem("cartItems");
+            setCart([]);
+            setFormData(initalData);
+            navigate("/thank-you");
+        } catch (error) {
+            console.error("Errore nell'invio dell'ordine:", error);
+            setIsFormValid(false);
+        }
+    };
+
+    
+      
     const validateForm = () => {
         const newErrors = {};
 
@@ -88,7 +119,7 @@ export default function Checkout() {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const newErrors = { ...errors };
         let isValid = validateForm();
@@ -97,6 +128,10 @@ export default function Checkout() {
             return;
         }
 
+        // Costruisci l'indirizzo di spedizione combinando i vari campi
+        const shippingAddress = `${formData.shipping_address}, ${formData.city}, ${formData.province}, ${formData.zip}`;
+
+        // Prepara i dati dell'ordine da inviare al backend
         if (!formData.acceptTerms) {
             newErrors.acceptTerms = "Devi accettare i termini e condizioni.";
             isValid = false;
@@ -109,9 +144,28 @@ export default function Checkout() {
             return;
         }
 
+
         const dataToSubmit = {
             ...formData,
             coupon_id: 1,
+
+            products: productsToSend,
+        };
+
+        // Primo step: gestisci il pagamento
+        setIsLoading(true)
+        const paymentSuccessful = await handlePayment();
+        setIsLoading(false)
+
+        if (paymentSuccessful) {
+            // Se il pagamento va a buon fine, invia l'ordine
+            await submitOrder(dataToSubmit);
+        } else {
+            // Gestisci il caso in cui il pagamento fallisca (ad es. mostra un messaggio di errore)
+            console.error("Il pagamento non è andato a buon fine. L'ordine non verrà inviato.");
+        }
+    };
+  
             billing_address: formData.sameBillingAddress
                 ? formData.shipping_address
                 : formData.billing_address,
@@ -146,8 +200,9 @@ export default function Checkout() {
                 setIsFormValid(false);
             });
 
-    }
 
+
+    //validazione dei campi
     const handleChange = (e) => {
         const { name, type, value, checked } = e.target;
 
@@ -258,6 +313,62 @@ export default function Checkout() {
         });
     };
 
+
+    //Logica per il pagamaneto 
+    // Funzione per gestire il pagamento
+    const handlePayment = async () => {
+        if (!stripe || !elements) return false;
+
+        const cardNumber = elements.getElement(CardNumberElement);
+        const cardExpiry = elements.getElement(CardExpiryElement);
+        const cardCvc = elements.getElement(CardCvcElement);
+
+        if (!cardNumber || !cardExpiry || !cardCvc) {
+            console.error("Uno dei campi della carta non è stato trovato.");
+            return false;
+        }
+
+        try {
+            const response = await axios.post("http://localhost:3000/cover/payment", {
+                amount: amountInCents,
+                currency: "eur",
+                description: "Acquisto prodotti",
+            });
+
+            const clientSecret = response.data.clientSecret;
+            setClientSecret(clientSecret);
+
+            const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+                payment_method: {
+                    card: cardNumber,
+                    billing_details: {
+                        name: `${formData.name} ${formData.surname}`,
+                        email: formData.email,
+                        phone: formData.phone_number,
+                    },
+                },
+            });
+
+            if (error) {
+                console.error("Errore nel pagamento:", error.message);
+                setPaymentError(error.message);
+                return false;
+            } else {
+                console.log("Pagamento completato:", paymentIntent);
+                setPaymentSuccess(true);
+                return true;
+            }
+        } catch (error) {
+            console.error("Errore durante la creazione del pagamento:", error);
+            setPaymentError("Errore nella creazione del pagamento");
+            return false;
+        }
+    };
+
+
+
+
+    // Recupera il carrello dal localStorage all'avvio
     useEffect(() => {
         const storedCart = localStorage.getItem("cartItems");
         if (storedCart) {
@@ -265,6 +376,9 @@ export default function Checkout() {
         }
     }, []);
 
+
+
+    // Calcola il totale e prepara i prodotti da inviare all'ordine
     let totalPrice = 0;
     let totalQuantity = 0;
     const productsToSend = cart.map((product) => {
@@ -275,8 +389,13 @@ export default function Checkout() {
             quantity: product.quantity,
             image: product.image
         };
-    })
-    totalPrice = totalPrice.toFixed(2);
+    });
+    // Stripe richiede l'importo in centesimi come intero
+    const amountInCents = Math.round(totalPrice * 100);
+
+
+
+
 
     return (
         <>
@@ -285,7 +404,10 @@ export default function Checkout() {
                     <div className="row g-5">
                         <div className="col-md-5 col-lg-4 order-md-last">
                             <h4 className="d-flex justify-content-between align-items-center mb-3">
+
+
                                 <span className="text-primary">Il tuo carrello</span>
+
                                 <span className="badge bg-primary rounded-pill">{totalQuantity}</span>
                             </h4>
 
@@ -298,6 +420,7 @@ export default function Checkout() {
                                                     <h6 className="my-0">{product.name}</h6>
                                                 </div>
                                                 <span className="text-body-secondary">{product.quantity} x {product.price}&euro;</span>
+                                                <img src={product.image} width="20px" alt="" />
                                             </li>
                                         )
                                     }
@@ -591,6 +714,80 @@ export default function Checkout() {
 
                                 <hr className="my-4" />
 
+
+
+
+                                <h4 className="mb-3">Pagamento</h4>
+                                <p>Tutte le transazioni sono sicure e crittografate.</p>
+
+                                <div className="my-3">
+                                    <div className="form-check">
+                                        <input
+                                            id="credit"
+                                            name="paymentMethod"
+                                            type="radio"
+                                            className="form-check-input"
+                                            defaultChecked
+                                            required
+                                        />
+                                        <label className="form-check-label" htmlFor="credit">
+                                            Carta di credito
+                                        </label>
+                                    </div>
+                                </div>
+
+
+
+                                <div className="row gy-3">
+                                    <div className="col-md-12">
+                                        <label htmlFor="card-number" className="form-label">Numero della carta</label>
+                                        <div className="form-control py-2">
+                                            <CardNumberElement
+                                                id="card-number"
+                                                options={{
+                                                    style: {
+                                                        base: {
+                                                            fontSize: '16px',
+                                                            color: '#495057',
+                                                            fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+                                                            '::placeholder': {
+                                                                color: '#6c757d',
+                                                            },
+                                                        },
+                                                        invalid: {
+                                                            color: '#dc3545',
+                                                            iconColor: '#dc3545',
+                                                        },
+                                                    },
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="col-md-6">
+                                        <label htmlFor="card-expiry" className="form-label">Data di scadenza</label>
+                                        <div className="form-control py-2">
+                                            <CardExpiryElement
+                                                id="card-expiry"
+                                                options={{
+                                                    style: {
+                                                        base: {
+                                                            fontSize: '16px',
+                                                            color: '#495057',
+                                                            fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+                                                            '::placeholder': {
+                                                                color: '#6c757d',
+                                                            },
+                                                        },
+                                                        invalid: {
+                                                            color: '#dc3545',
+                                                            iconColor: '#dc3545',
+                                                        },
+                                                    },
+                                                }}
+                                            />
+                                        </div>
+
                                 <div className="mb-3 form-check">
                                     <input
                                         type="checkbox"
@@ -617,7 +814,46 @@ export default function Checkout() {
                                             onChange={handleChange}
                                         />
                                         {errors.billing_address && <div className="invalid-feedback">{errors.billing_address}</div>}
+
                                     </div>
+                                )}
+
+
+                                    <div className="col-md-6">
+                                        <label htmlFor="card-cvc" className="form-label">CVV</label>
+                                        <div className="form-control py-2">
+                                            <CardCvcElement
+                                                id="card-cvc"
+                                                options={{
+                                                    style: {
+                                                        base: {
+                                                            fontSize: '16px',
+                                                            color: '#495057',
+                                                            fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+                                                            '::placeholder': {
+                                                                color: '#6c757d',
+                                                            },
+                                                        },
+                                                        invalid: {
+                                                            color: '#dc3545',
+                                                            iconColor: '#dc3545',
+                                                        },
+                                                    },
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr className="my-4" />
+
+                                {isLoading ? (
+                                    <button className="btn btn-primary w-100" disabled>
+                                        <span className="spinner-border spinner-border-sm me-2 btn-purchase" role="status" aria-hidden="true"></span>
+                                        Elaborazione in corso...
+                                    </button>
+                                ) : (
+                                    <button className="btn btn-primary w-100" type="submit">Acquista ora</button>
                                 )}
 
                                 <div className="form-check my-3">
@@ -637,9 +873,6 @@ export default function Checkout() {
                                     )}
                                 </div>
 
-                                <button className="w-100 btn btn-primary btn-lg" type="submit">
-                                    Conferma l'ordine
-                                </button>
                             </form>
                         </div>
                     </div>
