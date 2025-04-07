@@ -16,7 +16,7 @@ export default function Checkout() {
         zip: "",
         phone_number: "",
         sameBillingAddress: true,
-        billing_address: "", 
+        billing_address: "",
         acceptTerms: false,
     };
 
@@ -46,6 +46,7 @@ export default function Checkout() {
         acceptTerms: "",
     });
 
+    console.log(cart)
 
     const stripe = useStripe();
     const elements = useElements();
@@ -57,25 +58,25 @@ export default function Checkout() {
     const [isLoading, setIsLoading] = useState(false);
 
 
-    const submitOrder = async (dataToSubmit) => {
-        try {
-            const response = await axios.post("http://localhost:3000/cover/order", dataToSubmit, {
-                headers: { 'Content-Type': 'application/json' },
-            });
-            console.log("Order Response:", response.data);
-            // Azioni in caso di successo: svuotare il carrello, resettare il form, reindirizzare l'utente, ecc.
-            localStorage.removeItem("cartItems");
-            setCart([]);
-            setFormData(initalData);
-            navigate("/thank-you");
-        } catch (error) {
-            console.error("Errore nell'invio dell'ordine:", error);
-            setIsFormValid(false);
-        }
-    };
+    //const submitOrder = async (dataToSubmit) => {
+    //    try {
+    //        const response = await axios.post("http://localhost:3000/cover/order", dataToSubmit, {
+    //            headers: { 'Content-Type': 'application/json' },
+    //        });
+    //        console.log("Order Response:", response.data);
+    //        // Azioni in caso di successo: svuotare il carrello, resettare il form, reindirizzare l'utente, ecc.
+    //        localStorage.removeItem("cartItems");
+    //        setCart([]);
+    //        setFormData(initalData);
+    //        navigate("/thank-you");
+    //    } catch (error) {
+    //        console.error("Errore nell'invio dell'ordine:", error);
+    //        setIsFormValid(false);
+    //    }
+    //};
 
-    
-      
+
+
     const validateForm = () => {
         const newErrors = {};
 
@@ -148,7 +149,10 @@ export default function Checkout() {
         const dataToSubmit = {
             ...formData,
             coupon_id: 1,
-
+            shippingAddress: formData.shipping_address,
+            billing_address: formData.sameBillingAddress
+                ? formData.shipping_address
+                : formData.billing_address,
             products: productsToSend,
         };
 
@@ -157,49 +161,45 @@ export default function Checkout() {
         const paymentSuccessful = await handlePayment();
         setIsLoading(false)
 
-        if (paymentSuccessful) {
+        if (paymentSuccessful && cart.length > 0) {
             // Se il pagamento va a buon fine, invia l'ordine
-            await submitOrder(dataToSubmit);
+            axios.post("http://localhost:3000/cover/order", dataToSubmit, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+                .then((response) => {
+                    console.log("Response:", response.data);
+                    // Gestisci la risposta del server qui, ad esempio, reindirizza l'utente a una pagina di conferma
+                    localStorage.removeItem("cartItems");
+                    setCart([]);
+                    setFormData(initalData);
+                    navigate("/thank-you");
+                })
+                .catch((error) => {
+
+                    console.error("Error:", error);
+                    if (error.response && error.response.status === 400) {
+                        console.log("Errori dal server:", error.response.data);
+                        // Reset degli errori precedenti
+                        setServerErrors(prevErrors => ({
+                            ...prevErrors,
+                            ...error.response.data,
+                        }));
+                        // Gestisci l'errore qui, ad esempio, mostra un messaggio di errore all'utente
+                    }
+                    setIsFormValid(false);
+                });
         } else {
+            // Se il pagamento fallisce, gestisci l'errore
+            setPaymentError("Il pagamento non è andato a buon fine.");
+            setPaymentSuccess(false);
             // Gestisci il caso in cui il pagamento fallisca (ad es. mostra un messaggio di errore)
             console.error("Il pagamento non è andato a buon fine. L'ordine non verrà inviato.");
         }
-    };
-  
-            billing_address: formData.sameBillingAddress
-                ? formData.shipping_address
-                : formData.billing_address,
-            products: productsToSend
-        };
 
-        axios.post("http://localhost:3000/cover/order", dataToSubmit, {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-            .then((response) => {
-                console.log("Response:", response.data);
-                // Gestisci la risposta del server qui, ad esempio, reindirizza l'utente a una pagina di conferma
-                localStorage.removeItem("cartItems");
-                setCart([]);
-                setFormData(initalData);
-                navigate("/thank-you");
-            })
-            .catch((error) => {
 
-                console.error("Error:", error);
-                if (error.response && error.response.status === 400) {
-                    console.log("Errori dal server:", error.response.data);
-                    // Reset degli errori precedenti
-                    setServerErrors(prevErrors => ({
-                        ...prevErrors,
-                        ...error.response.data,
-                    }));
-                    // Gestisci l'errore qui, ad esempio, mostra un messaggio di errore all'utente
-                }
-                setIsFormValid(false);
-            });
-
+    }
 
 
     //validazione dei campi
@@ -317,6 +317,7 @@ export default function Checkout() {
     //Logica per il pagamaneto 
     // Funzione per gestire il pagamento
     const handlePayment = async () => {
+        if (cart.length === 0) return false;
         if (!stripe || !elements) return false;
 
         const cardNumber = elements.getElement(CardNumberElement);
@@ -368,6 +369,8 @@ export default function Checkout() {
 
 
 
+
+
     // Recupera il carrello dal localStorage all'avvio
     useEffect(() => {
         const storedCart = localStorage.getItem("cartItems");
@@ -390,8 +393,15 @@ export default function Checkout() {
             image: product.image
         };
     });
+
+    let paymentTotal = 0;
+    if (totalPrice < 29.99) {
+        paymentTotal = totalPrice + 13.00;
+    } else {
+        paymentTotal = totalPrice
+    }
     // Stripe richiede l'importo in centesimi come intero
-    const amountInCents = Math.round(totalPrice * 100);
+    const amountInCents = Math.round(paymentTotal * 100);
 
 
 
@@ -404,69 +414,56 @@ export default function Checkout() {
                     <div className="row g-5">
                         <div className="col-md-5 col-lg-4 order-md-last">
                             <h4 className="d-flex justify-content-between align-items-center mb-3">
-
-
                                 <span className="text-primary">Il tuo carrello</span>
-
                                 <span className="badge bg-primary rounded-pill">{totalQuantity}</span>
                             </h4>
 
+                            {cart.length === 0 && (
+                                <div className="alert alert-danger" role="alert">
+                                    <strong>Il carrello è vuoto!</strong>
+                                </div>
+                            )}
+    
                             <ul className="list-group mb-3">
-                                {
-                                    cart.map(product => {
-                                        return (
-                                            <li key={product.id} className="list-group-item d-flex justify-content-between lh-sm">
-                                                <div>
-                                                    <h6 className="my-0">{product.name}</h6>
-                                                </div>
-                                                <span className="text-body-secondary">{product.quantity} x {product.price}&euro;</span>
-                                                <img src={product.image} width="20px" alt="" />
-                                            </li>
-                                        )
-                                    }
-                                    )}
-                                {
-                                    totalPrice < 29.99 ? (
-                                        <li className="list-group-item d-flex justify-content-between lh-sm">
+                                {cart.map(product => {
+                                    return (
+                                        <li key={product.id} className="list-group-item d-flex justify-content-between lh-sm">
                                             <div>
-                                                <h6 className="my-0">Costi di spedizione</h6>
+                                                <h6 className="my-0">{product.name}</h6>
                                             </div>
-                                            <span className="text-body-secondary">13&euro;</span>
-                                        </li>
-                                    ) : (
-                                        <li className="list-group-item d-flex justify-content-between lh-sm">
-                                            <div>
-                                                <h6 className="my-0">Spedizione gratuita</h6>
-                                            </div>
-                                            <span className="text-body-secondary"></span>
+                                            <span className="text-body-secondary">{product.quantity} x {product.price}&euro;</span>
+                                            <img src={product.image} width="20px" alt="" />
                                         </li>
                                     )
-                                }
-                                {/*<li className="list-group-item d-flex justify-content-between bg-body-tertiary">
-                                    <div className="text-success">
-                                        <h6 className="my-0">Promo code</h6>
-                                        <small>EXAMPLECODE</small>
-                                    </div>
-                                    <span className="text-success">−$5</span>
-                                </li>*/}
+                                })}
+                                {totalPrice < 29.99 ? (
+                                    <li className="list-group-item d-flex justify-content-between lh-sm">
+                                        <div>
+                                            <h6 className="my-0">Costi di spedizione</h6>
+                                        </div>
+                                        <span className="text-body-secondary">13&euro;</span>
+                                    </li>
+                                ) : (
+                                    <li className="list-group-item d-flex justify-content-between lh-sm">
+                                        <div>
+                                            <h6 className="my-0">Spedizione gratuita</h6>
+                                        </div>
+                                        <span className="text-body-secondary"></span>
+                                    </li>
+                                )}
                                 <li className="list-group-item d-flex justify-content-between">
                                     <span>Totale</span>
-                                    {totalPrice < 29.99 ? <span className="text-body-secondary">{(parseFloat(totalPrice) + 13.00).toFixed(2)}&euro;</span>
-                                        : <span className="text-success">{totalPrice}&euro;</span>}
+                                    {totalPrice < 29.99 ? (
+                                        <span className="text-body-secondary">{(parseFloat(totalPrice) + 13.00).toFixed(2)}&euro;</span>
+                                    ) : (
+                                        <span className="text-success">{totalPrice}&euro;</span>
+                                    )}
                                 </li>
                             </ul>
-
-                            {/*<form className="card p-2">
-                                <div className="input-group">
-                                    <input type="text" className="form-control" placeholder="Promo code" />
-                                    <button type="submit" className="btn btn-secondary">Redeem</button>
-                                </div>
-                            </form>*/}
                         </div>
-
+    
                         <div className="col-md-7 col-lg-8">
                             <h4 className="mb-1">Inserisci i tuoi dati</h4>
-                            {/* Aggiungi noValidate per disabilitare la validazione HTML di default */}
                             <form className="needs-validation" onSubmit={handleSubmit} noValidate>
                                 <div className="alert alert-secondary" role="alert">
                                     <strong>Attenzione!</strong> Tutti i campi sono obbligatori.
@@ -486,9 +483,8 @@ export default function Checkout() {
                                         />
                                         {errors.name && <div className="invalid-feedback">{errors.name}</div>}
                                         {!errors.name && serverErrors.name && <div className="invalid-feedback">{serverErrors.name}</div>}
-
                                     </div>
-
+    
                                     <div className="col-sm-6">
                                         <label htmlFor="lastName" className="form-label">Cognome</label>
                                         <input
@@ -504,11 +500,9 @@ export default function Checkout() {
                                         {errors.surname && <div className="invalid-feedback">{errors.surname}</div>}
                                         {!errors.surname && serverErrors.surname && <div className="invalid-feedback">{serverErrors.surname}</div>}
                                     </div>
-
+    
                                     <div className="col-12">
-                                        <label htmlFor="email" className="form-label">
-                                            Email
-                                        </label>
+                                        <label htmlFor="email" className="form-label">Email</label>
                                         <input
                                             type="email"
                                             className={`form-control ${errors.email ? 'is-invalid' : ''}`}
@@ -522,11 +516,9 @@ export default function Checkout() {
                                         {errors.email && <div className="invalid-feedback">{errors.email}</div>}
                                         {!errors.email && serverErrors.email && <div className="invalid-feedback">{serverErrors.email}</div>}
                                     </div>
-
+    
                                     <div className="col-12">
-                                        <label htmlFor="phone_number" className="form-label">
-                                            Telefono
-                                        </label>
+                                        <label htmlFor="phone_number" className="form-label">Telefono</label>
                                         <input
                                             type="tel"
                                             className={`form-control ${errors.phone_number ? 'is-invalid' : ''}`}
@@ -540,8 +532,7 @@ export default function Checkout() {
                                         {errors.phone_number && <div className="invalid-feedback">{errors.phone_number}</div>}
                                         {!errors.phone_number && serverErrors.phone_number && <div className="invalid-feedback">{serverErrors.phone_number}</div>}
                                     </div>
-
-
+    
                                     <div className="col-12">
                                         <label htmlFor="shipping_address" className="form-label">Indirizzo</label>
                                         <input
@@ -556,11 +547,8 @@ export default function Checkout() {
                                         />
                                         {errors.shipping_address && <div className="invalid-feedback">{errors.shipping_address}</div>}
                                         {!errors.shipping_address && serverErrors.shipping_address && <div className="invalid-feedback">{serverErrors.shipping_address}</div>}
-
                                     </div>
-
-
-
+    
                                     <div className="col-md-3">
                                         <label htmlFor="city" className="form-label">Città</label>
                                         <input
@@ -576,7 +564,7 @@ export default function Checkout() {
                                         {errors.city && <div className="invalid-feedback">{errors.city}</div>}
                                         {!errors.city && serverErrors.city && <div className="invalid-feedback">{serverErrors.city}</div>}
                                     </div>
-
+    
                                     <div className="col-md-3">
                                         <label htmlFor="zip" className="form-label">CAP</label>
                                         <input
@@ -712,14 +700,48 @@ export default function Checkout() {
                                     </div>
                                 </div>
 
+                                
+    
+                                <div className="my-3 form-check">
+                                    <input
+                                        type="checkbox"
+                                        className="form-check-input"
+                                        id="sameBillingAddress"
+                                        name="sameBillingAddress"
+                                        checked={formData.sameBillingAddress}
+                                        onChange={handleChange}
+                                    />
+                                    <label className="form-check-label" htmlFor="sameBillingAddress">
+                                        Usa lo stesso indirizzo per la fatturazione
+                                    </label>
+                                </div>
+    
+                                {!formData.sameBillingAddress && (
+                                    <div className="mb-3">
+                                        <label htmlFor="billing_address" className="form-label">Indirizzo di fatturazione</label>
+                                        <input
+                                            type="text"
+                                            className={`form-control ${errors.billing_address ? "is-invalid" : ""}`}
+                                            id="billing_address"
+                                            name="billing_address"
+                                            value={formData.billing_address}
+                                            onChange={handleChange}
+                                        />
+                                        {errors.billing_address && <div className="invalid-feedback">{errors.billing_address}</div>}
+                                    </div>
+                                )}
+    
                                 <hr className="my-4" />
-
-
-
-
+    
                                 <h4 className="mb-3">Pagamento</h4>
                                 <p>Tutte le transazioni sono sicure e crittografate.</p>
-
+    
+                                {paymentError && (
+                                    <div className="alert alert-danger" role="alert">
+                                        <strong>Errore:</strong> {paymentError}
+                                    </div>
+                                )}
+    
                                 <div className="my-3">
                                     <div className="form-check">
                                         <input
@@ -735,9 +757,7 @@ export default function Checkout() {
                                         </label>
                                     </div>
                                 </div>
-
-
-
+    
                                 <div className="row gy-3">
                                     <div className="col-md-12">
                                         <label htmlFor="card-number" className="form-label">Numero della carta</label>
@@ -763,100 +783,63 @@ export default function Checkout() {
                                             />
                                         </div>
                                     </div>
-
-                                    <div className="col-md-6">
-                                        <label htmlFor="card-expiry" className="form-label">Data di scadenza</label>
-                                        <div className="form-control py-2">
-                                            <CardExpiryElement
-                                                id="card-expiry"
-                                                options={{
-                                                    style: {
-                                                        base: {
-                                                            fontSize: '16px',
-                                                            color: '#495057',
-                                                            fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
-                                                            '::placeholder': {
-                                                                color: '#6c757d',
+    
+                                    <div className="row mt-3">
+                                        <div className="col-md-5">
+                                            <label htmlFor="card-expiry" className="form-label">Data di scadenza</label>
+                                            <div className="form-control py-2">
+                                                <CardExpiryElement
+                                                    id="card-expiry"
+                                                    options={{
+                                                        style: {
+                                                            base: {
+                                                                fontSize: '16px',
+                                                                color: '#495057',
+                                                                fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+                                                                '::placeholder': {
+                                                                    color: '#6c757d',
+                                                                },
+                                                            },
+                                                            invalid: {
+                                                                color: '#dc3545',
+                                                                iconColor: '#dc3545',
                                                             },
                                                         },
-                                                        invalid: {
-                                                            color: '#dc3545',
-                                                            iconColor: '#dc3545',
-                                                        },
-                                                    },
-                                                }}
-                                            />
+                                                    }}
+                                                />
+                                            </div>
                                         </div>
-
-                                <div className="mb-3 form-check">
-                                    <input
-                                        type="checkbox"
-                                        className="form-check-input"
-                                        id="sameBillingAddress"
-                                        name="sameBillingAddress"
-                                        checked={formData.sameBillingAddress}
-                                        onChange={handleChange}
-                                    />
-                                    <label className="form-check-label" htmlFor="sameBillingAddress">
-                                        Usa lo stesso indirizzo per la fatturazione
-                                    </label>
-                                </div>
-
-                                {!formData.sameBillingAddress && (
-                                    <div className="mb-3">
-                                        <label htmlFor="billing_address" className="form-label">Indirizzo di fatturazione</label>
-                                        <input
-                                            type="text"
-                                            className={`form-control ${errors.billing_address ? "is-invalid" : ""}`}
-                                            id="billing_address"
-                                            name="billing_address"
-                                            value={formData.billing_address}
-                                            onChange={handleChange}
-                                        />
-                                        {errors.billing_address && <div className="invalid-feedback">{errors.billing_address}</div>}
-
-                                    </div>
-                                )}
-
-
-                                    <div className="col-md-6">
-                                        <label htmlFor="card-cvc" className="form-label">CVV</label>
-                                        <div className="form-control py-2">
-                                            <CardCvcElement
-                                                id="card-cvc"
-                                                options={{
-                                                    style: {
-                                                        base: {
-                                                            fontSize: '16px',
-                                                            color: '#495057',
-                                                            fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
-                                                            '::placeholder': {
-                                                                color: '#6c757d',
+    
+                                        <div className="col-md-5">
+                                            <label htmlFor="card-cvc" className="form-label">CVV</label>
+                                            <div className="form-control py-2">
+                                                <CardCvcElement
+                                                    id="card-cvc"
+                                                    options={{
+                                                        style: {
+                                                            base: {
+                                                                fontSize: '16px',
+                                                                color: '#495057',
+                                                                fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+                                                                '::placeholder': {
+                                                                    color: '#6c757d',
+                                                                },
+                                                            },
+                                                            invalid: {
+                                                                color: '#dc3545',
+                                                                iconColor: '#dc3545',
                                                             },
                                                         },
-                                                        invalid: {
-                                                            color: '#dc3545',
-                                                            iconColor: '#dc3545',
-                                                        },
-                                                    },
-                                                }}
-                                            />
+                                                    }}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-
-                                <hr className="my-4" />
-
-                                {isLoading ? (
-                                    <button className="btn btn-primary w-100" disabled>
-                                        <span className="spinner-border spinner-border-sm me-2 btn-purchase" role="status" aria-hidden="true"></span>
-                                        Elaborazione in corso...
-                                    </button>
-                                ) : (
-                                    <button className="btn btn-primary w-100" type="submit">Acquista ora</button>
-                                )}
-
-                                <div className="form-check my-3">
+    
+                                <hr className="my-3" />
+    
+                                <div className="form-check mb-3">
                                     <input
                                         className={`form-check-input ${errors.acceptTerms ? "is-invalid" : ""}`}
                                         type="checkbox"
@@ -872,14 +855,20 @@ export default function Checkout() {
                                         <div className="invalid-feedback d-block">{errors.acceptTerms}</div>
                                     )}
                                 </div>
-
+    
+                                {isLoading ? (
+                                    <button className="btn btn-primary w-100" disabled>
+                                        <span className="spinner-border spinner-border-sm me-2 btn-purchase" role="status" aria-hidden="true"></span>
+                                        Elaborazione in corso...
+                                    </button>
+                                ) : (
+                                    <button className="btn btn-primary w-100" type="submit">Acquista ora</button>
+                                )}
                             </form>
                         </div>
                     </div>
                 </main>
-
             </div>
         </>
-
-    )
-}
+    );
+}    
