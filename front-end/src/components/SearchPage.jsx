@@ -61,8 +61,8 @@ const SearchPage = () => {
           <option value="">Ordina per...</option>
           <option value="price_asc">Prezzo crescente</option>
           <option value="price_desc">Prezzo decrescente</option>
-          <option value="name_asc">Nome crescente</option>
-          <option value="name_desc">Nome decrescente</option>
+          <option value="name_asc">A-Z</option>
+          <option value="name_desc">Z-A</option>
           <option value="recent">Recenti</option>
         </select>
         <button className="btn btn-primary" onClick={handleSearch}>
