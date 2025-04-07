@@ -39,7 +39,16 @@ export default function Footer() {
                             </ul>
                         </div>
                     </section>
-                    <div className="d-flex justify-content-end p-2 gap-3">
+
+                    <section className="d-flex justify-content-between align-items-center">
+                        <div>
+                            <img className="logo" src="../public/logo-footer.png" alt="boolshop-footer" width="350px"/>
+                            <p className="text-white small-text">
+                                Boolshop® | BL s.p.a P.IVA e CF 01888310032 <br />
+                                Via Circonvallazione s/n 28010 Milano - Italia Tel. +39 0322980909 - Fax. +39 0322980910
+                            </p>
+                        </div>
+                         <div className="d-flex justify-content-end p-2 gap-3">
                         <img src={americanExpress} alt="apple pay" width={25} height={25}/>
                         <img src={applePay} alt="mastercard" width={25} height={25} />
                         <img src={google} alt="visa" width={25} height={25} />
@@ -47,6 +56,9 @@ export default function Footer() {
                         <img src={paypal} alt="american express" width={25} height={25} />
                         <img src={visa} alt="google pay" width={25} height={25} />
                     </div>
+                    </section>
+
+                   
                 </div>
             </footer>
         </>
