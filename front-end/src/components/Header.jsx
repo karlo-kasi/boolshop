@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { FaSearch, FaHeart, FaRegHeart } from "react-icons/fa";
+import { FaSearch, FaHeart, FaRegHeart, FaRegTrashAlt } from "react-icons/fa";
 import { FiShoppingCart } from "react-icons/fi";
 import { useModal } from "../context/ModalContext";
 import { useWishlist } from "../context/WishlistContext";
 import WishlistModal from "./WishlistModal";
+import { useCart } from "../context/CartContext";
 
 export default function Header() {
   const [showSearchModal, setShowSearchModal] = useState(false);
@@ -36,41 +37,14 @@ export default function Header() {
   };
 
   const { isModalOpen, modalData, closeModal, openModal } = useModal(); // Usa modalData dal contesto
-
-  const [cartItems, setCartItems] = useState(() => {
-    const storedCartItems = localStorage.getItem("cartItems");
-    return storedCartItems ? JSON.parse(storedCartItems) : [];
-  });
-
-  useEffect(() => {
-    // Sincronizza il carrello con il localStorage
-    localStorage.setItem("cartItems", JSON.stringify(cartItems));
-  }, [cartItems]);
-
-  useEffect(() => {
-    // Sincronizza il carrello con il localStorage e il contesto modale
-    if (modalData && modalData.cartItems) {
-      setCartItems(modalData.cartItems);
-    }
-  }, [modalData]);
-
-  const addToCart = (product) => {
-    setCartItems((prevItems) => {
-      const existingItem = prevItems.find((item) => item.id === product.id);
-      const updatedCart = existingItem
-        ? prevItems.map((item) =>
-            item.id === product.id
-              ? { ...item, quantity: item.quantity + 1 }
-              : item
-          )
-        : [...prevItems, { ...product, quantity: 1 }];
-      localStorage.setItem("cartItems", JSON.stringify(updatedCart));
-      return updatedCart;
-    });
-  };
+  const {
+    cartItems,
+    setCartItems: setCartItemsContext,
+    removeFromCart: removeFromCartContext,
+  } = useCart();
 
   const removeFromCart = (id) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
+    removeFromCartContext(id);
   };
 
   const { wishlist } = useWishlist();
@@ -192,7 +166,7 @@ export default function Header() {
           </div>
         </div>
       )}
-
+{/* MODALE CARRELLO */}
       {isModalOpen && (
         <div className="custom-modal">
           <div className="custom-modal-dialog">
@@ -231,24 +205,31 @@ export default function Header() {
                             </Link>
                             <p>Prezzo: {item.price}€</p>
                             <div className="d-flex align-items-center gap-2">
-                              <button
-                                className="btn btn-outline-secondary btn-sm"
-                                onClick={() => {
-                                  const updatedItems = cartItems.map(
-                                    (cartItem) =>
-                                      cartItem.id === item.id &&
-                                      cartItem.quantity > 1
-                                        ? {
-                                            ...cartItem,
-                                            quantity: cartItem.quantity - 1,
-                                          }
-                                        : cartItem
-                                  );
-                                  setCartItems(updatedItems);
-                                }}
-                              >
-                                -
-                              </button>
+                              {item.quantity <= 1 ? (
+                                <FaRegTrashAlt
+                                  className="trash"
+                                  onClick={() => removeFromCart(item.id)}
+                                />
+                              ) : (
+                                <button
+                                  className="btn btn-outline-secondary btn-sm"
+                                  onClick={() => {
+                                    const updatedItems = cartItems.map(
+                                      (cartItem) =>
+                                        cartItem.id === item.id &&
+                                        cartItem.quantity > 1
+                                          ? {
+                                              ...cartItem,
+                                              quantity: cartItem.quantity - 1,
+                                            }
+                                          : cartItem
+                                    );
+                                    setCartItemsContext(updatedItems);
+                                  }}
+                                >
+                                  -
+                                </button>
+                              )}
                               <span>{item.quantity}</span>
                               <button
                                 className="btn btn-outline-secondary btn-sm"
@@ -262,7 +243,7 @@ export default function Header() {
                                           }
                                         : cartItem
                                   );
-                                  setCartItems(updatedItems);
+                                  setCartItemsContext(updatedItems);
                                 }}
                               >
                                 +
@@ -300,18 +281,6 @@ export default function Header() {
       <WishlistModal
         show={showWishlistModal}
         onClose={() => setShowWishlistModal(false)}
-        addToCart={(product) => {
-          const existingItem = wishlist.find((item) => item.id === product.id);
-          if (existingItem) {
-            // Aggiorna la quantità se il prodotto esiste già
-            const updatedItems = wishlist.map((item) =>
-              item.id === product.id
-                ? { ...item, quantity: item.quantity + 1 }
-                : item
-            );
-            setWishlist(updatedItems);
-          }
-        }}
       />
     </>
   );
