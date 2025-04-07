@@ -438,7 +438,6 @@ export default function Checkout({ onPaymentSuccess }) {
                       <span className="text-body-secondary">
                         {product.quantity} x {product.price}&euro;
                       </span>
-                      <img src={product.image} width="20px" alt="" />
                     </li>
                   );
                 })}
@@ -477,9 +476,18 @@ export default function Checkout({ onPaymentSuccess }) {
                 onSubmit={handleSubmit}
                 noValidate
               >
-                <div className="alert alert-secondary" role="alert">
-                  <strong>Attenzione!</strong> Tutti i campi sono obbligatori.
-                </div>
+                {
+                  (!isFormValid) ? (
+                    <div className="alert alert-danger" role="alert">
+                      <strong>Attenzione!</strong> Tutti i campi sono obbligatori.
+                    </div>
+                  ) : (
+                    <div className="alert alert-secondary" role="alert">
+                      Tutti i campi sono obbligatori.
+                    </div>
+                  )
+                }
+
                 <div className="row g-3">
                   <div className="col-sm-6">
                     <label htmlFor="firstName" className="form-label">
@@ -487,9 +495,8 @@ export default function Checkout({ onPaymentSuccess }) {
                     </label>
                     <input
                       type="text"
-                      className={`form-control ${
-                        errors.name ? "is-invalid" : ""
-                      }`}
+                      className={`form-control ${errors.name ? "is-invalid" : ""
+                        }`}
                       id="firstName"
                       placeholder=""
                       name="name"
@@ -513,9 +520,8 @@ export default function Checkout({ onPaymentSuccess }) {
                     </label>
                     <input
                       type="text"
-                      className={`form-control ${
-                        errors.surname ? "is-invalid" : ""
-                      }`}
+                      className={`form-control ${errors.surname ? "is-invalid" : ""
+                        }`}
                       id="lastName"
                       placeholder=""
                       name="surname"
@@ -539,9 +545,8 @@ export default function Checkout({ onPaymentSuccess }) {
                     </label>
                     <input
                       type="email"
-                      className={`form-control ${
-                        errors.email ? "is-invalid" : ""
-                      }`}
+                      className={`form-control ${errors.email ? "is-invalid" : ""
+                        }`}
                       id="email"
                       placeholder="you@example.com"
                       name="email"
@@ -565,9 +570,8 @@ export default function Checkout({ onPaymentSuccess }) {
                     </label>
                     <input
                       type="tel"
-                      className={`form-control ${
-                        errors.phone_number ? "is-invalid" : ""
-                      }`}
+                      className={`form-control ${errors.phone_number ? "is-invalid" : ""
+                        }`}
                       id="phone_number"
                       placeholder="3333333333"
                       name="phone_number"
@@ -593,9 +597,8 @@ export default function Checkout({ onPaymentSuccess }) {
                     </label>
                     <input
                       type="text"
-                      className={`form-control ${
-                        errors.shipping_address ? "is-invalid" : ""
-                      }`}
+                      className={`form-control ${errors.shipping_address ? "is-invalid" : ""
+                        }`}
                       id="shipping_address"
                       placeholder="Via Roma 1"
                       name="shipping_address"
@@ -616,15 +619,14 @@ export default function Checkout({ onPaymentSuccess }) {
                       )}
                   </div>
 
-                  <div className="col-md-3">
+                  <div className="col-md-4">
                     <label htmlFor="city" className="form-label">
                       Città
                     </label>
                     <input
                       type="text"
-                      className={`form-control ${
-                        errors.city ? "is-invalid" : ""
-                      }`}
+                      className={`form-control ${errors.city ? "is-invalid" : ""
+                        }`}
                       id="city"
                       placeholder=""
                       name="city"
@@ -642,15 +644,14 @@ export default function Checkout({ onPaymentSuccess }) {
                     )}
                   </div>
 
-                  <div className="col-md-3">
+                  <div className="col-md-4">
                     <label htmlFor="zip" className="form-label">
                       CAP
                     </label>
                     <input
                       type="text"
-                      className={`form-control ${
-                        errors.zip ? "is-invalid" : ""
-                      }`}
+                      className={`form-control ${errors.zip ? "is-invalid" : ""
+                        }`}
                       id="zip"
                       placeholder=""
                       name="zip"
@@ -669,16 +670,14 @@ export default function Checkout({ onPaymentSuccess }) {
                   <div className="col-md-4">
                     <label
                       htmlFor="province"
-                      className={`form-label ${
-                        errors.province ? "is-invalid" : ""
-                      }`}
+                      className={`form-label ${errors.province ? "is-invalid" : ""
+                        }`}
                     >
                       Provincia
                     </label>
                     <select
-                      className={`form-select ${
-                        errors.province ? "is-invalid" : ""
-                      }`}
+                      className={`form-select ${errors.province ? "is-invalid" : ""
+                        }`}
                       id="province"
                       name="province"
                       value={formData.province}
@@ -825,9 +824,8 @@ export default function Checkout({ onPaymentSuccess }) {
                     </label>
                     <input
                       type="text"
-                      className={`form-control ${
-                        errors.billing_address ? "is-invalid" : ""
-                      }`}
+                      className={`form-control ${errors.billing_address ? "is-invalid" : ""
+                        }`}
                       id="billing_address"
                       name="billing_address"
                       value={formData.billing_address}
@@ -898,7 +896,7 @@ export default function Checkout({ onPaymentSuccess }) {
                   </div>
 
                   <div className="row mt-3">
-                    <div className="col-md-5">
+                    <div className="col-md-6">
                       <label htmlFor="card-expiry" className="form-label">
                         Data di scadenza
                       </label>
@@ -926,7 +924,7 @@ export default function Checkout({ onPaymentSuccess }) {
                       </div>
                     </div>
 
-                    <div className="col-md-5">
+                    <div className="col-md-6">
                       <label htmlFor="card-cvc" className="form-label">
                         CVV
                       </label>
@@ -960,9 +958,8 @@ export default function Checkout({ onPaymentSuccess }) {
 
                 <div className="form-check mb-3">
                   <input
-                    className={`form-check-input ${
-                      errors.acceptTerms ? "is-invalid" : ""
-                    }`}
+                    className={`form-check-input ${errors.acceptTerms ? "is-invalid" : ""
+                      }`}
                     type="checkbox"
                     id="acceptTerms"
                     name="acceptTerms"

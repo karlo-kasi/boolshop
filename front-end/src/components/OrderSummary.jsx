@@ -12,8 +12,6 @@ export default function OrderSummary({
     <div className="col-lg-4 bg-light rounded-3">
       <div className="p-5">
         <h5 className=" mb-5 mt-2 pt-1 h3">Riepilogo ordine</h5>
-
-
         <p>Totale parziale: {formatPrice(calculateTotal())}€</p>
         <p>
           Spedizione:{" "}
@@ -36,7 +34,7 @@ export default function OrderSummary({
         <h4 className="mb-4">
           Totale: {isCartEmpty ? "0.00" : formatPrice(totalWithShipping)}€
         </h4>
-        <Link to="/checkout" className="btn btn-primary fs-5 rounded w-100">
+        <Link to="/checkout" className={`btn btn-primary fs-5 rounded w-100 ${isCartEmpty ? "disabled" : ""}`}>
           Procedi all'ordine
         </Link>
       </div>

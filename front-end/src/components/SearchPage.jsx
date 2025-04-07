@@ -43,7 +43,7 @@ const SearchPage = () => {
   return (
     <div className="container mt-4">
       <h2>Risultati per: "{name}"</h2>
-
+      <p>Abbiamo trovato {products.length} prodotti.</p>
       {/* Campo di ricerca */}
       <div className="d-flex gap-2 mb-3">
         <input
@@ -54,7 +54,7 @@ const SearchPage = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
         <select
-          className="form-control"
+          className="form-select"
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
         >
@@ -65,7 +65,7 @@ const SearchPage = () => {
           <option value="name_desc">Z-A</option>
           <option value="recent">Recenti</option>
         </select>
-        <button className="custom-btnCarmelo" onClick={handleSearch}>
+        <button className="btn btn-primary" onClick={handleSearch}>
           Cerca
         </button>
       </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { FaSearch, FaHeart, FaRegHeart, FaRegTrashAlt } from "react-icons/fa";
@@ -36,7 +36,9 @@ export default function Header() {
     }
   };
 
-  const { isModalOpen, modalData, closeModal, openModal } = useModal(); // Usa modalData dal contesto
+  const { isModalOpen, modalData, closeModal, openModal } = useModal();
+
+  // Usa modalData dal contesto
 
   const {
     cartItems,
@@ -83,10 +85,13 @@ export default function Header() {
               <Link to="/search">
                 <button className="btn fw-bold fs-5">Prodotti</button>
               </Link>
+              <Link to="/about">
+                <button className="btn fw-bold fs-5">Chi Siamo</button>
+              </Link>
             </div>
 
             <div className="d-flex gap-3">
-              <NavLink onClick={handleSearchClick}>
+              <NavLink to={"/search"}>
                 <FaSearch className="fs-3 text-black" />
               </NavLink>
               <NavLink onClick={handleWishlistClick}>
@@ -113,67 +118,12 @@ export default function Header() {
           </div>
         </nav>
       </header>
-
-      {/* MODALE PER LA RICERCA */}
-      {showSearchModal && (
-        <div className="modal searchModal d-block" tabIndex="-1">
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Cerca prodotti</h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={handleCloseModal}
-                ></button>
-              </div>
-              <div className="modal-body">
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Cerca nome o descrizione..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <select
-                  className="form-control mt-2"
-                  value={filter}
-                  onChange={(e) => setFilter(e.target.value)}
-                >
-                  <option value="">Ordina per...</option>
-                  <option value="price_asc">Prezzo crescente</option>
-                  <option value="price_desc">Prezzo decrescente</option>
-                  <option value="name_asc">Nome crescente</option>
-                  <option value="name_desc">Nome decrescente</option>
-                  <option value="recent">Recenti</option>
-                </select>
-              </div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={handleCloseModal}
-                >
-                  Close
-                </button>
-                <button
-                  type="button"
-                  className="custom-btnCarmelo"
-                  onClick={handleSearch} // Naviga alla SearchPage
-                >
-                  Search
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-{/* MODALE CARRELLO */}
+      {/* MODALE CARRELLO */}
       {isModalOpen && (
         <div className="custom-modal">
           <div className="custom-modal-dialog">
-            <div className="custom-modal-header">
-              <p className="title-modal">Carrello</p>
+            <div className="custom-modal-header d-flex justify-content-between align-items-center">
+              <p className="title-modal fs-3">Carrello</p>
               <button
                 type="button"
                 className="btn-close text-dark bold"
@@ -189,7 +139,7 @@ export default function Header() {
                     <div key={item.id} className="container">
                       <div className="row justify-content-between align-items-center gap-2">
                         <div className="col-md-3">
-                          <Link to={`/cover/${item.slug}`}>
+                          <Link onClick={closeModal} to={`/cover/${item.slug}`}>
                             <img
                               src={item.image}
                               className="img-fluid rounded w-100"
@@ -200,6 +150,7 @@ export default function Header() {
                         <div className="col-md-8 d-flex flex-column justify-content-between">
                           <div>
                             <Link
+                              onClick={closeModal}
                               to={`/cover/${item.slug}`}
                               className="text-decoration-none text-dark"
                             >
@@ -219,11 +170,11 @@ export default function Header() {
                                     const updatedItems = cartItems.map(
                                       (cartItem) =>
                                         cartItem.id === item.id &&
-                                        cartItem.quantity > 1
+                                          cartItem.quantity > 1
                                           ? {
-                                              ...cartItem,
-                                              quantity: cartItem.quantity - 1,
-                                            }
+                                            ...cartItem,
+                                            quantity: cartItem.quantity - 1,
+                                          }
                                           : cartItem
                                     );
                                     setCartItemsContext(updatedItems);
@@ -250,13 +201,13 @@ export default function Header() {
                               >
                                 +
                               </button>
+                              <button
+                                className="btn btn-transparent border-0 mt-2"
+                                onClick={() => removeFromCart(item.id)}
+                              >
+                                Rimuovi
+                              </button>
                             </div>
-                            <button
-                              className="btn btn-transparent border-0 mt-2"
-                              onClick={() => removeFromCart(item.id)}
-                            >
-                              Rimuovi
-                            </button>
                           </div>
                         </div>
                       </div>

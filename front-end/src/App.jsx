@@ -7,6 +7,7 @@ import CartPage from "./pages/CartPage";
 import ThankYouPage from "./pages/ThankYouPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import SearchPage from "./components/SearchPage";
+import AboutPage from "./pages/AboutPage";
 import { ModalProvider } from "./context/ModalContext"; // Import del provider
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
@@ -38,6 +39,7 @@ function App() {
                 />
                 <Route path="/cart" Component={CartPage} />
                 <Route path="/thank-you" Component={ThankYouPage} />
+                <Route path="/about" Component={AboutPage} />
                 <Route path="*" Component={NotFoundPage} />
               </Route>
             </Routes>
