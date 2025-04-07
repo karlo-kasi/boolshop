@@ -1,19 +1,15 @@
-
 import Hero from "../components/Hero";
-
-import ProductCard from "../components/ProductCard";
 import NewProductsList from "../components/NewProductsList";
 import BestsellersList from "../components/BestsellersList";
-
+import PopupComponent from "../components/PopUp";
 
 export default function HomePage() {
   return (
-    <>      
+    <>
+      <PopupComponent />
       <Hero />
       <NewProductsList />
       <BestsellersList />
     </>
   );
 }
-
-

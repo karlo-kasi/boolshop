@@ -305,6 +305,9 @@ footer ul a {
   height: 60vh;
 }
 
+
+
+
 .small-text{
   font-size: 0.7rem;
 }
@@ -332,4 +335,5 @@ footer ul a {
   transition: background-color 3s ease-in, color 1.3s ease-in,
     text-shadow 3s ease-in !important;
 }
+
 
