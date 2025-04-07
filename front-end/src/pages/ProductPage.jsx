@@ -3,13 +3,16 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Link, NavLink } from "react-router-dom";
 import { useModal } from "../context/ModalContext"; // Import del contesto
+import { useWishlist } from "../context/WishlistContext";
+import WishlistModal from "../components/WishlistModal";
 
 //COMPONENTS
 import QuantityCounter from "../components/QuantityCounter";
 import BestsellersList from "../components/BestsellersList";
+import PressAndHoldButton from "../components/PressAndHoldButton";
 
 //ICONS
-import { FaRegHeart } from "react-icons/fa";
+import { FaHeart } from "react-icons/fa";
 import { FiPackage } from "react-icons/fi";
 import { FaShippingFast } from "react-icons/fa";
 import { FiShoppingCart } from "react-icons/fi";
@@ -26,6 +29,8 @@ export default function ProductPage() {
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1); // Stato per la quantità
   const { openModal } = useModal(); // Usa il contesto
+  const { addToWishlist, wishlist } = useWishlist(); // Importiamo la wishlist
+  const [showWishlistModal, setShowWishlistModal] = useState(false);
 
   useEffect(() => {
     console.log("Product ID:", slug);
@@ -44,6 +49,13 @@ export default function ProductPage() {
         console.error(error);
       });
   }, [slug]);
+
+  // Apri la modale quando la wishlist cambia
+  useEffect(() => {
+    if (showWishlistModal) {
+      setShowWishlistModal(true);
+    }
+  }, [wishlist]);
 
   // Funzione per aggiornare la quantità
   const handleQuantityChange = (newQuantity) => {
@@ -93,6 +105,11 @@ export default function ProductPage() {
     }
   };
 
+  const handleAddToWishlist = (product) => {
+    addToWishlist(product);
+    setShowWishlistModal(true); // Apri la modale della wishlist
+  };
+
   if (error) {
     return <div>{error}</div>;
   }
@@ -104,8 +121,8 @@ export default function ProductPage() {
   return (
     <>
       {/* ROW SINGLE CARD */}
-      <div className="row m-5" key={product.id}>
-        <div className="card text-decoration-none col-sm-12 col-md-7">
+      <div className="row m-5 justify-content-center" key={product.id}>
+        <div className="card text-decoration-none justify-content-center col-sm-12 col-md-7">
           <img
             src={product.image}
             className="card-img-top"
@@ -121,27 +138,36 @@ export default function ProductPage() {
           <div className="d-flex justify-content-around align-items-center">
             <QuantityCounter onQuantityChange={handleQuantityChange} />
             <div className="d-flex gap-4">
-              <NavLink className="text-black">
-                <FaRegHeart size={25} />
+              <NavLink
+                className="text-black"
+                onClick={() => handleAddToWishlist(product)}
+              >
+                <FaHeart className="heart-icon" size={25} />
               </NavLink>
             </div>
           </div>
-          <button
-            className="custom-btnCarmelo rounded w-100"
-            onClick={addToCart}
+          <PressAndHoldButton
+            className="btn-wishlist rounded w-100"
+            onHoldComplete={addToCart}
           >
             Aggiungi al carrello
-          </button>
-          <div className=" d-flex flex-column gap-2">
-            <FiPackage size={25} />
-            <span className="card-text">
-              <strong>Ordina ora</strong> e ricevi in 1-2 giorni lavorativi
-            </span>
-            <FaShippingFast size={25} />
-            <span className="card-text">
-              <strong>Spedizione gratuita</strong> per ordini superiori a
-              29,99&euro;
-            </span>
+          </PressAndHoldButton>
+
+          <div className=" d-flex flex-column align-items-center gap-2">
+            <div className="d-flex gap-2">
+              <FiPackage size={30} />
+              <p className="card-text">
+                <strong>Ordina ora</strong>
+                <p>e ricevi in 1-2 giorni lavorativi</p>
+              </p>
+            </div>
+            <div className="d-flex gap-2">
+              <FaShippingFast size={30} />
+              <p className="card-text">
+                <strong>Spedizione Gratuita</strong>
+                <p>per ordini superiori a 29,99&euro;</p>
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -214,8 +240,31 @@ export default function ProductPage() {
         </div>
       </div>
       <div className="text-center m-5">
-        <BestsellersList />
+        <NavLink
+          to={`/cover${product.slug}`}
+          className="text-decoration-none text-black"
+          onClick={() => window.scrollTo(0, 0)}
+        >
+          <BestsellersList />
+        </NavLink>
       </div>
+
+      <WishlistModal
+        show={showWishlistModal}
+        onClose={() => setShowWishlistModal(false)}
+        addToCart={(product) => {
+          const existingItem = wishlist.find((item) => item.id === product.id);
+          if (existingItem) {
+            // Aggiorna la quantità se il prodotto esiste già
+            const updatedItems = wishlist.map((item) =>
+              item.id === product.id
+                ? { ...item, quantity: item.quantity + 1 }
+                : item
+            );
+            setWishlist(updatedItems);
+          }
+        }}
+      />
     </>
   );
 }

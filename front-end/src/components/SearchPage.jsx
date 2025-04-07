@@ -65,7 +65,7 @@ const SearchPage = () => {
           <option value="name_desc">Nome decrescente</option>
           <option value="recent">Recenti</option>
         </select>
-        <button className="btn btn-primary" onClick={handleSearch}>
+        <button className="custom-btnCarmelo" onClick={handleSearch}>
           Cerca
         </button>
       </div>

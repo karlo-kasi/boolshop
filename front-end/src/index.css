@@ -8,6 +8,10 @@ body {
   background-color: #f2f2f2;
 }
 
+main {
+  min-height: 60vh;
+}
+
 .card {
   border: none !important;
 }
@@ -19,7 +23,7 @@ body {
 }
 
 .logo {
-  width: 100px;
+  width: 120px;
 }
 
 .hero-img {
@@ -30,25 +34,23 @@ footer ul a {
   text-decoration: none;
 }
 
-
 /* Button - Carmelo !!! Attenzione, questi Button sono presenti in ProductPage, CartPage */
-.custom-btnCarmelo {
-  text-decoration: none;
-}
 
 .custom-btnCarmelo {
-  background-color: #8a9098;
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  text-align: center;
+  background-color: #fefefe !important;
+  color: #000000 !important;
+  border: 1px solid #8a9098 !important;
+  border-radius: 5px !important;
+  padding: 7px;
+  cursor: pointer !important;
+  text-align: center !important;
+  text-decoration: none !important; /* Aggiungi questa regola dalla definizione duplicata */
 }
 
-.custom-btnCarmelo:hover {
-  background-color: rgba(49, 131, 231, 0.715);
-  color: #fff;
-}
+/* .custom-btnCarmelo:hover {
+  background-color: rgba(49, 131, 231, 0.796) !important;
+  color: #fff !important;
+} */
 
 /* css modale del carrello */
 
@@ -65,10 +67,11 @@ footer ul a {
   color: #fff !important;
 }
 
-.title-modal{
-  font-size: 2rem;
-  font-weight: 600;
-
+.title-modal {
+  margin: 10px;
+  font-size: 1.3rem;
+  text-shadow: 0.5px 0.5px 1.3px rgba(0, 0, 0, 0.518);
+  color: rgb(0, 0, 0);
 }
 
 .custom-modal {
@@ -82,6 +85,39 @@ footer ul a {
   width: 100%;
   height: 100%;
   z-index: 1050;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .custom-modal-dialog {
@@ -132,14 +168,112 @@ footer ul a {
   background-color: #495057;
 }
 
-  
-  
+.thank-you-page,
+.not-found {
+  height: 60vh;
+}
 
-  .custom-btnCarmelo:hover {
-    background-color: rgba(49, 131, 231, 0.715);
-    color: #fff;
+/* ICON */
+
+.heart-icon:hover {
+  fill: #ff0101;
+  transition: all 0.5s ease-in-out;
+}
+
+.wishlist-icon:hover {
+  fill: #ff0101;
+  transition: all 0.5s ease-in-out;
+}
+
+/* Modale per la ricerca */
+
+.searchModal {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Modale Wishlist */
+.wishlist-modal {
+  position: fixed;
+  top: 14vh; /* Posiziona sotto l'Header */
+  right: 20px;
+  width: 90%;
+  max-width: 400px;
+  z-index: 1050;
+  animation: slideDownCompact 0.4s ease-in-out;
+}
+
+.wishlist-modal-dialog {
+  background-color: #f2f2f2;
+  border-radius: 10px;
+  box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.539);
+  max-height: 80vh; /* Altezza massima */
+  display: flex;
+  flex-direction: column;
+}
+
+.wishlist-modal-header {
+  background-color: #f2f2f2;
+  color: grey;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+}
+
+.wishlist-modal-body {
+  padding: 15px;
+  overflow-y: auto;
+}
+
+.wishlist-item {
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+.wishlist-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.wishlist-item-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.wishlist-item-details {
+  flex-grow: 1;
+}
+
+@keyframes slideDownCompact {
+  0% {
+    transform: translateY(-20%);
+    opacity: 0;
   }
+  80% {
+    transform: translateY(5%);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
 
+.btn-wishlist {
+  font-size: 0.7rem !important;
+
+  background-color: #fefefe !important;
+  color: #000000 !important;
+  border: 1px solid #8a9098 !important;
+  border-radius: 5px !important;
+  padding: 7px;
+  cursor: pointer !important;
+  text-align: center !important;
+  text-decoration: none !important;
+}
 
 
 .thank-you-page, .not-found {
@@ -149,3 +283,28 @@ footer ul a {
 .small-text{
   font-size: 0.7rem;
 }
+
+.btn-wishlist.hold-progress {
+  background-color: red !important;
+  color: white !important;
+  text-shadow: 2px 2px 5px #000000 !important;
+  transition: background-color 3s ease-in, color 1.3s ease-in,
+    text-shadow 3s ease-in !important;
+}
+
+.btn-wishlist.hold-progress-green {
+  background-color: green !important;
+  color: white !important;
+  text-shadow: 2px 2px 5px #000000 !important;
+  transition: background-color 3s ease-in, color 1.3s ease-in,
+    text-shadow 3s ease-in !important;
+}
+
+.btn-wishlist.hold-progress-red {
+  background-color: red !important;
+  color: white !important;
+  text-shadow: 2px 2px 5px #000000 !important;
+  transition: background-color 3s ease-in, color 1.3s ease-in,
+    text-shadow 3s ease-in !important;
+}
+
