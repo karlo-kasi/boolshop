@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { FaSearch, FaHeart } from "react-icons/fa";
+import { FaSearch, FaHeart, FaRegHeart } from "react-icons/fa";
 import { FiShoppingCart } from "react-icons/fi";
 import { useModal } from "../context/ModalContext";
 import { useWishlist } from "../context/WishlistContext";
@@ -81,6 +81,10 @@ export default function Header() {
     openModal(); // Apri la modale Carrello
   };
 
+  const handleWishlistClick = () => {
+    setShowWishlistModal(true); // Imposta lo stato per aprire la modale Wishlist
+  };
+
   return (
     <>
       <header className="position-sticky top-0 z-3">
@@ -106,19 +110,28 @@ export default function Header() {
             </div>
 
             <div className="d-flex gap-3">
-              <NavLink onClick={handleSearchClick}><FaSearch className="fs-3 text-black" /></NavLink>
-              <NavLink><FaRegHeart className="fs-3 text-black" /></NavLink>
-              <NavLink onClick={() => openModal()} className="position-relative">
+              <NavLink onClick={handleSearchClick}>
+                <FaSearch className="fs-3 text-black" />
+              </NavLink>
+              <NavLink onClick={handleWishlistClick}>
+                <FaHeart className="fs-3 text-black" />
+              </NavLink>
+              <NavLink
+                onClick={() => openModal()}
+                className="position-relative"
+              >
                 <FiShoppingCart className="fs-3 text-black" />
                 {cartItems.length > 0 && (
                   <span
                     className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                     style={{ fontSize: "0.75rem" }}
                   >
-                    {cartItems.reduce((total, item) => total + item.quantity, 0)}
+                    {cartItems.reduce(
+                      (total, item) => total + item.quantity,
+                      0
+                    )}
                   </span>
                 )}
-
               </NavLink>
             </div>
           </div>
@@ -200,17 +213,20 @@ export default function Header() {
                     <div key={item.id} className="container">
                       <div className="row justify-content-between align-items-center gap-2">
                         <div className="col-md-3">
-                            <Link to={`/cover/${item.slug}`}>
+                          <Link to={`/cover/${item.slug}`}>
                             <img
                               src={item.image}
                               className="img-fluid rounded w-100"
                               alt={item.name}
                             />
-                            </Link>
+                          </Link>
                         </div>
                         <div className="col-md-8 d-flex flex-column justify-content-between">
                           <div>
-                            <Link to={`/cover/${item.slug}`} className="text-decoration-none text-dark">
+                            <Link
+                              to={`/cover/${item.slug}`}
+                              className="text-decoration-none text-dark"
+                            >
                               <h5>{item.name}</h5>
                             </Link>
                             <p>Prezzo: {item.price}€</p>
@@ -218,10 +234,15 @@ export default function Header() {
                               <button
                                 className="btn btn-outline-secondary btn-sm"
                                 onClick={() => {
-                                  const updatedItems = cartItems.map((cartItem) =>
-                                    cartItem.id === item.id && cartItem.quantity > 1
-                                      ? { ...cartItem, quantity: cartItem.quantity - 1 }
-                                      : cartItem
+                                  const updatedItems = cartItems.map(
+                                    (cartItem) =>
+                                      cartItem.id === item.id &&
+                                      cartItem.quantity > 1
+                                        ? {
+                                            ...cartItem,
+                                            quantity: cartItem.quantity - 1,
+                                          }
+                                        : cartItem
                                   );
                                   setCartItems(updatedItems);
                                 }}
@@ -232,10 +253,14 @@ export default function Header() {
                               <button
                                 className="btn btn-outline-secondary btn-sm"
                                 onClick={() => {
-                                  const updatedItems = cartItems.map((cartItem) =>
-                                    cartItem.id === item.id
-                                      ? { ...cartItem, quantity: cartItem.quantity + 1 }
-                                      : cartItem
+                                  const updatedItems = cartItems.map(
+                                    (cartItem) =>
+                                      cartItem.id === item.id
+                                        ? {
+                                            ...cartItem,
+                                            quantity: cartItem.quantity + 1,
+                                          }
+                                        : cartItem
                                   );
                                   setCartItems(updatedItems);
                                 }}

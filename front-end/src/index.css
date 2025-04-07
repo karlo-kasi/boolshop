@@ -62,6 +62,7 @@ footer ul a {
   border-radius: 5px !important;
   text-align: center !important;
 }
+
 .btn-modal:hover {
   background-color: rgba(49, 131, 231, 0.715) !important;
   color: #fff !important;
@@ -77,7 +78,8 @@ footer ul a {
 .custom-modal {
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
-  justify-content: flex-end; /* Posiziona il pannello a destra */
+  justify-content: flex-end;
+  /* Posiziona il pannello a destra */
   align-items: stretch;
   position: fixed;
   top: 0;
@@ -122,10 +124,13 @@ footer ul a {
 
 .custom-modal-dialog {
   background-color: #f8f8f8e7;
-  border-radius: 10px 0 0 10px; /* Arrotonda solo i bordi sinistri */
+  border-radius: 10px 0 0 10px;
+  /* Arrotonda solo i bordi sinistri */
   box-shadow: -4px 0 15px rgba(0, 0, 0, 0.2);
-  width: 400px; /* Larghezza del pannello */
-  height: 100%; /* Altezza del pannello */
+  width: 400px;
+  /* Larghezza del pannello */
+  height: 100%;
+  /* Altezza del pannello */
   animation: slideIn 0.3s ease-in-out;
   display: flex;
   flex-direction: column;
@@ -146,8 +151,10 @@ footer ul a {
   padding: 20px;
   font-size: 1rem;
   color: #393333;
-  flex-grow: 1; /* Permette al corpo di occupare lo spazio rimanente */
-  overflow-y: auto; /* Aggiunge uno scroll se il contenuto è troppo lungo */
+  flex-grow: 1;
+  /* Permette al corpo di occupare lo spazio rimanente */
+  overflow-y: auto;
+  /* Aggiunge uno scroll se il contenuto è troppo lungo */
 }
 
 .custom-modal-footer {
@@ -167,6 +174,8 @@ footer ul a {
 .custom-modal-footer button:hover {
   background-color: #495057;
 }
+
+
 
 .thank-you-page,
 .not-found {
@@ -265,6 +274,7 @@ footer ul a {
 .btn-wishlist {
   font-size: 0.7rem !important;
 
+
   background-color: #fefefe !important;
   color: #000000 !important;
   border: 1px solid #8a9098 !important;
@@ -275,8 +285,23 @@ footer ul a {
   text-decoration: none !important;
 }
 
+.custom-btnCarmelo:hover {
+  background-color: rgba(49, 131, 231, 0.715);
+  color: #fff;
+}
 
-.thank-you-page, .not-found {
+/* bottone Acquista ora */
+.btn-purchase {
+  transition: opacity 0.3s ease-in-out;
+}
+
+.btn-purchase.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.thank-you-page,
+.not-found {
   height: 60vh;
 }
 
