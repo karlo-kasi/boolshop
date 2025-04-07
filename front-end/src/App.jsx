@@ -19,35 +19,31 @@ function App() {
     <>
       <BrowserRouter>
         <ModalProvider>
- <WishlistProvider>
-          <Routes>
-            <Route Component={DefaultLayout}>
-              <Route path="/search" element={<SearchPage />} />
-              <Route path="/" Component={HomePage} />
-              <Route path="/cover/:slug" Component={ProductPage} />
+          <WishlistProvider>
+            <Routes>
+              <Route Component={DefaultLayout}>
+                <Route path="/search" element={<SearchPage />} />
+                <Route path="/" Component={HomePage} />
+                <Route path="/cover/:slug" Component={ProductPage} />
 
-              <Route path="/checkout" Component={CheckoutPage} />
+                <Route path="/checkout" Component={CheckoutPage} />
 
-              <Route
-                path="/checkout" element={
-                  <Elements stripe={stripePromise}>
-                    <CheckoutPage />
-                  </Elements>
-                }
-              />
+                <Route
+                  path="/checkout" element={
+                    <Elements stripe={stripePromise}>
+                      <CheckoutPage />
+                    </Elements>
+                  }
+                />
 
-              <Route path="/cart" Component={CartPage} />
-              <Route path="/thank-you" Component={ThankYouPage} />
-              <Route path="*" Component={NotFoundPage} />
-            </Route>
-          </Routes>
-
+                <Route path="/cart" Component={CartPage} />
+                <Route path="/thank-you" Component={ThankYouPage} />
+                <Route path="*" Component={NotFoundPage} />
+              </Route>
+            </Routes>
+          </WishlistProvider >
         </ModalProvider>
       </BrowserRouter>
-
-         </WishlistProvider>
-        </ ModalProvider>
-     </BrowserRouter>
     </>
   );
 }
