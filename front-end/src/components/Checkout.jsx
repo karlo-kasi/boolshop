@@ -14,12 +14,26 @@ export default function Checkout() {
         province: "",
         zip: "",
         phone_number: "",
+        sameBillingAddress: true,
+        billing_address: "", 
+        acceptTerms: false,
     };
 
     const [cart, setCart] = useState([]);
     const [formData, setFormData] = useState(initalData);
     const [isFormValid, setIsFormValid] = useState(true);
-    const [errors, setErrors] = useState({
+    const [isChecked, setIsChecked] = useState(false);
+    const [serverErrors, setServerErrors] = useState({
+        name: '',
+        surname: '',
+        email: '',
+        phone_number: '',
+        shipping_address: '',
+        city: '',
+        zip: '',
+        province: '',
+    });
+    let [errors, setErrors] = useState({
         name: "",
         surname: "",
         email: "",
@@ -28,19 +42,79 @@ export default function Checkout() {
         province: "",
         zip: "",
         phone_number: "",
+        acceptTerms: "",
     });
+
+    const validateForm = () => {
+        const newErrors = {};
+
+        if (formData.name.trim().length < 3) {
+            newErrors.name = "Il nome deve essere lungo almeno 3 caratteri.";
+        }
+
+        if (formData.surname.trim().length < 3) {
+            newErrors.surname = "Il cognome deve essere lungo almeno 3 caratteri.";
+        }
+
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(formData.email.trim())) {
+            newErrors.email = "Inserisci un'email valida.";
+        }
+
+        const phonePattern = /^\d{10}$/;
+        if (!phonePattern.test(formData.phone_number.trim())) {
+            newErrors.phone_number = "Il numero di telefono deve essere lungo 10 cifre.";
+        }
+
+        if (formData.shipping_address.trim().length < 5) {
+            newErrors.shipping_address = "L'indirizzo deve essere lungo almeno 5 caratteri.";
+        }
+
+        if (formData.city.trim().length < 3) {
+            newErrors.city = "La città deve essere lunga almeno 3 caratteri.";
+        }
+
+        const zipPattern = /^\d{5}$/;
+        if (!zipPattern.test(formData.zip.trim())) {
+            newErrors.zip = "Il CAP deve essere lungo 5 cifre.";
+        }
+
+        if (formData.province === "") {
+            newErrors.province = "Seleziona una provincia.";
+        }
+
+        setErrors(newErrors);
+
+        return Object.keys(newErrors).length === 0;
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        const newErrors = { ...errors };
+        let isValid = validateForm();
+        if (!isValid) {
+            setIsFormValid(false);
+            return;
+        }
 
-        const shippingAddress = `${formData.shipping_address}, ${formData.city}, ${formData.province}, ${formData.zip}`;
+        if (!formData.acceptTerms) {
+            newErrors.acceptTerms = "Devi accettare i termini e condizioni.";
+            isValid = false;
+        }
 
+        setErrors(newErrors);
+
+        if (!isValid) {
+            setIsFormValid(false);
+            return;
+        }
 
         const dataToSubmit = {
             ...formData,
-            shipping_address: shippingAddress,
-            billing_address: shippingAddress,
             coupon_id: 1,
+            billing_address: formData.sameBillingAddress
+                ? formData.shipping_address
+                : formData.billing_address,
             products: productsToSend
         };
 
@@ -58,28 +132,37 @@ export default function Checkout() {
                 navigate("/thank-you");
             })
             .catch((error) => {
+
                 console.error("Error:", error);
-                // Gestisci l'errore qui, ad esempio, mostra un messaggio di errore all'utente
+                if (error.response && error.response.status === 400) {
+                    console.log("Errori dal server:", error.response.data);
+                    // Reset degli errori precedenti
+                    setServerErrors(prevErrors => ({
+                        ...prevErrors,
+                        ...error.response.data,
+                    }));
+                    // Gestisci l'errore qui, ad esempio, mostra un messaggio di errore all'utente
+                }
                 setIsFormValid(false);
             });
 
     }
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const { name, type, value, checked } = e.target;
 
-        // Aggiorna il valore del form
         setFormData({
             ...formData,
-            [name]: value,
+            [name]: type === 'checkbox' ? checked : value,
         });
 
-        // Aggiorna gli errori in modo che non sovrascrivano quelli esistenti
         setErrors(() => {
             const newErrors = { ...errors };
 
             if (name === "name") {
-                if (value.length < 3) {
+                const name = value.trim()
+
+                if (name.length < 3) {
                     newErrors.name = "Il nome deve essere lungo almeno 3 caratteri.";
                 } else {
                     newErrors.name = ""; // Rimuove l'errore se la condizione è soddisfatta
@@ -87,7 +170,9 @@ export default function Checkout() {
             }
 
             if (name === "surname") {
-                if (value.length < 3) {
+                const surname = value.trim()
+
+                if (surname.length < 3) {
                     newErrors.surname = "Il cognome deve essere lungo almeno 3 caratteri.";
                 } else {
                     newErrors.surname = ""; // Rimuove l'errore se la condizione è soddisfatta
@@ -95,8 +180,10 @@ export default function Checkout() {
             }
 
             if (name === "email") {
+                const email = value.trim()
+
                 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailPattern.test(value)) {
+                if (!emailPattern.test(email)) {
                     newErrors.email = "Inserisci un'email valida.";
                 } else {
                     newErrors.email = ""; // Rimuove l'errore se la condizione è soddisfatta
@@ -104,8 +191,10 @@ export default function Checkout() {
             }
 
             if (name === "phone_number") {
+                const phone = value.trim()
+
                 const phonePattern = /^\d{10}$/; // Modifica il pattern in base al formato desiderato
-                if (!phonePattern.test(value)) {
+                if (!phonePattern.test(phone)) {
                     newErrors.phone_number = "Il numero di telefono deve essere lungo 10 cifre.";
                 } else {
                     newErrors.phone_number = ""; // Rimuove l'errore se la condizione è soddisfatta
@@ -113,7 +202,9 @@ export default function Checkout() {
             }
 
             if (name === "shipping_address") {
-                if (value.length < 5) {
+                const address = value.trim()
+
+                if (address.length < 5) {
                     newErrors.shipping_address = "L'indirizzo deve essere lungo almeno 5 caratteri.";
                 } else {
                     newErrors.shipping_address = ""; // Rimuove l'errore se la condizione è soddisfatta
@@ -121,7 +212,9 @@ export default function Checkout() {
             }
 
             if (name === "city") {
-                if (value.length < 3) {
+                const city = value.trim()
+
+                if (city.length < 3) {
                     newErrors.city = "La città deve essere lunga almeno 3 caratteri.";
                 } else {
                     newErrors.city = ""; // Rimuove l'errore se la condizione è soddisfatta
@@ -129,8 +222,10 @@ export default function Checkout() {
             }
 
             if (name === "zip") {
+                const zip = value.trim()
+
                 const zipPattern = /^\d{5}$/; // Modifica il pattern in base al formato desiderato
-                if (!zipPattern.test(value)) {
+                if (!zipPattern.test(zip)) {
                     newErrors.zip = "Il CAP deve essere lungo 5 cifre.";
                 } else {
                     newErrors.zip = ""; // Rimuove l'errore se la condizione è soddisfatta
@@ -145,6 +240,19 @@ export default function Checkout() {
                 }
             }
 
+            if (name === "billing_address" && !formData.sameBillingAddress) {
+                if (value.trim().length < 5) {
+                    newErrors.billing_address = "L'indirizzo di fatturazione deve essere lungo almeno 5 caratteri.";
+                } else {
+                    newErrors.billing_address = "";
+                }
+            }
+
+            if (name === "acceptTerms" && !value) {
+                newErrors.acceptTerms = "Devi accettare i termini e condizioni.";
+            } else {
+                newErrors.acceptTerms = "";
+            }
 
             return newErrors;
         });
@@ -165,11 +273,10 @@ export default function Checkout() {
         return {
             product_id: product.id,
             quantity: product.quantity,
+            image: product.image
         };
     })
     totalPrice = totalPrice.toFixed(2);
-
-    console.log(typeof totalPrice )
 
     return (
         <>
@@ -178,7 +285,7 @@ export default function Checkout() {
                     <div className="row g-5">
                         <div className="col-md-5 col-lg-4 order-md-last">
                             <h4 className="d-flex justify-content-between align-items-center mb-3">
-                                <span className="text-primary">Your cart</span>
+                                <span className="text-primary">Il tuo carrello</span>
                                 <span className="badge bg-primary rounded-pill">{totalQuantity}</span>
                             </h4>
 
@@ -238,10 +345,9 @@ export default function Checkout() {
                             <h4 className="mb-1">Inserisci i tuoi dati</h4>
                             {/* Aggiungi noValidate per disabilitare la validazione HTML di default */}
                             <form className="needs-validation" onSubmit={handleSubmit} noValidate>
-                                {!isFormValid && (
-                                    <div className="alert alert-danger" role="alert">
-                                        *Tutti i campi sono obbligatori.
-                                    </div>)}
+                                <div className="alert alert-secondary" role="alert">
+                                    <strong>Attenzione!</strong> Tutti i campi sono obbligatori.
+                                </div>
                                 <div className="row g-3">
                                     <div className="col-sm-6">
                                         <label htmlFor="firstName" className="form-label">Nome</label>
@@ -255,9 +361,8 @@ export default function Checkout() {
                                             onChange={handleChange}
                                             required
                                         />
-                                        <div className="invalid-feedback">
-                                            Scrivi un nome valido.
-                                        </div>
+                                        {errors.name && <div className="invalid-feedback">{errors.name}</div>}
+                                        {!errors.name && serverErrors.name && <div className="invalid-feedback">{serverErrors.name}</div>}
 
                                     </div>
 
@@ -273,9 +378,8 @@ export default function Checkout() {
                                             onChange={handleChange}
                                             required
                                         />
-                                        <div className="invalid-feedback">
-                                            Scrivi un cognome valido.
-                                        </div>
+                                        {errors.surname && <div className="invalid-feedback">{errors.surname}</div>}
+                                        {!errors.surname && serverErrors.surname && <div className="invalid-feedback">{serverErrors.surname}</div>}
                                     </div>
 
                                     <div className="col-12">
@@ -292,9 +396,8 @@ export default function Checkout() {
                                             onChange={handleChange}
                                             required
                                         />
-                                        <div className="invalid-feedback">
-                                            Scrivi un indirizzo email valido.
-                                        </div>
+                                        {errors.email && <div className="invalid-feedback">{errors.email}</div>}
+                                        {!errors.email && serverErrors.email && <div className="invalid-feedback">{serverErrors.email}</div>}
                                     </div>
 
                                     <div className="col-12">
@@ -311,9 +414,8 @@ export default function Checkout() {
                                             onChange={handleChange}
                                             required
                                         />
-                                        <div className="invalid-feedback">
-                                            Scrivi un numero di telefono valido.
-                                        </div>
+                                        {errors.phone_number && <div className="invalid-feedback">{errors.phone_number}</div>}
+                                        {!errors.phone_number && serverErrors.phone_number && <div className="invalid-feedback">{serverErrors.phone_number}</div>}
                                     </div>
 
 
@@ -323,15 +425,15 @@ export default function Checkout() {
                                             type="text"
                                             className={`form-control ${errors.shipping_address ? 'is-invalid' : ''}`}
                                             id="shipping_address"
-                                            placeholder="1234 Main St"
+                                            placeholder="Via Roma 1"
                                             name="shipping_address"
                                             value={formData.shipping_address}
                                             onChange={handleChange}
                                             required
                                         />
-                                        <div className="invalid-feedback">
-                                            Scrivi un indirizzo valido.
-                                        </div>
+                                        {errors.shipping_address && <div className="invalid-feedback">{errors.shipping_address}</div>}
+                                        {!errors.shipping_address && serverErrors.shipping_address && <div className="invalid-feedback">{serverErrors.shipping_address}</div>}
+
                                     </div>
 
 
@@ -348,9 +450,8 @@ export default function Checkout() {
                                             onChange={handleChange}
                                             required
                                         />
-                                        <div className="invalid-feedback">
-                                            Scrivi una città valida.
-                                        </div>
+                                        {errors.city && <div className="invalid-feedback">{errors.city}</div>}
+                                        {!errors.city && serverErrors.city && <div className="invalid-feedback">{serverErrors.city}</div>}
                                     </div>
 
                                     <div className="col-md-3">
@@ -365,21 +466,20 @@ export default function Checkout() {
                                             onChange={handleChange}
                                             required
                                         />
-                                        <div className="invalid-feedback">
-                                            Il CAP è obbligatorio.
-                                        </div>
+                                        {errors.zip && <div className="invalid-feedback">{errors.zip}</div>}
+                                        {!errors.zip && serverErrors.zip && <div className="invalid-feedback">{serverErrors.zip}</div>}
                                     </div>
 
                                     <div className="col-md-4">
                                         <label htmlFor="province" className={`form-label ${errors.province ? 'is-invalid' : ''}`}>Provincia</label>
                                         <select
-                                            className="form-select"
+                                            className={`form-select ${errors.province ? 'is-invalid' : ''}`}
                                             id="province"
                                             name="province"
                                             value={formData.province}
                                             onChange={handleChange}
                                             required>
-                                            <option value="">Choose...</option>
+                                            <option value={""}>Scegli</option>
                                             <option value="AG">Agrigento (AG)</option>
                                             <option value="AL">Alessandria (AL)</option>
                                             <option value="AN">Ancona (AN)</option>
@@ -484,145 +584,61 @@ export default function Checkout() {
                                             <option value="VI">Vicenza (VI)</option>
                                             <option value="VT">Viterbo (VT)</option>
                                         </select>
-                                        <div className="invalid-feedback">
-                                            Scegli una provincia.
-                                        </div>
+                                        {errors.province && <div className="invalid-feedback">{errors.province}</div>}
+                                        {!errors.province && serverErrors.province && <div className="invalid-feedback">{serverErrors.province}</div>}
                                     </div>
                                 </div>
 
                                 <hr className="my-4" />
 
-                                {/*<div className="form-check">
+                                <div className="mb-3 form-check">
                                     <input
                                         type="checkbox"
                                         className="form-check-input"
-                                        id="same-address"
+                                        id="sameBillingAddress"
+                                        name="sameBillingAddress"
+                                        checked={formData.sameBillingAddress}
+                                        onChange={handleChange}
                                     />
-                                    <label className="form-check-label" htmlFor="same-address">
-                                        Shipping address is the same as my billing address
+                                    <label className="form-check-label" htmlFor="sameBillingAddress">
+                                        Usa lo stesso indirizzo per la fatturazione
                                     </label>
                                 </div>
 
-                                <div className="form-check">
+                                {!formData.sameBillingAddress && (
+                                    <div className="mb-3">
+                                        <label htmlFor="billing_address" className="form-label">Indirizzo di fatturazione</label>
+                                        <input
+                                            type="text"
+                                            className={`form-control ${errors.billing_address ? "is-invalid" : ""}`}
+                                            id="billing_address"
+                                            name="billing_address"
+                                            value={formData.billing_address}
+                                            onChange={handleChange}
+                                        />
+                                        {errors.billing_address && <div className="invalid-feedback">{errors.billing_address}</div>}
+                                    </div>
+                                )}
+
+                                <div className="form-check my-3">
                                     <input
+                                        className={`form-check-input ${errors.acceptTerms ? "is-invalid" : ""}`}
                                         type="checkbox"
-                                        className="form-check-input"
-                                        id="save-info"
+                                        id="acceptTerms"
+                                        name="acceptTerms"
+                                        checked={formData.acceptTerms}
+                                        onChange={handleChange}
                                     />
-                                    <label className="form-check-label" htmlFor="save-info">
-                                        Save this information for next time
+                                    <label className="form-check-label" htmlFor="acceptTerms">
+                                        Accetto i termini e condizioni
                                     </label>
+                                    {errors.acceptTerms && (
+                                        <div className="invalid-feedback d-block">{errors.acceptTerms}</div>
+                                    )}
                                 </div>
-
-                                <hr className="my-4" />
-
-                                <h4 className="mb-3">Payment</h4>
-
-                                <div className="my-3">
-                                    <div className="form-check">
-                                        <input
-                                            id="credit"
-                                            name="paymentMethod"
-                                            type="radio"
-                                            className="form-check-input"
-                                            defaultChecked
-                                            required
-                                        />
-                                        <label className="form-check-label" htmlFor="credit">
-                                            Credit card
-                                        </label>
-                                    </div>
-                                    <div className="form-check">
-                                        <input
-                                            id="debit"
-                                            name="paymentMethod"
-                                            type="radio"
-                                            className="form-check-input"
-                                            required
-                                        />
-                                        <label className="form-check-label" htmlFor="debit">
-                                            Debit card
-                                        </label>
-                                    </div>
-                                    <div className="form-check">
-                                        <input
-                                            id="paypal"
-                                            name="paymentMethod"
-                                            type="radio"
-                                            className="form-check-input"
-                                            required
-                                        />
-                                        <label className="form-check-label" htmlFor="paypal">
-                                            PayPal
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <div className="row gy-3">
-                                    <div className="col-md-6">
-                                        <label htmlFor="cc-name" className="form-label">Name on card</label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            id="cc-name"
-                                            placeholder=""
-                                            required
-                                        />
-                                        <small className="text-body-secondary">
-                                            Full name as displayed on card
-                                        </small>
-                                        <div className="invalid-feedback">
-                                            Name on card is required
-                                        </div>
-                                    </div>
-
-                                    <div className="col-md-6">
-                                        <label htmlFor="cc-number" className="form-label">Credit card number</label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            id="cc-number"
-                                            placeholder=""
-                                            required
-                                        />
-                                        <div className="invalid-feedback">
-                                            Credit card number is required
-                                        </div>
-                                    </div>
-
-                                    <div className="col-md-3">
-                                        <label htmlFor="cc-expiration" className="form-label">Expiration</label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            id="cc-expiration"
-                                            placeholder=""
-                                            required
-                                        />
-                                        <div className="invalid-feedback">
-                                            Expiration date required
-                                        </div>
-                                    </div>
-
-                                    <div className="col-md-3">
-                                        <label htmlFor="cc-cvv" className="form-label">CVV</label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            id="cc-cvv"
-                                            placeholder=""
-                                            required
-                                        />
-                                        <div className="invalid-feedback">
-                                            Security code required
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <hr className="my-4" />*/}
 
                                 <button className="w-100 btn btn-primary btn-lg" type="submit">
-                                    Continua al checkout
+                                    Conferma l'ordine
                                 </button>
                             </form>
                         </div>
