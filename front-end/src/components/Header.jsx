@@ -44,6 +44,25 @@ export default function Header() {
 
   useEffect(() => {
     // Sincronizza il carrello con il localStorage
+    const storedCartItems = localStorage.getItem("cartItems");
+    setCartItems(storedCartItems ? JSON.parse(storedCartItems) : []);
+  }, []);
+
+  useEffect(() => {
+    // Svuota il carrello se il localStorage è vuoto (ad esempio, dopo un pagamento)
+    const handleStorageChange = () => {
+      const storedCartItems = localStorage.getItem("cartItems");
+      if (!storedCartItems) {
+        setCartItems([]);
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
+
+  useEffect(() => {
+    // Sincronizza il carrello con il localStorage
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
   }, [cartItems]);
 
