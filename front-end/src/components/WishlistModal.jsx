@@ -9,6 +9,8 @@ export default function WishlistModal({ show, onClose }) {
   const { openModal } = useModal();
   const modalRef = useRef(null);
 
+  const initScroll = window.scrollTo(0, 0);
+
   const addToCart = useCallback(
     (item) => {
       const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
@@ -48,10 +50,10 @@ export default function WishlistModal({ show, onClose }) {
   if (!show) return null;
 
   return (
-    <div className="wishlist-modal">
+    <div className={`wishlist-modal ${show ? "show" : ""}`}>
       <div className="wishlist-modal-dialog" ref={modalRef}>
         <div className="wishlist-modal-header d-flex justify-content-around align-items-center">
-          <p className="title-modal ">Preferiti</p>
+          <p className="title-modal">Preferiti</p>
           <button
             type="button"
             className="btn-close text-dark bold"
@@ -66,7 +68,10 @@ export default function WishlistModal({ show, onClose }) {
               {wishlist.map((item) => (
                 <div key={item.id} className="wishlist-item">
                   <div className="d-flex align-items-center gap-3">
-                    <Link to={`/cover/${item.slug}`} onClick={onClose}>
+                    <Link
+                      to={`/cover/${item.slug}`}
+                      onClick={{ onClose, initScroll }} //PER FARLA SCROLLARE IN ALTOA INIZIO PAGINA
+                    >
                       <img
                         src={item.image}
                         className="wishlist-item-image"
@@ -77,8 +82,7 @@ export default function WishlistModal({ show, onClose }) {
                       <Link
                         to={`/cover/${item.slug}`}
                         className="text-decoration-none text-dark"
-                        onClick={onClose}
-                      >
+                        onClick={{ onClose, initScroll }}                      >
                         <h5>{item.name}</h5>
                       </Link>
                       <p>Prezzo: {item.price}€</p>
