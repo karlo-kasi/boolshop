@@ -39,52 +39,6 @@ const PopupComponent = () => {
     }
   };
 
-  const styles = {
-    popup: {
-      position: "fixed",
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: "rgba(0, 0, 0, 0.5)",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      zIndex: 1000,
-    },
-    popupContent: {
-      backgroundColor: "#fff",
-      padding: "20px",
-      borderRadius: "8px",
-      textAlign: "center",
-      width: "90%",
-      maxWidth: "400px",
-    },
-    input: {
-      marginTop: "10px",
-      padding: "10px",
-      width: "80%",
-    },
-    button: {
-      marginTop: "10px",
-      marginLeft: "5px",
-      padding: "10px 20px",
-      backgroundColor: "#4CAF50",
-      color: "#fff",
-      border: "none",
-      cursor: "pointer",
-    },
-    closeButton: {
-      marginTop: "10px",
-      marginLeft: "5px",
-      padding: "10px 20px",
-      backgroundColor: "#f44336",
-      color: "#fff",
-      border: "none",
-      cursor: "pointer",
-    },
-  };
-
   return (
     showPopup && (
       <div style={styles.popup}>
@@ -117,6 +71,67 @@ const PopupComponent = () => {
       </div>
     )
   );
+};
+
+const styles = {
+  popup: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 1000,
+    animation: "fadeIn 0.3s ease-in-out",
+  },
+  popupContent: {
+    backgroundColor: "#ffffff",
+    padding: "30px 25px",
+    borderRadius: "16px",
+    textAlign: "center",
+    width: "90%",
+    maxWidth: "420px",
+    boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
+    animation: "slideUp 0.3s ease-in-out",
+    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+  },
+  input: {
+    marginTop: "15px",
+    padding: "12px 14px",
+    width: "85%",
+    borderRadius: "10px",
+    border: "1px solid #ccc",
+    fontSize: "1rem",
+    outline: "none",
+    transition: "border-color 0.3s ease",
+  },
+  button: {
+    marginTop: "15px",
+    marginLeft: "5px",
+    padding: "10px 24px",
+    backgroundColor: "#4CAF50",
+    color: "#fff",
+    border: "none",
+    borderRadius: "8px",
+    cursor: "pointer",
+    fontSize: "0.95rem",
+    transition: "background-color 0.3s ease, transform 0.2s ease",
+  },
+  closeButton: {
+    marginTop: "15px",
+    marginLeft: "5px",
+    padding: "10px 24px",
+    backgroundColor: "#f44336",
+    color: "#fff",
+    border: "none",
+    borderRadius: "8px",
+    cursor: "pointer",
+    fontSize: "0.95rem",
+    transition: "background-color 0.3s ease, transform 0.2s ease",
+  },
 };
 
 export default PopupComponent;
