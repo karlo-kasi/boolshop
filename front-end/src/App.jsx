@@ -23,26 +23,25 @@ function App() {
       <BrowserRouter>
         <ModalProvider>
           <WishlistProvider>
-            <CartProvider>
-              <Routes>
-                <Route Component={DefaultLayout}>
-                  <Route path="/search" element={<SearchPage />} />
-                  <Route path="/" Component={HomePage} />
-                  <Route path="/cover/:slug" Component={ProductPage} />
-                  <Route
-                    path="/checkout"
-                    element={
-                      <Elements stripe={stripePromise}>
-                        <CheckoutPage />
-                      </Elements>
-                    }
-                  />
-                  <Route path="/cart" Component={CartPage} />
-                  <Route path="/thank-you" Component={ThankYouPage} />
-                  <Route path="*" Component={NotFoundPage} />
-                </Route>
-              </Routes>
-            </CartProvider>
+           <CartProvider>
+            <Routes>
+              <Route Component={DefaultLayout}>
+                <Route path="/search" element={<SearchPage />} />
+                <Route path="/" Component={HomePage} />
+                <Route path="/cover/:slug" Component={ProductPage} />
+                <Route
+                  path="/checkout" element={
+                    <Elements stripe={stripePromise}>
+                      <CheckoutPage />
+                    </Elements>
+                  }
+                />
+                <Route path="/cart" Component={CartPage} />
+                <Route path="/thank-you" Component={ThankYouPage} />
+                <Route path="*" Component={NotFoundPage} />
+              </Route>
+            </Routes>
+           </CartProvider>
           </WishlistProvider>
         </ModalProvider>
       </BrowserRouter>

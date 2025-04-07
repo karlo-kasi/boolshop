@@ -15,7 +15,7 @@ export default function Footer() {
         <>
             <footer className="bg-dark">
                 <div className="container">
-                    <section className="d-flex justify-content-between text-white p-3">
+                    <section className="d-flex justify-content-between text-white pt-5">
                         <div>
                             <ul className="list-unstyled">
                                 <li><strong>AZIENDA</strong></li>
@@ -44,8 +44,7 @@ export default function Footer() {
                         <div>
                             <img className="logo" src="../public/logo-footer.png" alt="boolshop-footer" width="350px"/>
                             <p className="text-white small-text">
-                                Boolshop® | BL s.p.a P.IVA e CF 01888310032 <br />
-                                Via Circonvallazione s/n 28010 Milano - Italia Tel. +39 0322980909 - Fax. +39 0322980910
+                                Boolshop® | Create By Fabio, Carmelo, Diego, Michael e Karlo <br />
                             </p>
                         </div>
                          <div className="d-flex justify-content-end p-2 gap-3">

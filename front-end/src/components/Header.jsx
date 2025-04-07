@@ -37,11 +37,46 @@ export default function Header() {
   };
 
   const { isModalOpen, modalData, closeModal, openModal } = useModal(); // Usa modalData dal contesto
+
+
+  const [cartItems, setCartItems] = useState(() => {
+    const storedCartItems = localStorage.getItem("cartItems");
+    return storedCartItems ? JSON.parse(storedCartItems) : [];
+  });
+
+  useEffect(() => {
+    // Sincronizza il carrello con il localStorage
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+  }, [cartItems]);
+
+  useEffect(() => {
+    // Sincronizza il carrello con il localStorage e il contesto modale
+    if (modalData && modalData.cartItems) {
+      setCartItems(modalData.cartItems);
+    }
+  }, [modalData]);
+
+  const addToCart = (product) => {
+    setCartItems((prevItems) => {
+      const existingItem = prevItems.find((item) => item.id === product.id);
+      const updatedCart = existingItem
+        ? prevItems.map((item) =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        )
+        : [...prevItems, { ...product, quantity: 1 }];
+      localStorage.setItem("cartItems", JSON.stringify(updatedCart));
+      return updatedCart;
+    });
+  };
+
   const {
     cartItems,
     setCartItems: setCartItemsContext,
     removeFromCart: removeFromCartContext,
   } = useCart();
+
 
   const removeFromCart = (id) => {
     removeFromCartContext(id);
@@ -63,7 +98,7 @@ export default function Header() {
     <>
       <header className="position-sticky top-0 z-3">
         <nav className="navbar navbar-light bg-light">
-          <div className="container-fluid d-flex flex-wrap justify-content-between align-items-center">
+          <div className="container d-flex flex-wrap justify-content-between align-items-center px-6">
             <div>
               <Link className="navbar-brand" to={"/"}>
                 <img
@@ -76,11 +111,11 @@ export default function Header() {
 
             <div className="d-none d-lg-flex">
               <Link to="/">
-                <button className="btn btn-outline-dark m-1">Home</button>
+                <button className="btn fw-bold fs-5">Home</button>
               </Link>
-              <button className="btn btn-outline-dark m-1">About Us</button>
-              <button className="btn btn-outline-dark m-1">Products</button>
-              <button className="btn btn-outline-dark m-1">Contact</button>
+              <Link to="/search">
+                <button className="btn fw-bold fs-5">Prodotti</button>
+              </Link>
             </div>
 
             <div className="d-flex gap-3">
@@ -238,9 +273,9 @@ export default function Header() {
                                     (cartItem) =>
                                       cartItem.id === item.id
                                         ? {
-                                            ...cartItem,
-                                            quantity: cartItem.quantity + 1,
-                                          }
+                                          ...cartItem,
+                                          quantity: cartItem.quantity + 1,
+                                        }
                                         : cartItem
                                   );
                                   setCartItemsContext(updatedItems);
@@ -267,7 +302,7 @@ export default function Header() {
               <Link to="/cart">
                 <button
                   type="button"
-                  className="custom-btnCarmelo"
+                  className="btn btn-primary fs-5"
                   onClick={closeModal}
                 >
                   Vai al carrello
