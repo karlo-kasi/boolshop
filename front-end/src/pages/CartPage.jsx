@@ -1,20 +1,35 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 //ICON
 import { TiDelete } from "react-icons/ti";
+import { FaRegTrashAlt } from "react-icons/fa"; // Importa l'icona
 
 //COMPONENTS
 import QuantityCounter from "../components/QuantityCounter";
 import OrderSummary from "../components/OrderSummary"; // Importa OrderSummary
+import { useCart } from "../context/CartContext";
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState(() => {
-    const storedCartItems = localStorage.getItem("cartItems");
-    const parsedItems = storedCartItems ? JSON.parse(storedCartItems) : [];
-    console.log("Cart Items:", parsedItems); // Verifica che slug sia presente
-    return parsedItems;
-  });
+  const {
+    cartItems,
+    removeFromCart: removeFromCartContext,
+    setCartItems,
+    updateQuantity,
+  } = useCart();
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const storedCartItems = localStorage.getItem("cartItems");
+      setCartItems(storedCartItems ? JSON.parse(storedCartItems) : []);
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, [setCartItems]);
 
   // Calcola i valori una volta sola per render
   const subtotal = cartItems.reduce(
@@ -25,24 +40,20 @@ export default function CartPage() {
   const total = subtotal + shippingCost;
 
   // Funzione stabile per aggiornare la quantità
-  const handleQuantityUpdate = useCallback((itemId, newQuantity) => {
-    setCartItems((prevItems) => {
-      const updatedItems = prevItems.map((item) =>
-        item.id === itemId ? { ...item, quantity: newQuantity } : item
-      );
-      localStorage.setItem("cartItems", JSON.stringify(updatedItems));
-      return updatedItems;
-    });
-  }, []);
+  const handleQuantityUpdate = useCallback(
+    (itemId, newQuantity) => {
+      updateQuantity(itemId, newQuantity);
+    },
+    [updateQuantity]
+  );
 
   // Funzione stabile per rimuovere dal carrello
-  const removeFromCart = useCallback((productId) => {
-    setCartItems((prevItems) => {
-      const updatedItems = prevItems.filter((item) => item.id !== productId);
-      localStorage.setItem("cartItems", JSON.stringify(updatedItems));
-      return updatedItems;
-    });
-  }, []);
+  const removeFromCart = useCallback(
+    (productId) => {
+      removeFromCartContext(productId);
+    },
+    [removeFromCartContext]
+  );
 
   const formatPrice = (price) => Number(price).toFixed(2);
 
@@ -85,7 +96,17 @@ export default function CartPage() {
                                   onQuantityChange={(newQuantity) =>
                                     handleQuantityUpdate(item.id, newQuantity)
                                   }
-                                />
+                                >
+                                  {item.quantity <= 1 && (
+                                    <FaRegTrashAlt
+                                      className="trash"
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        removeFromCart(item.id);
+                                      }}
+                                    />
+                                  )}
+                                </QuantityCounter>
                                 <button
                                   className="btn btn-transparent border-0"
                                   onClick={(e) => {
