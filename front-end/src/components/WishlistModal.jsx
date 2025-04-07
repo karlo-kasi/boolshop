@@ -3,33 +3,24 @@ import { useWishlist } from "../context/WishlistContext";
 import { useModal } from "../context/ModalContext";
 import PressAndHoldButton from "./PressAndHoldButton"; // Importa il nuovo componente
 import { Link } from "react-router-dom";
+import { FaRegTrashAlt } from "react-icons/fa"; // Importa l'icona
+import { useCart } from "../context/CartContext";
 
 export default function WishlistModal({ show, onClose }) {
   const { wishlist, removeFromWishlist } = useWishlist();
   const { openModal } = useModal();
   const modalRef = useRef(null);
+  const { addToCart: addToCartContext } = useCart();
 
   const initScroll = window.scrollTo(0, 0);
 
   const addToCart = useCallback(
     (item) => {
-      const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
-      const existingItem = cartItems.find(
-        (cartItem) => cartItem.id === item.id
-      );
-      const updatedCart = existingItem
-        ? cartItems.map((cartItem) =>
-            cartItem.id === item.id
-              ? { ...cartItem, quantity: cartItem.quantity + 1 }
-              : cartItem
-          )
-        : [...cartItems, { ...item, quantity: 1 }];
-      localStorage.setItem("cartItems", JSON.stringify(updatedCart));
-
+      addToCartContext(item);
       onClose();
-      openModal({ cartItems: updatedCart });
+      openModal();
     },
-    [onClose, openModal]
+    [addToCartContext, onClose, openModal]
   );
 
   const handleClickOutside = (event) => {
@@ -82,7 +73,8 @@ export default function WishlistModal({ show, onClose }) {
                       <Link
                         to={`/cover/${item.slug}`}
                         className="text-decoration-none text-dark"
-                        onClick={{ onClose, initScroll }}                      >
+                        onClick={{ onClose, initScroll }}
+                      >
                         <h5>{item.name}</h5>
                       </Link>
                       <p>Prezzo: {item.price}€</p>

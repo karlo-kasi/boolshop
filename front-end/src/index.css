@@ -333,3 +333,17 @@ footer ul a {
     text-shadow 3s ease-in !important;
 }
 
+
+.trash{
+  width: 30px;
+  height: 30px;
+  border: 1px solid #6C757D;
+  color: #6C757D;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.trash:hover{
+  background-color: #6C757D;
+  color: white;
+}

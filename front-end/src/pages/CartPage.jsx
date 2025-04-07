@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 //ICON
 import { TiDelete } from "react-icons/ti";
+import { FaRegTrashAlt } from "react-icons/fa"; // Importa l'icona
 
 //COMPONENTS
 import QuantityCounter from "../components/QuantityCounter";
@@ -95,7 +96,17 @@ export default function CartPage() {
                                   onQuantityChange={(newQuantity) =>
                                     handleQuantityUpdate(item.id, newQuantity)
                                   }
-                                />
+                                >
+                                  {item.quantity <= 1 && (
+                                    <FaRegTrashAlt
+                                      className="trash"
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        removeFromCart(item.id);
+                                      }}
+                                    />
+                                  )}
+                                </QuantityCounter>
                                 <button
                                   className="btn btn-transparent border-0"
                                   onClick={(e) => {
