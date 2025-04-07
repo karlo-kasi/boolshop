@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer';
 import connection from '../data/db-cover.js';
 
-function sendConfirmationEmail(name, email, orderId, total) {
+function sendConfirmationEmail(name, email, orderId, total, arrayProducts) {
     // Crea un trasportatore SMTP usando le credenziali di Mailtrap
     let transporter = nodemailer.createTransport({
         host: 'sandbox.smtp.mailtrap.io',  // Server SMTP di Mailtrap
@@ -10,6 +10,16 @@ function sendConfirmationEmail(name, email, orderId, total) {
             user: 'c4b706acf77fab',    // Il tuo username di Mailtrap
             pass: '26b215ce533dec'     // La tua password di Mailtrap
         },
+    });
+
+    let productListHtml = '';
+    arrayProducts.forEach(product => {
+        productListHtml += `
+        <li>
+            <img src="${product.image}" alt="${product.name}" style="width: 50px; height: 50px; margin-right: 10px; vertical-align: middle;" />
+            <strong>${product.name}</strong> x ${product.quantity}
+        </li>
+        `;
     });
 
     let htmlContent = `
@@ -60,6 +70,15 @@ function sendConfirmationEmail(name, email, orderId, total) {
                     color: #777;
                     margin-top: 30px;
                 }
+                ul {
+                    list-style-type: none;
+                    padding: 0;
+                    margin: 0;
+                }
+                li {
+                    text-align: justify;
+                    margin-bottom: 10px;
+                }
             </style>
         </head>
         <body>
@@ -72,12 +91,14 @@ function sendConfirmationEmail(name, email, orderId, total) {
                     <p>Il tuo ordine è stato registrato con successo e sarà elaborato al più presto.</p>
                 </div>
                 <div class="order-summary">
-                    <p><strong>Dettaglio Ordine:</strong></p>
-                    <p>Totale dell'ordine: <span class="total">${total.toFixed(2)} €</span></p>
+                    <p><strong>Dettagli Ordine:</strong></p>
+                    <ul>${productListHtml}<ul/>
+                    <h3>Totale dell'ordine: <span class="total">${total.toFixed(2)}€</span></h3>
                 </div>
                 <div class="footer">
                     <p>Se hai domande o hai bisogno di assistenza, non esitare a contattarci.</p>
                     <p>BoolShop - Il tuo negozio online di fiducia.</p>
+                    <img src="http://localhost:3000/boolshop-logo.svg" alt="Logo BoolShop" style="width: 150px; height: auto; margin-top: 10px; text-align: center" />
                 </div>
             </div>
         </body>
@@ -86,7 +107,7 @@ function sendConfirmationEmail(name, email, orderId, total) {
     // Configura i dettagli dell'email
     let mailOptions = {
         from: '"BoolShop" <info@boolshop.com>', // Il mittente dell'email
-        to: email,                 // Il destinatario
+        to: email, // Il destinatario
         subject: `Conferma Ordine id: #${orderId}`,
         //text: `Ciao ${name}, questo è il tuo ordine ${orderId} e il prezzo totale è: ${total}`,       // Corpo del messaggio in testo semplice
         html: htmlContent // Corpo del messaggio in HTML
@@ -103,29 +124,40 @@ function sendConfirmationEmail(name, email, orderId, total) {
 
 
 function storeOrder(req, res) {
-    const { name, surname, email, coupon_id, shipping_address, billing_address, phone_number } = req.body;
-    let { products } = req.body;
+    const { name, surname, email, coupon_id, city, province, zip, phone_number, billing_address } = req.body;
+    let { products, shipping_address } = req.body;
 
     // Validazione dei dati dell'ordine
     //if (!name || !email || !surname || !shipping_address || !phone_number || !products) {
     //    return res.status(400).json({ error: 'Tutti i campi sono obbligatori' });
     //}
 
-    if (!name || name.length < 3) {
+    if (!name || name.trim().length < 3) {
         return res.status(400).json({ error: 'Il nome deve contenere almeno 3 caratteri' });
     }
-    if (!surname || surname.length < 3) {
+    if (!surname || surname.trim().length < 3) {
         return res.status(400).json({ error: 'Il cognome deve contenere almeno 3 caratteri' });
     }
     if (!email || !/\S+@\S+\.\S+/.test(email)) {
         return res.status(400).json({ error: 'Email non valida' });
     }
-    if (!shipping_address || shipping_address.length < 10) {
+    if (!shipping_address || shipping_address.trim().length < 5) {
         return res.status(400).json({ error: 'L\'indirizzo di spedizione deve contenere almeno 5 caratteri' });
     }
-    if (phone_number && /^\d{10}$/.test(phone_number) === false) {
+    if (!city || city.trim().length < 3) {
+        return res.status(400).json({ error: 'La città deve contenere almeno 3 caratteri' });
+    }
+    if (!province || province.trim().length !== 2) {
+        return res.status(400).json({ error: 'Scegli una provincia' });
+    }
+    if (!zip || zip.trim().length !== 5) {
+        return res.status(400).json({ error: 'Il CAP deve essere composto da 5 caratteri' });
+    }    
+    if (!phone_number && /^\d{10}$/.test(phone_number) === false) {
         return res.status(400).json({ error: 'Il numero di telefono deve contenere 10 cifre' });
     }
+
+    shipping_address = `${shipping_address}, ${city}(${province}), ${zip}`;
 
     // Logica per ottenere i prodotti dal carrello
     let productsIds = products.map(element => {
@@ -151,11 +183,13 @@ function storeOrder(req, res) {
             return {
                 ...product,
                 quantity: productInCart.quantity,
+                image: productInCart.image,
                 price: product.price,
                 name: product.name,
                 product_id: product.id,
             };
         })
+
 
         // Logica per memorizzare l'ordine nel database
         const sqlOrder = 'INSERT INTO orders (name, email, surname, shipping_address, billing_address, phone_number, coupon_id, total) VALUES (?,?,?,?,?,?,?,?)';
@@ -188,7 +222,7 @@ function storeOrder(req, res) {
                 }
 
                 // Se l'ordine e i prodotti sono stati memorizzati con successo, invia l'email di conferma
-                sendConfirmationEmail(name, email, orderId, total);
+                sendConfirmationEmail(name, email, orderId, total, arrayProducts);
 
                 res.status(201).json({ message: 'Ordine creato con successo' });
             });

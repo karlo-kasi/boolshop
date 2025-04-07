@@ -1,3 +1,15 @@
+
+//PAGAMENTI
+import americanExpress from "../assets/img/american-express.png";
+
+import applePay from "../assets/img/apple-pay.png";
+import google from "../assets/img/google.png";
+import money from "../assets/img/money.png";
+import paypal from "../assets/img/paypal.png";
+import visa from "../assets/img/visa.png";
+
+
+
 export default function Footer() {
     return (
         <>
@@ -27,14 +39,26 @@ export default function Footer() {
                             </ul>
                         </div>
                     </section>
-                    <div className="d-flex justify-content-end p-2 gap-3">
-                        <img src="icons/apple-pay.png" alt="apple pay" width="42px" />
-                        <img src="icons/google.png" alt="google pay" width="45px" />
-                        <img src="icons/money.png" alt="mastercard" width="40px" />
-                        <img src="icons/visa.png" alt="visa" width="40px" />
-                        <img src="icons/paypal.png" alt="paypal" width="45px" />
-                        <img src="icons/american-express.png" alt="american express" width="38px" />
+
+                    <section className="d-flex justify-content-between align-items-center">
+                        <div>
+                            <img className="logo" src="../public/logo-footer.png" alt="boolshop-footer" width="350px"/>
+                            <p className="text-white small-text">
+                                Boolshop® | BL s.p.a P.IVA e CF 01888310032 <br />
+                                Via Circonvallazione s/n 28010 Milano - Italia Tel. +39 0322980909 - Fax. +39 0322980910
+                            </p>
+                        </div>
+                         <div className="d-flex justify-content-end p-2 gap-3">
+                        <img src={americanExpress} alt="apple pay" width={25} height={25}/>
+                        <img src={applePay} alt="mastercard" width={25} height={25} />
+                        <img src={google} alt="visa" width={25} height={25} />
+                        <img src={money} alt="paypal" width={25} height={25} />
+                        <img src={paypal} alt="american express" width={25} height={25} />
+                        <img src={visa} alt="google pay" width={25} height={25} />
                     </div>
+                    </section>
+
+                   
                 </div>
             </footer>
         </>

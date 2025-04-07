@@ -37,7 +37,7 @@ export default function OrderSummary({
           Totale: {isCartEmpty ? "0.00" : formatPrice(totalWithShipping)}€
         </h4>
         <Link to="/checkout" className="custom-btnCarmelo rounded w-100">
-          Vai al checkout
+          Procedi all'ordine
         </Link>
       </div>
     </div>
