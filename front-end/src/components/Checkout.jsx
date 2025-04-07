@@ -38,6 +38,9 @@ export default function Checkout() {
     const [paymentError, setPaymentError] = useState('');
     const [paymentSuccess, setPaymentSuccess] = useState(false);
 
+    const [isLoading, setIsLoading] = useState(false);
+
+
     const submitOrder = async (dataToSubmit) => {
         try {
             const response = await axios.post("http://localhost:3000/cover/order", dataToSubmit, {
@@ -71,7 +74,9 @@ export default function Checkout() {
         };
 
         // Primo step: gestisci il pagamento
+        setIsLoading(true)
         const paymentSuccessful = await handlePayment();
+        setIsLoading(false)
 
         if (paymentSuccessful) {
             // Se il pagamento va a buon fine, invia l'ordine
@@ -174,52 +179,52 @@ export default function Checkout() {
     // Funzione per gestire il pagamento
     const handlePayment = async () => {
         if (!stripe || !elements) return false;
-      
+
         const cardNumber = elements.getElement(CardNumberElement);
         const cardExpiry = elements.getElement(CardExpiryElement);
         const cardCvc = elements.getElement(CardCvcElement);
-      
+
         if (!cardNumber || !cardExpiry || !cardCvc) {
-          console.error("Uno dei campi della carta non è stato trovato.");
-          return false;
-        }
-      
-        try {
-          const response = await axios.post("http://localhost:3000/cover/payment", {
-            amount: amountInCents,
-            currency: "eur",
-            description: "Acquisto prodotti",
-          });
-      
-          const clientSecret = response.data.clientSecret;
-          setClientSecret(clientSecret);
-      
-          const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
-            payment_method: {
-              card: cardNumber,
-              billing_details: {
-                name: `${formData.name} ${formData.surname}`,
-                email: formData.email,
-                phone: formData.phone_number,
-              },
-            },
-          });
-      
-          if (error) {
-            console.error("Errore nel pagamento:", error.message);
-            setPaymentError(error.message);
+            console.error("Uno dei campi della carta non è stato trovato.");
             return false;
-          } else {
-            console.log("Pagamento completato:", paymentIntent);
-            setPaymentSuccess(true);
-            return true;
-          }
-        } catch (error) {
-          console.error("Errore durante la creazione del pagamento:", error);
-          setPaymentError("Errore nella creazione del pagamento");
-          return false;
         }
-      };
+
+        try {
+            const response = await axios.post("http://localhost:3000/cover/payment", {
+                amount: amountInCents,
+                currency: "eur",
+                description: "Acquisto prodotti",
+            });
+
+            const clientSecret = response.data.clientSecret;
+            setClientSecret(clientSecret);
+
+            const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+                payment_method: {
+                    card: cardNumber,
+                    billing_details: {
+                        name: `${formData.name} ${formData.surname}`,
+                        email: formData.email,
+                        phone: formData.phone_number,
+                    },
+                },
+            });
+
+            if (error) {
+                console.error("Errore nel pagamento:", error.message);
+                setPaymentError(error.message);
+                return false;
+            } else {
+                console.log("Pagamento completato:", paymentIntent);
+                setPaymentSuccess(true);
+                return true;
+            }
+        } catch (error) {
+            console.error("Errore durante la creazione del pagamento:", error);
+            setPaymentError("Errore nella creazione del pagamento");
+            return false;
+        }
+    };
 
 
 
@@ -248,9 +253,8 @@ export default function Checkout() {
     // Stripe richiede l'importo in centesimi come intero
     const amountInCents = Math.round(totalPrice * 100);
 
-    console.log("il prezzo per stripe è:", amountInCents)
-    console.log("Total Price:", totalPrice, "Total Quantity:", totalQuantity);
-    
+
+
 
     return (
         <>
@@ -272,6 +276,7 @@ export default function Checkout() {
                                                     <h6 className="my-0">{product.name}</h6>
                                                 </div>
                                                 <span className="text-body-secondary">{product.quantity} x {product.price}&euro;</span>
+                                                <img src={product.image} width="20px" alt="" />
                                             </li>
                                         )
                                     }
@@ -573,7 +578,7 @@ export default function Checkout() {
 
                                 <hr className="my-4" />
 
-                                
+
 
                                 <h4 className="mb-3">Pagamento</h4>
                                 <p>Tutte le transazioni sono sicure e crittografate.</p>
@@ -594,7 +599,7 @@ export default function Checkout() {
                                     </div>
                                 </div>
 
-                                
+
 
                                 <div className="row gy-3">
                                     <div className="col-md-12">
@@ -675,9 +680,14 @@ export default function Checkout() {
 
                                 <hr className="my-4" />
 
-                                <button className="w-100 btn btn-primary btn-lg" type="submit">
-                                    Acquista ora
-                                </button>
+                                {isLoading ? (
+                                    <button className="btn btn-primary w-100" disabled>
+                                        <span className="spinner-border spinner-border-sm me-2 btn-purchase" role="status" aria-hidden="true"></span>
+                                        Elaborazione in corso...
+                                    </button>
+                                ) : (
+                                    <button className="btn btn-primary w-100" type="submit">Acquista ora</button>
+                                )}
                             </form>
                         </div>
                     </div>
