@@ -12,6 +12,19 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
   }, [cartItems]);
 
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const storedCartItems = localStorage.getItem("cartItems");
+      setCartItems(storedCartItems ? JSON.parse(storedCartItems) : []);
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+
   const addToCart = (product, quantity = 1) => {
     setCartItems((prevItems) => {
       const existingItem = prevItems.find((item) => item.id === product.id);
@@ -41,6 +54,10 @@ export const CartProvider = ({ children }) => {
     });
   };
 
+  const clearCart = () => {
+    setCartItems([]);
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -49,6 +66,7 @@ export const CartProvider = ({ children }) => {
         removeFromCart,
         setCartItems,
         updateQuantity,
+        clearCart,
       }}
     >
       {children}
