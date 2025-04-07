@@ -7,7 +7,6 @@ import CartPage from "./pages/CartPage";
 import ThankYouPage from "./pages/ThankYouPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import SearchPage from "./components/SearchPage";
-
 import { ModalProvider } from "./context/ModalContext"; // Import del provider
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
@@ -16,6 +15,7 @@ const stripePromise = loadStripe(
 );
 import { WishlistProvider } from "./context/WishlistContext";
 import { CartProvider } from "./context/CartContext";
+
 
 function App() {
   return (
