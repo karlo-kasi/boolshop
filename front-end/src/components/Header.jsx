@@ -38,39 +38,6 @@ export default function Header() {
 
   const { isModalOpen, modalData, closeModal, openModal } = useModal(); // Usa modalData dal contesto
 
-
-  const [cartItems, setCartItems] = useState(() => {
-    const storedCartItems = localStorage.getItem("cartItems");
-    return storedCartItems ? JSON.parse(storedCartItems) : [];
-  });
-
-  useEffect(() => {
-    // Sincronizza il carrello con il localStorage
-    localStorage.setItem("cartItems", JSON.stringify(cartItems));
-  }, [cartItems]);
-
-  useEffect(() => {
-    // Sincronizza il carrello con il localStorage e il contesto modale
-    if (modalData && modalData.cartItems) {
-      setCartItems(modalData.cartItems);
-    }
-  }, [modalData]);
-
-  const addToCart = (product) => {
-    setCartItems((prevItems) => {
-      const existingItem = prevItems.find((item) => item.id === product.id);
-      const updatedCart = existingItem
-        ? prevItems.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        )
-        : [...prevItems, { ...product, quantity: 1 }];
-      localStorage.setItem("cartItems", JSON.stringify(updatedCart));
-      return updatedCart;
-    });
-  };
-
   const {
     cartItems,
     setCartItems: setCartItemsContext,
