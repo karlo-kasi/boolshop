@@ -20,8 +20,8 @@ export default function OrderSummary({
           {isCartEmpty
             ? "-"
             : shippingCost === 0
-            ? "Gratuita"
-            : `${formatPrice(shippingCost)}€`}
+              ? "Gratuita"
+              : `${formatPrice(shippingCost)}€`}
         </p>
 
         {/* Alert spedizione gratuita */}
@@ -36,7 +36,7 @@ export default function OrderSummary({
         <h4 className="mb-4">
           Totale: {isCartEmpty ? "0.00" : formatPrice(totalWithShipping)}€
         </h4>
-        <Link to="/checkout" className="custom-btnCarmelo rounded w-100">
+        <Link to="/checkout" className="btn btn-primary fs-5 rounded w-100">
           Procedi all'ordine
         </Link>
       </div>

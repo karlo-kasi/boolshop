@@ -25,9 +25,6 @@ function App() {
                 <Route path="/search" element={<SearchPage />} />
                 <Route path="/" Component={HomePage} />
                 <Route path="/cover/:slug" Component={ProductPage} />
-
-                <Route path="/checkout" Component={CheckoutPage} />
-
                 <Route
                   path="/checkout" element={
                     <Elements stripe={stripePromise}>
@@ -35,7 +32,6 @@ function App() {
                     </Elements>
                   }
                 />
-
                 <Route path="/cart" Component={CartPage} />
                 <Route path="/thank-you" Component={ThankYouPage} />
                 <Route path="*" Component={NotFoundPage} />
