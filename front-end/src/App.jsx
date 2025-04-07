@@ -12,14 +12,14 @@ import { ModalProvider } from "./context/ModalContext"; // Import del provider
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 const stripePromise = loadStripe("pk_test_51R9uT2H9dC3WZ03zWtzI5XQwoJe1l9CCDTKXtvYgdg07iYu6iJuXil0nS7QoCdypHYcicfjtyAPnckYRw30LIhhw007BI7p4JZ");
-
+import { WishlistProvider } from "./context/WishlistContext";
 
 function App() {
   return (
     <>
       <BrowserRouter>
         <ModalProvider>
-
+        <WishlistProvider>
           <Routes>
             <Route Component={DefaultLayout}>
               <Route path="/search" element={<SearchPage />} />
@@ -37,8 +37,9 @@ function App() {
               <Route path="*" Component={NotFoundPage} />
             </Route>
           </Routes>
+         </WishlistProvider>
         </ ModalProvider>
-      </BrowserRouter>
+     </BrowserRouter>
     </>
   );
 }

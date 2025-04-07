@@ -1,0 +1,100 @@
+import React, { useCallback, useEffect, useRef } from "react";
+import { useWishlist } from "../context/WishlistContext";
+import { useModal } from "../context/ModalContext";
+import PressAndHoldButton from "./PressAndHoldButton"; // Importa il nuovo componente
+
+export default function WishlistModal({ show, onClose }) {
+  const { wishlist, removeFromWishlist } = useWishlist();
+  const { openModal } = useModal();
+  const modalRef = useRef(null);
+
+  const addToCart = useCallback(
+    (item) => {
+      const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+      const existingItem = cartItems.find(
+        (cartItem) => cartItem.id === item.id
+      );
+      const updatedCart = existingItem
+        ? cartItems.map((cartItem) =>
+            cartItem.id === item.id
+              ? { ...cartItem, quantity: cartItem.quantity + 1 }
+              : cartItem
+          )
+        : [...cartItems, { ...item, quantity: 1 }];
+      localStorage.setItem("cartItems", JSON.stringify(updatedCart));
+
+      onClose();
+      openModal({ cartItems: updatedCart });
+    },
+    [onClose, openModal]
+  );
+
+  const handleClickOutside = (event) => {
+    if (modalRef.current && !modalRef.current.contains(event.target)) {
+      onClose();
+    }
+  };
+
+  useEffect(() => {
+    if (show) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [show]);
+
+  if (!show) return null;
+
+  return (
+    <div className="wishlist-modal">
+      <div className="wishlist-modal-dialog" ref={modalRef}>
+        <div className="wishlist-modal-header d-flex justify-content-around align-items-center">
+          <p className="title-modal ">Preferiti</p>
+          <button
+            type="button"
+            className="btn-close text-dark bold"
+            onClick={onClose}
+          ></button>
+        </div>
+        <div className="wishlist-modal-body">
+          {wishlist.length === 0 ? (
+            <p className="mb-3">La tua wishlist è vuota.</p>
+          ) : (
+            <div className="d-flex flex-column gap-4">
+              {wishlist.map((item) => (
+                <div key={item.id} className="wishlist-item">
+                  <div className="d-flex align-items-center gap-3">
+                    <img
+                      src={item.image}
+                      className="wishlist-item-image"
+                      alt={item.name}
+                    />
+                    <div className="wishlist-item-details">
+                      <h5>{item.name}</h5>
+                      <p>Prezzo: {item.price}€</p>
+                      <div className="d-flex gap-4 justify-content-center">
+                        <PressAndHoldButton
+                          className="btn-wishlist"
+                          onHoldComplete={() => addToCart(item)}
+                        >
+                          Aggiungi al carrello
+                        </PressAndHoldButton>
+                        <PressAndHoldButton
+                          className="btn-wishlist btn-wishlist-red"
+                          onHoldComplete={() => removeFromWishlist(item.id)}
+                        >
+                          Rimuovi dai preferiti
+                        </PressAndHoldButton>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
