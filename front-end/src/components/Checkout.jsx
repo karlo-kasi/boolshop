@@ -423,7 +423,7 @@ export default function Checkout() {
                                     <strong>Il carrello è vuoto!</strong>
                                 </div>
                             )}
-    
+
                             <ul className="list-group mb-3">
                                 {cart.map(product => {
                                     return (
@@ -432,7 +432,7 @@ export default function Checkout() {
                                                 <h6 className="my-0">{product.name}</h6>
                                             </div>
                                             <span className="text-body-secondary">{product.quantity} x {product.price}&euro;</span>
-                                            <img src={product.image} width="20px" alt="" />
+
                                         </li>
                                     )
                                 })}
@@ -461,7 +461,7 @@ export default function Checkout() {
                                 </li>
                             </ul>
                         </div>
-    
+
                         <div className="col-md-7 col-lg-8">
                             <h4 className="mb-1">Inserisci i tuoi dati</h4>
                             <form className="needs-validation" onSubmit={handleSubmit} noValidate>
@@ -484,7 +484,7 @@ export default function Checkout() {
                                         {errors.name && <div className="invalid-feedback">{errors.name}</div>}
                                         {!errors.name && serverErrors.name && <div className="invalid-feedback">{serverErrors.name}</div>}
                                     </div>
-    
+
                                     <div className="col-sm-6">
                                         <label htmlFor="lastName" className="form-label">Cognome</label>
                                         <input
@@ -500,7 +500,7 @@ export default function Checkout() {
                                         {errors.surname && <div className="invalid-feedback">{errors.surname}</div>}
                                         {!errors.surname && serverErrors.surname && <div className="invalid-feedback">{serverErrors.surname}</div>}
                                     </div>
-    
+
                                     <div className="col-12">
                                         <label htmlFor="email" className="form-label">Email</label>
                                         <input
@@ -516,7 +516,7 @@ export default function Checkout() {
                                         {errors.email && <div className="invalid-feedback">{errors.email}</div>}
                                         {!errors.email && serverErrors.email && <div className="invalid-feedback">{serverErrors.email}</div>}
                                     </div>
-    
+
                                     <div className="col-12">
                                         <label htmlFor="phone_number" className="form-label">Telefono</label>
                                         <input
@@ -532,7 +532,7 @@ export default function Checkout() {
                                         {errors.phone_number && <div className="invalid-feedback">{errors.phone_number}</div>}
                                         {!errors.phone_number && serverErrors.phone_number && <div className="invalid-feedback">{serverErrors.phone_number}</div>}
                                     </div>
-    
+
                                     <div className="col-12">
                                         <label htmlFor="shipping_address" className="form-label">Indirizzo</label>
                                         <input
@@ -548,8 +548,8 @@ export default function Checkout() {
                                         {errors.shipping_address && <div className="invalid-feedback">{errors.shipping_address}</div>}
                                         {!errors.shipping_address && serverErrors.shipping_address && <div className="invalid-feedback">{serverErrors.shipping_address}</div>}
                                     </div>
-    
-                                    <div className="col-md-3">
+
+                                    <div className="col-md-4">
                                         <label htmlFor="city" className="form-label">Città</label>
                                         <input
                                             type="text"
@@ -564,8 +564,8 @@ export default function Checkout() {
                                         {errors.city && <div className="invalid-feedback">{errors.city}</div>}
                                         {!errors.city && serverErrors.city && <div className="invalid-feedback">{serverErrors.city}</div>}
                                     </div>
-    
-                                    <div className="col-md-3">
+
+                                    <div className="col-md-4">
                                         <label htmlFor="zip" className="form-label">CAP</label>
                                         <input
                                             type="text"
@@ -700,8 +700,8 @@ export default function Checkout() {
                                     </div>
                                 </div>
 
-                                
-    
+
+
                                 <div className="my-3 form-check">
                                     <input
                                         type="checkbox"
@@ -715,7 +715,7 @@ export default function Checkout() {
                                         Usa lo stesso indirizzo per la fatturazione
                                     </label>
                                 </div>
-    
+
                                 {!formData.sameBillingAddress && (
                                     <div className="mb-3">
                                         <label htmlFor="billing_address" className="form-label">Indirizzo di fatturazione</label>
@@ -730,18 +730,18 @@ export default function Checkout() {
                                         {errors.billing_address && <div className="invalid-feedback">{errors.billing_address}</div>}
                                     </div>
                                 )}
-    
+
                                 <hr className="my-4" />
-    
+
                                 <h4 className="mb-3">Pagamento</h4>
                                 <p>Tutte le transazioni sono sicure e crittografate.</p>
-    
+
                                 {paymentError && (
                                     <div className="alert alert-danger" role="alert">
                                         <strong>Errore:</strong> {paymentError}
                                     </div>
                                 )}
-    
+
                                 <div className="my-3">
                                     <div className="form-check">
                                         <input
@@ -757,7 +757,7 @@ export default function Checkout() {
                                         </label>
                                     </div>
                                 </div>
-    
+
                                 <div className="row gy-3">
                                     <div className="col-md-12">
                                         <label htmlFor="card-number" className="form-label">Numero della carta</label>
@@ -783,7 +783,7 @@ export default function Checkout() {
                                             />
                                         </div>
                                     </div>
-    
+
                                     <div className="row mt-3">
                                         <div className="col-md-5">
                                             <label htmlFor="card-expiry" className="form-label">Data di scadenza</label>
@@ -809,7 +809,7 @@ export default function Checkout() {
                                                 />
                                             </div>
                                         </div>
-    
+
                                         <div className="col-md-5">
                                             <label htmlFor="card-cvc" className="form-label">CVV</label>
                                             <div className="form-control py-2">
@@ -836,9 +836,9 @@ export default function Checkout() {
                                         </div>
                                     </div>
                                 </div>
-    
+
                                 <hr className="my-3" />
-    
+
                                 <div className="form-check mb-3">
                                     <input
                                         className={`form-check-input ${errors.acceptTerms ? "is-invalid" : ""}`}
@@ -855,14 +855,14 @@ export default function Checkout() {
                                         <div className="invalid-feedback d-block">{errors.acceptTerms}</div>
                                     )}
                                 </div>
-    
+
                                 {isLoading ? (
                                     <button className="btn btn-primary w-100" disabled>
                                         <span className="spinner-border spinner-border-sm me-2 btn-purchase" role="status" aria-hidden="true"></span>
                                         Elaborazione in corso...
                                     </button>
                                 ) : (
-                                    <button className="btn btn-primary w-100" type="submit">Acquista ora</button>
+                                    <button className="btn btn-primary fs-5 w-100" type="submit">Acquista ora</button>
                                 )}
                             </form>
                         </div>

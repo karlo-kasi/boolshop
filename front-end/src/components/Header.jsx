@@ -105,7 +105,7 @@ export default function Header() {
                 <button className="btn fw-bold fs-5">Home</button>
               </Link>
               <Link to="/search">
-                <button className="btn fw-bold fs-5">Products</button>
+                <button className="btn fw-bold fs-5">Prodotti</button>
               </Link>
             </div>
 
@@ -286,7 +286,7 @@ export default function Header() {
               <Link to="/cart">
                 <button
                   type="button"
-                  className="custom-btnCarmelo"
+                  className="btn btn-primary fs-5"
                   onClick={closeModal}
                 >
                   Vai al carrello

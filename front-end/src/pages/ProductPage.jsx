@@ -146,12 +146,12 @@ export default function ProductPage() {
               </NavLink>
             </div>
           </div>
-          <PressAndHoldButton
-            className="btn-wishlist rounded w-100"
-            onHoldComplete={addToCart}
-          >
+          <button className="btn btn-primary fs-5 rounded w-100"
+            onClick={addToCart}>
             Aggiungi al carrello
-          </PressAndHoldButton>
+          </button>
+            
+        
 
           <div className=" d-flex flex-column align-items-center gap-2">
             <div className="d-flex gap-2">
