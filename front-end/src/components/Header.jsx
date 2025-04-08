@@ -72,7 +72,7 @@ export default function Header() {
               <Link className="navbar-brand" to={"/"}>
                 <img
                   className="logo"
-                  src="../public/boolshop-logo.svg"
+                  src="../boolshop-logo.svg"
                   alt="boolshop"
                 />
               </Link>
