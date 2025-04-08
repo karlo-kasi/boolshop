@@ -40,7 +40,7 @@ const PopupComponent = () => {
         setErrorMessage("Errore durante la registrazione. Riprova.")
         return
       } else {
-        ; // chiudi popup in modo silenzioso
+        setShowPopup(false); // chiudi popup in modo silenzioso
         setSuccessMessage("Iscrizione avvenuta con successo! Controlla la tua email.");
         setErrorMessage(""); // Rimuovi eventuali messaggi di errore precedenti
       }
