@@ -179,9 +179,6 @@ footer ul a {
 .custom-modal-footer button:hover {
   background-color: #495057;
 }
-
-
-
 .thank-you-page,
 .not-found {
   height: 60vh;
@@ -278,8 +275,6 @@ footer ul a {
 
 .btn-wishlist {
   font-size: 0.7rem !important;
-
-
   background-color: #fefefe !important;
   color: #000000 !important;
   border: 1px solid #8a9098 !important;
@@ -310,10 +305,7 @@ footer ul a {
   height: 60vh;
 }
 
-
-
-
-.small-text{
+.small-text {
   font-size: 0.7rem;
 }
 
@@ -341,18 +333,17 @@ footer ul a {
     text-shadow 3s ease-in !important;
 }
 
-
-.trash{
+.trash {
   width: 30px;
   height: 30px;
-  border: 1px solid #6C757D;
-  color: #6C757D;
+  border: 1px solid #6c757d;
+  color: #6c757d;
   padding: 5px;
   border-radius: 5px;
 }
 
-.trash:hover{
-  background-color: #6C757D;
+.trash:hover {
+  background-color: #6c757d;
   color: white;
 }
 
