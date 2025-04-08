@@ -16,6 +16,8 @@ export default function Header() {
   const navigate = useNavigate(); // Usato per navigare alla pagina dei risultati di ricerca
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const modalRef = useRef(null);
+
   const handleSearchClick = () => {
     setShowSearchModal(true);
   };
@@ -64,6 +66,22 @@ export default function Header() {
   const handleWishlistClick = () => {
     setShowWishlistModal(true); // Imposta lo stato per aprire la modale Wishlist
   };
+
+  useEffect(() => {
+    function handleOutsideClick(event) {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        closeModal(); // Chiude la modale se clicchi fuori
+      }
+    }
+  
+    if (isModalOpen) {
+      document.addEventListener("mousedown", handleOutsideClick);
+    }
+  
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [isModalOpen]);
 
   return (
     <>
@@ -174,7 +192,7 @@ export default function Header() {
       {/* MODALE CARRELLO */}
       {isModalOpen && (
         <div className="custom-modal">
-          <div className="custom-modal-dialog">
+          <div ref={modalRef} className="custom-modal-dialog">
             <div className="custom-modal-header d-flex justify-content-between align-items-center">
               <p className="title-modal fs-3">Carrello</p>
               <button
@@ -291,3 +309,4 @@ export default function Header() {
     </>
   );
 }
+
