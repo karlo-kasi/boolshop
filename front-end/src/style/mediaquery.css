@@ -79,3 +79,19 @@
   z-index: -1;
   top: 50px;
 }
+
+@keyframes bubble {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.bubble {
+  animation: bubble 5s infinite ease-in-out;
+}
