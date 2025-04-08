@@ -355,3 +355,22 @@ footer ul a {
   background-color: #6C757D;
   color: white;
 }
+
+.mobile-menu {
+  transform: translateY(-20%);
+  opacity: 0;
+  transition: all 0.4s ease;
+  pointer-events: none;
+}
+
+.mobile-menu.slide-down {
+  transform: translateY(0%);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mobile-menu.slide-up {
+  transform: translateY(-20%);
+  opacity: 0;
+  pointer-events: none;
+}
