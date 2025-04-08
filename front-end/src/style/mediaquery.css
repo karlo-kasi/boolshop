@@ -1,0 +1,75 @@
+@media screen and (max-width: 767px) {
+  .about-page {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .col-md-5.col-sm-12 {
+    width: 100%;
+    text-align: center;
+  }
+
+  .col-md-5.col-sm-12 img {
+    margin-bottom: 10px;
+  }
+
+  .aboutResponsive .row {
+    flex-direction: column !important;
+  }
+
+  /* Prima riga */
+  .aboutResponsive .row:nth-child(2) .col-md-5:first-child {
+    order: 1;
+  }
+  .aboutResponsive .row:nth-child(2) .col-md-5:last-child {
+    order: 2;
+  }
+
+  /* Seconda riga */
+  .aboutResponsive .row:nth-child(3) .col-md-5:first-child {
+    order: 2;
+  }
+  .aboutResponsive .row:nth-child(3) .col-md-5:last-child {
+    order: 1;
+  }
+
+  /* Terza riga */
+  .aboutResponsive .row:nth-child(4) .col-md-5:first-child {
+    order: 1;
+  }
+  .aboutResponsive .row:nth-child(4) .col-md-5:last-child {
+    order: 2;
+  }
+
+  /* Quarta riga */
+  .aboutResponsive .row:nth-child(5) .col-md-5:first-child {
+    order: 2;
+  }
+  .aboutResponsive .row:nth-child(5) .col-md-5:last-child {
+    order: 1;
+  }
+
+  /* Quinta riga */
+  .aboutResponsive .row:nth-child(6) .col-md-5:first-child {
+    order: 1;
+  }
+  .aboutResponsive .row:nth-child(6) .col-md-5:last-child {
+    order: 2;
+  }
+
+  .aboutResponsive .col-md-5 {
+    margin-bottom: 1rem;
+  }
+}
+
+.codingGif{
+  position: relative;
+  top: 50px;
+  z-index: -1;
+}

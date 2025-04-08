@@ -2,14 +2,26 @@ import Karlo from "../assets/img/karlo.png";
 import Fabio from "../assets/img/fabio.png";
 import Diego from "../assets/img/diego.png";
 import Carme from "../assets/img/carme.png";
+import Michael from "../assets/img/michael.png";
+import Coding from "../assets/img/coding.gif";
 
+import "../style/mediaquery.css";
 import { Link } from "react-router-dom";
 
 export default function AboutPage() {
   return (
     <main>
-      <div className="container mt-5 mb-5 d-flex flex-column justify-content-center align-items-center">
-        <p className="text-center display-1 fw-bold p-3">Chi siamo</p>
+      <div className="container-fluid aboutResponsive  mb-5 d-flex flex-column justify-content-center align-items-center">
+        <div className="d-flex flex-column justify-content-center align-items-center mb-5">
+          <img
+            src={Coding}
+            width={250}
+            height={150}
+            alt="Karlo Kasi"
+            className="rounded shadow bubble codingGif"
+          />
+          <p className="text-center display-2 fw-bold p-3">Chi siamo</p>
+        </div>
 
         <div className="row gap-3 justify-content-center align-items-center">
           <div className="col-md-5 col-sm-12">
@@ -66,7 +78,7 @@ export default function AboutPage() {
                 src={Diego}
                 width={170}
                 height={170}
-                alt="Karlo Kasi"
+                alt="Diego Lenci"
                 className="rounded-circle shadow bubble"
                 style={{ backgroundColor: "rgba(27, 175, 47, 0.63)" }}
               />
@@ -78,12 +90,12 @@ export default function AboutPage() {
           <div className="col-md-5 col-sm-12">
             <div className="text-center">
               <img
-                src={Karlo}
+                src={Michael}
                 width={170}
                 height={170}
-                alt="Karlo Kasi"
+                alt="Michael Pellizzato"
                 className="rounded-circle shadow bubble"
-                style={{ backgroundColor: "rgba(27, 123, 175, 0.63)" }}
+                style={{ backgroundColor: "rgba(230, 11, 11, 0.63)" }}
               />
             </div>
           </div>
@@ -96,7 +108,7 @@ export default function AboutPage() {
         </div>
 
         <div className="row gap-3 justify-content-center align-items-center">
-          <div className="col-md-5 col-sm-12 ">
+          <div className="col-md-6 col-sm-12">
             <p className="text-center m-1">Creatività: la nostra bussola.</p>
             <p className="text-center m-1">Innovazione: il nostro vento.</p>
             <p className="text-center m-1">
@@ -109,7 +121,7 @@ export default function AboutPage() {
                 src={Carme}
                 width={170}
                 height={170}
-                alt="Karlo Kasi"
+                alt="Carmelo Ziino"
                 className="rounded-circle shadow bubble"
                 style={{ backgroundColor: "rgba(121, 27, 175, 0.55)" }}
               />
@@ -117,8 +129,10 @@ export default function AboutPage() {
           </div>
         </div>
 
-        <Link to="/home">
-          <button className="mt-5 btn btn-outline-primary">Visita il nostro sito</button>
+        <Link to="/">
+          <button className="mt-5 btn btn-outline-primary">
+            Visita il nostro sito
+          </button>
         </Link>
       </div>
     </main>
