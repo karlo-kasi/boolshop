@@ -7,8 +7,8 @@ function sendConfirmationEmail(name, email, orderId, total, arrayProducts) {
         host: 'sandbox.smtp.mailtrap.io',  // Server SMTP di Mailtrap
         port: 2525,                 // Porta SMTP            // Usa TLS
         auth: {
-            user: 'c4b706acf77fab',    // Il tuo username di Mailtrap
-            pass: '26b215ce533dec'     // La tua password di Mailtrap
+            user: 'cf79ddc6a81dc7',    // Il tuo username di Mailtrap
+            pass: 'c1da937a604768'     // La tua password di Mailtrap
         },
     });
 
@@ -98,7 +98,7 @@ function sendConfirmationEmail(name, email, orderId, total, arrayProducts) {
                 <div class="footer">
                     <p>Se hai domande o hai bisogno di assistenza, non esitare a contattarci.</p>
                     <p>BoolShop - Il tuo negozio online di fiducia.</p>
-                    <img src="http://localhost:3000/boolshop-logo.svg" alt="Logo BoolShop" style="width: 150px; height: auto; margin-top: 10px; text-align: center" />
+                    <img src="http://localhost:3000/boolshop-logo.svg" alt="Logo BoolShop" style="width: 100px; height: auto; margin-top: 10px; text-align: center" />
                 </div>
             </div>
         </body>
