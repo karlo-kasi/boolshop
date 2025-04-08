@@ -73,3 +73,9 @@
   top: 50px;
   z-index: -1;
 }
+
+.phoneGif{
+  position: relative;
+  z-index: -1;
+  top: 50px;
+}

@@ -4,6 +4,7 @@ import Diego from "../assets/img/diego.png";
 import Carme from "../assets/img/carme.png";
 import Michael from "../assets/img/michael.png";
 import Coding from "../assets/img/coding.gif";
+import Phone from "../assets/img/phone.gif";
 
 import "../style/mediaquery.css";
 import { Link } from "react-router-dom";
@@ -129,10 +130,18 @@ export default function AboutPage() {
           </div>
         </div>
 
-        <Link to="/">
-          <button className="mt-5 btn btn-outline-primary">
+        <Link to="/" className="d-flex flex-column text-decoration-none justify-content-center align-items-center">
+        <img
+            src={Phone}
+            width={270}
+            height={225}
+            alt="Karlo Kasi"
+            className="rounded-circle shadow bubble phoneGif"
+          />
+          <button className="btn btn-primary "> 
             Visita il nostro sito
           </button>
+        
         </Link>
       </div>
     </main>
