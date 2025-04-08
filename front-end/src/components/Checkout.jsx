@@ -986,7 +986,7 @@ export default function Checkout({ onPaymentSuccess }) {
                     Elaborazione in corso...
                   </button>
                 ) : (
-                  <button className="btn btn-primary w-100" type="submit">
+                  <button className="btn btn-primary fs-5 w-100" type="submit">
                     Acquista ora
                   </button>
                 )}

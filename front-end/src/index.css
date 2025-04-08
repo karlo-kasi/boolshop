@@ -347,18 +347,21 @@ footer ul a {
   color: white;
 }
 
-@keyframes bubble {
-  0% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-  100% {
-    transform: translateY(0);
-  }
+.mobile-menu {
+  transform: translateY(-20%);
+  opacity: 0;
+  transition: all 0.4s ease;
+  pointer-events: none;
 }
 
-.bubble {
-  animation: bubble 5s infinite ease-in-out;
+.mobile-menu.slide-down {
+  transform: translateY(0%);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mobile-menu.slide-up {
+  transform: translateY(-20%);
+  opacity: 0;
+  pointer-events: none;
 }

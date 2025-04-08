@@ -7,12 +7,14 @@ import { useModal } from "../context/ModalContext";
 import { useWishlist } from "../context/WishlistContext";
 import WishlistModal from "./WishlistModal";
 import { useCart } from "../context/CartContext";
+import { FaBars, FaTimes } from 'react-icons/fa';
 
 export default function Header() {
   const [showSearchModal, setShowSearchModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState("");
   const navigate = useNavigate(); // Usato per navigare alla pagina dei risultati di ricerca
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleSearchClick = () => {
     setShowSearchModal(true);
@@ -68,17 +70,29 @@ export default function Header() {
       <header className="position-sticky top-0 z-3">
         <nav className="navbar navbar-light bg-light">
           <div className="container d-flex flex-wrap justify-content-between align-items-center px-6">
-            <div>
-              <Link className="navbar-brand" to={"/"}>
+            <div className="d-flex align-items-center">
+              {/* Mobile Hamburger Icon */}
+              <div className="d-flex d-lg-none ms-auto">
+                <button
+                  className="btn"
+                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                >
+                  {isMobileMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+                </button>
+              </div>
+              <Link className="navbar-brand d-none d-lg-flex" to={"/"}>
                 <img
                   className="logo"
-                  src="../public/boolshop-logo.svg"
+                  src="../boolshop-logo.svg"
                   alt="boolshop"
                 />
               </Link>
+              <NavLink className={"d-block d-lg-none"} to={"/search"}>
+                <FaSearch className="fs-3 text-black" />
+              </NavLink>
             </div>
 
-            <div className="d-none d-lg-flex">
+            <div className="d-none d-lg-flex gap-3">
               <Link to="/">
                 <button className="btn fw-bold fs-5">Home</button>
               </Link>
@@ -90,8 +104,47 @@ export default function Header() {
               </Link>
             </div>
 
+            <Link className="navbar-brand d-flex d-lg-none" to={"/"}>
+              <img
+                className="logo"
+                src="../public/boolshop-logo.svg"
+                alt="boolshop"
+              />
+            </Link>
+
+
+
+
+            {/* Mobile Menu */}
+            <div
+              className={`position-absolute top-100 start-0 w-100 bg-white shadow-sm d-lg-none p-3 z-3 mobile-menu ${isMobileMenuOpen ? "slide-down" : "slide-up"
+                }`}
+            >
+              <Link
+                to="/"
+                className="d-block mt-2 mb-3 text-decoration-none text-black"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Home
+              </Link>
+              <Link
+                to="/search"
+                className="d-block mb-3 text-decoration-none text-black"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Prodotti
+              </Link>
+              <Link
+                to="/about"
+                className="d-block text-decoration-none text-black"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Chi Siamo
+              </Link>
+            </div>
+
             <div className="d-flex gap-3">
-              <NavLink to={"/search"}>
+              <NavLink className={"d-none d-lg-block"} to={"/search"}>
                 <FaSearch className="fs-3 text-black" />
               </NavLink>
               <NavLink onClick={handleWishlistClick}>

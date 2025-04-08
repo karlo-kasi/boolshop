@@ -42,7 +42,7 @@ export default function Footer() {
 
                     <section className="d-flex justify-content-between align-items-center">
                         <div>
-                            <img className="logo" src="../public/logo-footer.png" alt="boolshop-footer" width="350px"/>
+                            <img className="logo" src="../logo-footer.png" alt="boolshop-footer" width="350px"/>
                             <p className="text-white small-text">
                                 Boolshop® | Create By Fabio, Carmelo, Diego, Michael e Karlo <br />
                             </p>
