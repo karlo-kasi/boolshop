@@ -359,6 +359,6 @@ footer ul a {
 .nav-link-hover:hover,
 .nav-link-hover.active {
   text-decoration: underline !important;
-  text-underline-offset: 8px !important;
+  text-underline-offset: 7px !important;
   text-decoration-color: blue !important;
 }
