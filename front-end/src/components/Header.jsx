@@ -50,7 +50,6 @@ export default function Header() {
     removeFromCart: removeFromCartContext,
   } = useCart();
 
-
   const removeFromCart = (id) => {
     removeFromCartContext(id);
   };
@@ -114,16 +113,32 @@ export default function Header() {
               </NavLink>
             </div>
 
-            <div className="d-none d-lg-flex gap-3">
-              <Link to="/">
-                <button className="btn fw-bold fs-5">Home</button>
-              </Link>
-              <Link to="/search">
-                <button className="btn fw-bold fs-5">Prodotti</button>
-              </Link>
-              <Link to="/about">
-                <button className="btn fw-bold fs-5">Chi Siamo</button>
-              </Link>
+
+            <div className="d-none d-lg-flex gap-2">
+              <NavLink
+                to="/"
+                className={({ isActive }) =>
+                  `btn fw-bold fs-5 ${isActive ? "text-primary" : "text-dark"}`
+                }
+              >
+                Home
+              </NavLink>
+              <NavLink
+                to="/search"
+                className={({ isActive }) =>
+                  `btn fw-bold fs-5 ${isActive ? "text-primary" : "text-dark"}`
+                }
+              >
+                Prodotti
+              </NavLink>
+              <NavLink
+                to="/about"
+                className={({ isActive }) =>
+                  `btn fw-bold fs-5 ${isActive ? "text-primary" : "text-dark"}`
+                }
+              >
+                Chi Siamo
+              </NavLink>
             </div>
 
             <Link className="navbar-brand d-flex d-lg-none" to={"/"}>
@@ -245,11 +260,11 @@ export default function Header() {
                                     const updatedItems = cartItems.map(
                                       (cartItem) =>
                                         cartItem.id === item.id &&
-                                          cartItem.quantity > 1
+                                        cartItem.quantity > 1
                                           ? {
-                                            ...cartItem,
-                                            quantity: cartItem.quantity - 1,
-                                          }
+                                              ...cartItem,
+                                              quantity: cartItem.quantity - 1,
+                                            }
                                           : cartItem
                                     );
                                     setCartItemsContext(updatedItems);
@@ -266,9 +281,9 @@ export default function Header() {
                                     (cartItem) =>
                                       cartItem.id === item.id
                                         ? {
-                                          ...cartItem,
-                                          quantity: cartItem.quantity + 1,
-                                        }
+                                            ...cartItem,
+                                            quantity: cartItem.quantity + 1,
+                                          }
                                         : cartItem
                                   );
                                   setCartItemsContext(updatedItems);
