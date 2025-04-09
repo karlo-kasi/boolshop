@@ -377,7 +377,8 @@ margin-top: 300px;
 .nav-link-hover.active {
   text-decoration: underline !important;
   text-underline-offset: 7px !important;
-  text-decoration-color: blue !important;
+  text-decoration-color: #085FD7 !important;
+}
 
 .pressSub{
   font-size: 0.6rem ;
