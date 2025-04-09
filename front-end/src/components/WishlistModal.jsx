@@ -79,18 +79,26 @@ export default function WishlistModal({ show, onClose }) {
                       </Link>
                       <p>Prezzo: {item.price}€</p>
                       <div className="d-flex gap-4 justify-content-center">
-                        <PressAndHoldButton
-                          className="btn-wishlist"
-                          onHoldComplete={() => addToCart(item)}
+                        <div>
+                        <button
+                          className="btn-wishlist press-hold-btn "
+                          onClick={() => addToCart(item)}
                         >
                           Aggiungi al carrello
-                        </PressAndHoldButton>
+                        </button>
+                        <span></span>
+                        </div>
+
+                        <div className="d-flex flex-column align-items-center">
                         <PressAndHoldButton
                           className="btn-wishlist btn-wishlist-red"
                           onHoldComplete={() => removeFromWishlist(item.id)}
                         >
                           Rimuovi dai preferiti
                         </PressAndHoldButton>
+                        <span class="pressSub text-center d-block">tieni premuto per rimuovere </span>
+
+                        </div>
                       </div>
                     </div>
                   </div>

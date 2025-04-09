@@ -50,7 +50,6 @@ export default function Header() {
     removeFromCart: removeFromCartContext,
   } = useCart();
 
-
   const removeFromCart = (id) => {
     removeFromCartContext(id);
   };
@@ -83,6 +82,10 @@ export default function Header() {
     };
   }, [isModalOpen]);
 
+  const calculateTotal = () => {
+    return cartItems.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
+  };
+
   return (
     <>
       <header className="position-sticky top-0 z-3">
@@ -110,16 +113,32 @@ export default function Header() {
               </NavLink>
             </div>
 
-            <div className="d-none d-lg-flex gap-3">
-              <Link to="/">
-                <button className="btn fw-bold fs-5">Home</button>
-              </Link>
-              <Link to="/search">
-                <button className="btn fw-bold fs-5">Prodotti</button>
-              </Link>
-              <Link to="/about">
-                <button className="btn fw-bold fs-5">Chi Siamo</button>
-              </Link>
+
+            <div className="d-none d-lg-flex gap-2">
+              <NavLink
+                to="/"
+                className={({ isActive }) =>
+                  `btn fw-bold fs-5 ${isActive ? "text-primary" : "text-dark"}`
+                }
+              >
+                Home
+              </NavLink>
+              <NavLink
+                to="/search"
+                className={({ isActive }) =>
+                  `btn fw-bold fs-5 ${isActive ? "text-primary" : "text-dark"}`
+                }
+              >
+                Prodotti
+              </NavLink>
+              <NavLink
+                to="/about"
+                className={({ isActive }) =>
+                  `btn fw-bold fs-5 ${isActive ? "text-primary" : "text-dark"}`
+                }
+              >
+                Chi Siamo
+              </NavLink>
             </div>
 
             <Link className="navbar-brand d-flex d-lg-none" to={"/"}>
@@ -241,11 +260,11 @@ export default function Header() {
                                     const updatedItems = cartItems.map(
                                       (cartItem) =>
                                         cartItem.id === item.id &&
-                                          cartItem.quantity > 1
+                                        cartItem.quantity > 1
                                           ? {
-                                            ...cartItem,
-                                            quantity: cartItem.quantity - 1,
-                                          }
+                                              ...cartItem,
+                                              quantity: cartItem.quantity - 1,
+                                            }
                                           : cartItem
                                     );
                                     setCartItemsContext(updatedItems);
@@ -262,9 +281,9 @@ export default function Header() {
                                     (cartItem) =>
                                       cartItem.id === item.id
                                         ? {
-                                          ...cartItem,
-                                          quantity: cartItem.quantity + 1,
-                                        }
+                                            ...cartItem,
+                                            quantity: cartItem.quantity + 1,
+                                          }
                                         : cartItem
                                   );
                                   setCartItemsContext(updatedItems);
@@ -287,7 +306,11 @@ export default function Header() {
                 </div>
               )}
             </div>
-            <div className="custom-modal-footer">
+            <div className="custom-modal-footer d-flex justify-content-between">
+                  <div className="d-flex gap-2 justify-content-between align-items-center mt-3">
+                    <h5 className="fw-bold">Totale:</h5>
+                    <h5 className="fw-bold">{calculateTotal()}€</h5>
+                  </div>
               <Link to="/cart">
                 <button
                   type="button"

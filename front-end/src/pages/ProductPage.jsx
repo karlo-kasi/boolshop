@@ -143,7 +143,12 @@ export default function ProductPage() {
                 className={`${isAlreadyInWhishlist ? "text-danger" : "text-black"}`}
                 onClick={() => handleWhishlist(product)}
               >
-                <FaHeart className="heart-icon" size={25} />
+                <FaHeart
+                  className={`heart-icon ${
+                    wishlist.some((item) => item.id === product.id) ? "text-danger" : ""
+                  }`}
+                  size={25}
+                />
               </NavLink>
             </div>
           </div>
