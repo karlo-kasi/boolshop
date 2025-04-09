@@ -61,7 +61,7 @@ export default function CartPage() {
     <div className="container mb-5 mx-0">
       <h1 className="text-center mt-3">Il tuo carrello</h1>
       <div className="row">
-        <div className="col-md-8">
+        <div className="col-12 col-lg-8">
           <div className="bg-light p-3 mb-4">
             <h5 className="mb-3">Prodotti nel tuo carrello</h5>
             {cartItems.length === 0 ? (
