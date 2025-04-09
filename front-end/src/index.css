@@ -42,14 +42,16 @@ footer ul a {
 /* Button - Carmelo !!! Attenzione, questi Button sono presenti in ProductPage, CartPage */
 
 .custom-btnCarmelo {
-  background-color: #fefefe !important;
+margin-top: 300px;
+
+  /* background-color: #fefefe !important;
   color: #000000 !important;
   border: 1px solid #8a9098 !important;
   border-radius: 5px !important;
   padding: 7px;
   cursor: pointer !important;
   text-align: center !important;
-  text-decoration: none !important; /* Aggiungi questa regola dalla definizione duplicata */
+  text-decoration: none !important; Aggiungi questa regola dalla definizione duplicata */
 }
 
 /* .custom-btnCarmelo:hover {
@@ -179,9 +181,6 @@ footer ul a {
 .custom-modal-footer button:hover {
   background-color: #495057;
 }
-
-
-
 .thank-you-page,
 .not-found {
   height: 60vh;
@@ -211,7 +210,7 @@ footer ul a {
   top: 14vh; /* Posiziona sotto l'Header */
   right: 20px;
   width: 90%;
-  max-width: 400px;
+  max-width: 450px;
   z-index: 1050;
   animation: slideDownCompact 0.4s ease-in-out;
 }
@@ -276,20 +275,6 @@ footer ul a {
   }
 }
 
-.btn-wishlist {
-  font-size: 0.7rem !important;
-
-
-  background-color: #fefefe !important;
-  color: #000000 !important;
-  border: 1px solid #8a9098 !important;
-  border-radius: 5px !important;
-  padding: 7px;
-  cursor: pointer !important;
-  text-align: center !important;
-  text-decoration: none !important;
-}
-
 .custom-btnCarmelo:hover {
   background-color: rgba(49, 131, 231, 0.715);
   color: #fff;
@@ -310,55 +295,105 @@ footer ul a {
   height: 60vh;
 }
 
-
-
-
-.small-text{
+.small-text {
   font-size: 0.7rem;
 }
 
-.btn-wishlist.hold-progress {
-  background-color: red !important;
-  color: white !important;
-  text-shadow: 2px 2px 5px #000000 !important;
-  transition: background-color 3s ease-in, color 1.3s ease-in,
-    text-shadow 3s ease-in !important;
-}
-
-.btn-wishlist.hold-progress-green {
-  background-color: green !important;
-  color: white !important;
-  text-shadow: 2px 2px 5px #000000 !important;
-  transition: background-color 3s ease-in, color 1.3s ease-in,
-    text-shadow 3s ease-in !important;
-}
-
-.btn-wishlist.hold-progress-red {
-  background-color: red !important;
-  color: white !important;
-  text-shadow: 2px 2px 5px #000000 !important;
-  transition: background-color 3s ease-in, color 1.3s ease-in,
-    text-shadow 3s ease-in !important;
-}
 
 
-.trash{
+.trash {
   width: 30px;
   height: 30px;
-  border: 1px solid #6C757D;
-  color: #6C757D;
+  border: 1px solid #6c757d;
+  color: #6c757d;
   padding: 5px;
   border-radius: 5px;
 }
 
-.trash:hover{
-  background-color: #6C757D;
+.trash:hover {
+  background-color: #6c757d;
   color: white;
 }
+
+.mobile-menu {
+  transform: translateY(-20%);
+  opacity: 0;
+  transition: all 0.4s ease;
+  pointer-events: none;
+}
+
+.mobile-menu.slide-down {
+  transform: translateY(0%);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mobile-menu.slide-up {
+  transform: translateY(-20%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Press and Hold Button */
+.press-hold-btn {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  background: #F2F2F2;
+  border: 1px solid #8a9098;
+  font-size: 0.875rem;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.press-hold-progress {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background-color: rgb(214, 63, 78); /* Rosso più trasparente */
+  width: 0%;
+  transition: width 0.1s linear;
+  z-index: 0;
+}
+
+.press-hold-btn span {
+  position: relative;
+  z-index: 1;
+}
+
+.press-hold-btn:active {
+  transform: scale(0.98);
+}
+
+.press-hold-btn.holding {
+  background-color: #fefefe;
+  color: white;
+  text-shadow: 0.6px 0.6px 2px #000000 ;
+}
+
 
 .nav-link-hover:hover,
 .nav-link-hover.active {
   text-decoration: underline !important;
   text-underline-offset: 7px !important;
   text-decoration-color: blue !important;
+
+.pressSub{
+  font-size: 0.6rem ;
+}
+
+@keyframes trembling {
+  0% { transform: translate(0.5px, 0.5px) rotate(0deg); }
+  25% { transform: translate(-0.5px, -0.5px) rotate(-0.5deg); }
+  50% { transform: translate(0.5px, -0.5px) rotate(0.5deg); }
+  75% { transform: translate(-0.5px, 0.5px) rotate(-0.5deg); }
+  100% { transform: translate(0.5px, 0.5px) rotate(0deg); }
+}
+
+.brokenPhone {
+  position: absolute;
+  top: 300px;
+  animation: trembling 0.8s infinite;
+
 }

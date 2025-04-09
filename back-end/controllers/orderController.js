@@ -7,8 +7,8 @@ function sendConfirmationEmail(name, email, orderId, total, arrayProducts) {
         host: 'sandbox.smtp.mailtrap.io',  // Server SMTP di Mailtrap
         port: 2525,                 // Porta SMTP            // Usa TLS
         auth: {
-            user: 'c4b706acf77fab',    // Il tuo username di Mailtrap
-            pass: '26b215ce533dec'     // La tua password di Mailtrap
+            user: 'cf79ddc6a81dc7',    // Il tuo username di Mailtrap
+            pass: 'c1da937a604768'     // La tua password di Mailtrap
         },
     });
 
@@ -98,7 +98,7 @@ function sendConfirmationEmail(name, email, orderId, total, arrayProducts) {
                 <div class="footer">
                     <p>Se hai domande o hai bisogno di assistenza, non esitare a contattarci.</p>
                     <p>BoolShop - Il tuo negozio online di fiducia.</p>
-                    <img src="http://localhost:3000/boolshop-logo.svg" alt="Logo BoolShop" style="width: 150px; height: auto; margin-top: 10px; text-align: center" />
+                    <img src="http://localhost:3000/boolshop-logo.svg" alt="Logo BoolShop" style="width: 100px; height: auto; margin-top: 10px; text-align: center" />
                 </div>
             </div>
         </body>
@@ -124,8 +124,8 @@ function sendConfirmationEmail(name, email, orderId, total, arrayProducts) {
 
 
 function storeOrder(req, res) {
-    const { name, surname, email, coupon_id, city, province, zip, phone_number, billing_address } = req.body;
-    let { products, shipping_address } = req.body;
+    const { name, surname, email, coupon_id, city, province, zip, phone_number, billing_city, billing_zip, billing_province, sameBillingAddress } = req.body;
+    let { products, shipping_address, billing_address } = req.body;
 
     // Validazione dei dati dell'ordine
     //if (!name || !email || !surname || !shipping_address || !phone_number || !products) {
@@ -158,6 +158,25 @@ function storeOrder(req, res) {
     }
 
     shipping_address = `${shipping_address}, ${city}(${province}), ${zip}`;
+
+    if (!sameBillingAddress) {
+        if (!billing_address || billing_address.trim().length < 5) {
+            return res.status(400).json({ error: 'L\'indirizzo di fatturazione deve contenere almeno 5 caratteri' });
+        }
+        if (!billing_city || billing_city.trim().length < 3) {
+            return res.status(400).json({ error: 'La città di fatturazione deve contenere almeno 3 caratteri' });
+        }
+        if (!billing_province || billing_province.trim().length !== 2) {
+            return res.status(400).json({ error: 'Scegli una provincia di fatturazione' });
+        }
+        if (!billing_zip || billing_zip.trim().length !== 5) {
+            return res.status(400).json({ error: 'Il CAP di fatturazione deve essere composto da 5 caratteri' });
+        }
+
+        billing_address = `${billing_address}, ${billing_city}(${billing_province}), ${billing_zip}`;
+    } else {
+        billing_address = shipping_address;
+    }
 
     // Logica per ottenere i prodotti dal carrello
     let productsIds = products.map(element => {

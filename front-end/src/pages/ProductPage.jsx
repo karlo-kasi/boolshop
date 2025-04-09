@@ -29,9 +29,10 @@ export default function ProductPage() {
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1); // Stato per la quantità
   const { openModal } = useModal(); // Usa il contesto
-  const { addToWishlist, wishlist } = useWishlist(); // Importiamo la wishlist
+  const { addToWishlist, wishlist, setWishlist } = useWishlist(); // Importiamo la wishlist
   const [showWishlistModal, setShowWishlistModal] = useState(false);
   const { addToCart: addToCartContext } = useCart();
+  const [isAlreadyInWhishlist, setIsAlreadyInWishlist] = useState(false);
 
   useEffect(() => {
     console.log("Product ID:", slug);
@@ -41,6 +42,12 @@ export default function ProductPage() {
       .then((response) => {
         if (response.data) {
           setProduct(response.data);
+          const existingItem = wishlist.find((item) => item.id === response.data.id);
+          if (existingItem) {
+            setIsAlreadyInWishlist(true);
+          } else {
+            setIsAlreadyInWishlist(false);
+          }
         } else {
           setError("Prodotto non trovato");
         }
@@ -88,9 +95,19 @@ export default function ProductPage() {
     }
   };
 
-  const handleAddToWishlist = (product) => {
-    addToWishlist(product);
-    setShowWishlistModal(true); // Apri la modale della wishlist
+  const handleWhishlist = (product) => {
+    const existingItem = wishlist.find((item) => item.id === product.id);
+    if (existingItem) {
+      setIsAlreadyInWishlist(false);
+      const updatedItems = wishlist.filter(
+        (item) => item.id !== product.id
+      );
+      setWishlist(updatedItems);
+    } else {
+      setIsAlreadyInWishlist(true);
+      addToWishlist(product);
+    }
+    setShowWishlistModal(true);
   };
 
   if (error) {
@@ -101,6 +118,7 @@ export default function ProductPage() {
     return <div>Caricamento...</div>;
   }
 
+  console.log(isAlreadyInWhishlist)
   return (
     <>
       {/* ROW SINGLE CARD */}
@@ -122,10 +140,15 @@ export default function ProductPage() {
             <QuantityCounter onQuantityChange={handleQuantityChange} />
             <div className="d-flex gap-4">
               <NavLink
-                className="text-black"
-                onClick={() => handleAddToWishlist(product)}
+                className={`${isAlreadyInWhishlist ? "text-danger" : "text-black"}`}
+                onClick={() => handleWhishlist(product)}
               >
-                <FaHeart className="heart-icon" size={25} />
+                <FaHeart
+                  className={`heart-icon ${
+                    wishlist.some((item) => item.id === product.id) ? "text-danger" : ""
+                  }`}
+                  size={25}
+                />
               </NavLink>
             </div>
           </div>

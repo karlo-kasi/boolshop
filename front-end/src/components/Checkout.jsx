@@ -23,6 +23,9 @@ export default function Checkout({ onPaymentSuccess }) {
     phone_number: "",
     sameBillingAddress: true,
     billing_address: "",
+    billing_city: "",
+    billing_province: "",
+    billing_zip: "",
     acceptTerms: false,
   };
 
@@ -39,6 +42,10 @@ export default function Checkout({ onPaymentSuccess }) {
     city: "",
     zip: "",
     province: "",
+    billing_address: "",
+    billing_city: "",
+    billing_province: "",
+    billing_zip: "",
   });
   let [errors, setErrors] = useState({
     name: "",
@@ -48,11 +55,15 @@ export default function Checkout({ onPaymentSuccess }) {
     city: "",
     province: "",
     zip: "",
+    billing_address: "",
+    billing_city: "",
+    billing_province: "",
+    billing_zip: "",
     phone_number: "",
     acceptTerms: "",
   });
 
-  console.log(cart);
+  console.log(formData);
 
   const stripe = useStripe();
   const elements = useElements();
@@ -62,23 +73,6 @@ export default function Checkout({ onPaymentSuccess }) {
   const [paymentSuccess, setPaymentSuccess] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
-
-  //const submitOrder = async (dataToSubmit) => {
-  //    try {
-  //        const response = await axios.post("http://localhost:3000/cover/order", dataToSubmit, {
-  //            headers: { 'Content-Type': 'application/json' },
-  //        });
-  //        console.log("Order Response:", response.data);
-  //        // Azioni in caso di successo: svuotare il carrello, resettare il form, reindirizzare l'utente, ecc.
-  //        localStorage.removeItem("cartItems");
-  //        setCart([]);
-  //        setFormData(initalData);
-  //        navigate("/thank-you");
-  //    } catch (error) {
-  //        console.error("Errore nell'invio dell'ordine:", error);
-  //        setIsFormValid(false);
-  //    }
-  //};
 
   const validateForm = () => {
     const newErrors = {};
@@ -118,6 +112,25 @@ export default function Checkout({ onPaymentSuccess }) {
 
     if (formData.province === "") {
       newErrors.province = "Seleziona una provincia.";
+    }
+
+    if (formData.billing_address.trim().length < 5 && !formData.sameBillingAddress) {
+      newErrors.billing_address =
+        "L'indirizzo di fatturazione deve essere lungo almeno 5 caratteri.";
+    }
+
+    if (formData.billing_city.trim().length < 3 && !formData.sameBillingAddress) {
+      newErrors.billing_city =
+        "La città deve essere lunga almeno 3 caratteri.";
+    }
+
+    const billing_zipPattern = /^\d{5}$/;
+    if (!billing_zipPattern.test(formData.billing_zip.trim()) && !formData.sameBillingAddress) {
+      newErrors.billing_zip = "Il CAP deve essere lungo 5 cifre.";
+    }
+
+    if (formData.billing_province === "" && !formData.sameBillingAddress) {
+      newErrors.billing_province = "Seleziona una provincia.";
     }
 
     setErrors(newErrors);
@@ -308,6 +321,35 @@ export default function Checkout({ onPaymentSuccess }) {
             "L'indirizzo di fatturazione deve essere lungo almeno 5 caratteri.";
         } else {
           newErrors.billing_address = "";
+        }
+      }
+
+      if (name === "billing_city" && !formData.sameBillingAddress) {
+        const billing_city = value.trim();
+
+        if (billing_city.length < 3) {
+          newErrors.billing_city = "La città deve essere lunga almeno 3 caratteri.";
+        } else {
+          newErrors.billing_city = ""; // Rimuove l'errore se la condizione è soddisfatta
+        }
+      }
+
+      if (name === "billing_zip" && !formData.sameBillingAddress) {
+        const billing_zip = value.trim();
+
+        const zipPattern = /^\d{5}$/; // Modifica il pattern in base al formato desiderato
+        if (!zipPattern.test(billing_zip)) {
+          newErrors.billing_zip = "Il CAP deve essere lungo 5 cifre.";
+        } else {
+          newErrors.billing_zip = ""; // Rimuove l'errore se la condizione è soddisfatta
+        }
+      }
+
+      if (name === "billing_province" && !formData.sameBillingAddress) {
+        if (value === "") {
+          newErrors.billing_province = "Seleziona una provincia.";
+        } else {
+          newErrors.billing_province = ""; // Rimuove l'errore se la condizione è soddisfatta
         }
       }
 
@@ -548,7 +590,7 @@ export default function Checkout({ onPaymentSuccess }) {
                       className={`form-control ${errors.email ? "is-invalid" : ""
                         }`}
                       id="email"
-                      placeholder="you@example.com"
+                      placeholder="Es. you@example.com"
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
@@ -573,7 +615,7 @@ export default function Checkout({ onPaymentSuccess }) {
                       className={`form-control ${errors.phone_number ? "is-invalid" : ""
                         }`}
                       id="phone_number"
-                      placeholder="3333333333"
+                      placeholder="Es. 3333333333"
                       name="phone_number"
                       value={formData.phone_number}
                       onChange={handleChange}
@@ -600,7 +642,7 @@ export default function Checkout({ onPaymentSuccess }) {
                       className={`form-control ${errors.shipping_address ? "is-invalid" : ""
                         }`}
                       id="shipping_address"
-                      placeholder="Via Roma 1"
+                      placeholder="Es. Via Roma 1"
                       name="shipping_address"
                       value={formData.shipping_address}
                       onChange={handleChange}
@@ -818,24 +860,208 @@ export default function Checkout({ onPaymentSuccess }) {
                 </div>
 
                 {!formData.sameBillingAddress && (
-                  <div className="mb-3">
-                    <label htmlFor="billing_address" className="form-label">
-                      Indirizzo di fatturazione
-                    </label>
-                    <input
-                      type="text"
-                      className={`form-control ${errors.billing_address ? "is-invalid" : ""
-                        }`}
-                      id="billing_address"
-                      name="billing_address"
-                      value={formData.billing_address}
-                      onChange={handleChange}
-                    />
-                    {errors.billing_address && (
-                      <div className="invalid-feedback">
-                        {errors.billing_address}
-                      </div>
-                    )}
+                  <div className="row g-3">
+                    <div className="col-12">
+                      <label htmlFor="billing_address" className="form-label">
+                        Indirizzo di fatturazione
+                      </label>
+                      <input
+                        type="text"
+                        className={`form-control ${errors.billing_address ? "is-invalid" : ""
+                          }`}
+                        id="billing_address"
+                        name="billing_address"
+                        value={formData.billing_address}
+                        onChange={handleChange}
+                      />
+                      {errors.billing_address && (
+                        <div className="invalid-feedback">{errors.billing_address}</div>
+                      )}
+                      {!errors.billing_address && serverErrors.billing_address && (
+                        <div className="invalid-feedback">
+                          {serverErrors.billing_address}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="col-md-4">
+                      <label htmlFor="billing_city" className="form-label">
+                        Città
+                      </label>
+                      <input
+                        type="text"
+                        className={`form-control ${errors.billing_city ? "is-invalid" : ""
+                          }`}
+                        id="billing_city"
+                        placeholder=""
+                        name="billing_city"
+                        value={formData.billing_city}
+                        onChange={handleChange}
+                        required
+                      />
+                      {errors.billing_city && (
+                        <div className="invalid-feedback">{errors.billing_city}</div>
+                      )}
+                      {errors.billing_city && serverErrors.billing_city && (
+                        <div className="invalid-feedback">
+                          {serverErrors.billing_city}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="col-md-4">
+                      <label htmlFor="billing_zip" className="form-label">
+                        CAP
+                      </label>
+                      <input
+                        type="text"
+                        className={`form-control ${errors.billing_zip ? "is-invalid" : ""
+                          }`}
+                        id="zip"
+                        placeholder=""
+                        name="billing_zip"
+                        value={formData.billing_zip}
+                        onChange={handleChange}
+                        required
+                      />
+                      {errors.billing_zip && (
+                        <div className="invalid-feedback">{errors.billing_zip}</div>
+                      )}
+                      {errors.billing_zip && serverErrors.billing_zip && (
+                        <div className="invalid-feedback">
+                          {serverErrors.billing_zip}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="col-md-4">
+                      <label
+                        htmlFor="billing_province"
+                        className={`form-label ${errors.billing_province ? "is-invalid" : ""
+                          }`}
+                      >
+                        Provincia
+                      </label>
+                      <select
+                        className={`form-select ${errors.billing_province ? "is-invalid" : ""
+                          }`}
+                        id="billing_province"
+                        name="billing_province"
+                        value={formData.billing_province}
+                        onChange={handleChange}
+                        required
+                      >
+                        <option value={""}>Scegli</option>
+                        <option value="AG">Agrigento (AG)</option>
+                        <option value="AL">Alessandria (AL)</option>
+                        <option value="AN">Ancona (AN)</option>
+                        <option value="AO">Aosta (AO)</option>
+                        <option value="AR">Arezzo (AR)</option>
+                        <option value="AP">Ascoli Piceno (AP)</option>
+                        <option value="AT">Asti (AT)</option>
+                        <option value="AV">Avellino (AV)</option>
+                        <option value="BA">Bari (BA)</option>
+                        <option value="BT">Barletta-Andria-Trani (BT)</option>
+                        <option value="BL">Belluno (BL)</option>
+                        <option value="BN">Benevento (BN)</option>
+                        <option value="BG">Bergamo (BG)</option>
+                        <option value="BI">Biella (BI)</option>
+                        <option value="BO">Bologna (BO)</option>
+                        <option value="BZ">Bolzano (BZ)</option>
+                        <option value="BS">Brescia (BS)</option>
+                        <option value="BR">Brindisi (BR)</option>
+                        <option value="CA">Cagliari (CA)</option>
+                        <option value="CB">Campobasso (CB)</option>
+                        <option value="CE">Caserta (CE)</option>
+                        <option value="CT">Catania (CT)</option>
+                        <option value="CZ">Catanzaro (CZ)</option>
+                        <option value="CH">Chieti (CH)</option>
+                        <option value="CO">Como (CO)</option>
+                        <option value="CS">Cosenza (CS)</option>
+                        <option value="CR">Cremona (CR)</option>
+                        <option value="KR">Crotone (KR)</option>
+                        <option value="CN">Cuneo (CN)</option>
+                        <option value="EN">Enna (EN)</option>
+                        <option value="FM">Fermo (FM)</option>
+                        <option value="FE">Ferrara (FE)</option>
+                        <option value="FI">Firenze (FI)</option>
+                        <option value="FG">Foggia (FG)</option>
+                        <option value="FC">Forlì-Cesena (FC)</option>
+                        <option value="FR">Frosinone (FR)</option>
+                        <option value="GE">Genova (GE)</option>
+                        <option value="GO">Gorizia (GO)</option>
+                        <option value="GR">Grosseto (GR)</option>
+                        <option value="IM">Imperia (IM)</option>
+                        <option value="IS">Isernia (IS)</option>
+                        <option value="SP">La Spezia (SP)</option>
+                        <option value="LT">Latina (LT)</option>
+                        <option value="LE">Lecce (LE)</option>
+                        <option value="LC">Lecco (LC)</option>
+                        <option value="LI">Livorno (LI)</option>
+                        <option value="LO">Lodi (LO)</option>
+                        <option value="LU">Lucca (LU)</option>
+                        <option value="MC">Macerata (MC)</option>
+                        <option value="MN">Mantova (MN)</option>
+                        <option value="MS">Massa-Carrara (MS)</option>
+                        <option value="MT">Matera (MT)</option>
+                        <option value="VS">Medio Campidano (VS)</option>
+                        <option value="ME">Messina (ME)</option>
+                        <option value="MI">Milano (MI)</option>
+                        <option value="MO">Modena (MO)</option>
+                        <option value="MB">Monza e della Brianza (MB)</option>
+                        <option value="NA">Napoli (NA)</option>
+                        <option value="NO">Novara (NO)</option>
+                        <option value="NU">Nuoro (NU)</option>
+                        <option value="OR">Oristano (OR)</option>
+                        <option value="PD">Padova (PD)</option>
+                        <option value="PA">Palermo (PA)</option>
+                        <option value="PR">Parma (PR)</option>
+                        <option value="PV">Pavia (PV)</option>
+                        <option value="PG">Perugia (PG)</option>
+                        <option value="PU">Pesaro e Urbino (PU)</option>
+                        <option value="PE">Pescara (PE)</option>
+                        <option value="PI">Pisa (PI)</option>
+                        <option value="PT">Pistoia (PT)</option>
+                        <option value="PN">Pordenone (PN)</option>
+                        <option value="PR">Potenza (PR)</option>
+                        <option value="RG">Ragusa (RG)</option>
+                        <option value="RA">Ravenna (RA)</option>
+                        <option value="RC">Reggio Calabria (RC)</option>
+                        <option value="RE">Reggio Emilia (RE)</option>
+                        <option value="RI">Rieti (RI)</option>
+                        <option value="RN">Rimini (RN)</option>
+                        <option value="RM">Roma (RM)</option>
+                        <option value="RO">Rovigo (RO)</option>
+                        <option value="SA">Salerno (SA)</option>
+                        <option value="SS">Sassari (SS)</option>
+                        <option value="SV">Savona (SV)</option>
+                        <option value="SI">Siena (SI)</option>
+                        <option value="SR">Siracusa (SR)</option>
+                        <option value="SO">Sondrio (SO)</option>
+                        <option value="TA">Taranto (TA)</option>
+                        <option value="TE">Teramo (TE)</option>
+                        <option value="TR">Terni (TR)</option>
+                        <option value="TO">Torino (TO)</option>
+                        <option value="TP">Trapani (TP)</option>
+                        <option value="TN">Trento (TN)</option>
+                        <option value="TV">Treviso (TV)</option>
+                        <option value="TS">Trieste (TS)</option>
+                        <option value="UD">Udine (UD)</option>
+                        <option value="VA">Varese (VA)</option>
+                        <option value="VE">Venezia (VE)</option>
+                        <option value="VB">Verbania (VB)</option>
+                        <option value="VC">Vercelli (VC)</option>
+                        <option value="VR">Verona (VR)</option>
+                        <option value="VV">Vibo Valentia (VV)</option>
+                        <option value="VI">Vicenza (VI)</option>
+                        <option value="VT">Viterbo (VT)</option>
+                      </select>
+                      {errors.billing_province && serverErrors.billing_province && (
+                        <div className="invalid-feedback">
+                          {serverErrors.billing_province}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
 
@@ -993,8 +1219,8 @@ export default function Checkout({ onPaymentSuccess }) {
               </form>
             </div>
           </div>
-        </main>
-      </div>
+        </main >
+      </div >
     </>
   );
 }

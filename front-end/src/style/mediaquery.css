@@ -1,0 +1,125 @@
+@media screen and (max-width: 767px) {
+  .about-page {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .col-md-5.col-sm-12 {
+    width: 100%;
+    text-align: center;
+  }
+
+  .col-md-5.col-sm-12 img {
+    margin-bottom: 10px;
+  }
+
+  .aboutResponsive .row {
+    flex-direction: column !important;
+  }
+
+  /* Prima riga */
+  .aboutResponsive .row:nth-child(2) .col-md-5:first-child {
+    order: 1;
+  }
+  .aboutResponsive .row:nth-child(2) .col-md-5:last-child {
+    order: 2;
+  }
+
+  /* Seconda riga */
+  .aboutResponsive .row:nth-child(3) .col-md-5:first-child {
+    order: 2;
+  }
+  .aboutResponsive .row:nth-child(3) .col-md-5:last-child {
+    order: 1;
+  }
+
+  /* Terza riga */
+  .aboutResponsive .row:nth-child(4) .col-md-5:first-child {
+    order: 1;
+  }
+  .aboutResponsive .row:nth-child(4) .col-md-5:last-child {
+    order: 2;
+  }
+
+  /* Quarta riga */
+  .aboutResponsive .row:nth-child(5) .col-md-5:first-child {
+    order: 2;
+  }
+  .aboutResponsive .row:nth-child(5) .col-md-5:last-child {
+    order: 1;
+  }
+
+  /* Quinta riga */
+  .aboutResponsive .row:nth-child(6) .col-md-5:first-child {
+    order: 1;
+  }
+  .aboutResponsive .row:nth-child(6) .col-md-5:last-child {
+    order: 2;
+  }
+
+  .aboutResponsive .col-md-5 {
+    margin-bottom: 1rem;
+  }
+}
+
+.codingGif {
+  position: relative;
+  top: 50px;
+  z-index: -1;
+}
+
+.phoneGif {
+  position: relative;
+  z-index: -1;
+  top: 50px;
+}
+
+@keyframes bubble {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.bubble {
+  animation: bubble 5s infinite ease-in-out;
+}
+
+.nameAbout {
+  font-weight: bold;
+  text-align: center;
+  text-shadow: 0.5px 2px 1px black ;
+  
+  position: relative;
+  bottom: 40px;
+}
+
+.bubbleName {
+  animation: bubbleName 5s infinite ease-in-out;
+}
+
+@keyframes bubbleName {
+  0% {
+    transform: translateY(0) rotateX(0) scale(1);
+  }
+  25% {
+    transform: translateY(-15px) translateX(5px) rotateX(10deg) rotateY(5deg)
+      scale(1.1);
+  }
+  50% {
+    transform: translateY(-25px) translateX(-5px) rotateX(-10deg) rotateY(-5deg)
+      scale(1.15);
+  }
+  75% {
+    transform: translateY(-10px) translateX(3px) rotateX(5deg) rotateY(10deg)
+      scale(1.1);
+  }
+  100% {
+    transform: translateY(0) rotateX(0) scale(1);
+  }
+}
