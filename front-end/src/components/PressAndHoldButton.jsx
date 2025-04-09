@@ -1,6 +1,11 @@
 import React, { useState, useRef } from "react";
 
-export default function PressAndHoldButton({ onHoldComplete, children }) {
+export default function PressAndHoldButton({
+  onHoldComplete,
+  children,
+  className,
+  type,
+}) {
   const [progress, setProgress] = useState(0);
   const [isHolding, setIsHolding] = useState(false);
   const progressInterval = useRef(null);
@@ -37,7 +42,10 @@ export default function PressAndHoldButton({ onHoldComplete, children }) {
 
   return (
     <button
-      className={`press-hold-btn ${isHolding ? "holding" : ""}`}
+      type={type}
+      className={`press-hold-btn ${className || ""} ${
+        isHolding ? "holding" : ""
+      }`}
       onMouseDown={startHolding}
       onMouseUp={stopHolding}
       onMouseLeave={stopHolding}
