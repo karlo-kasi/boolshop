@@ -91,8 +91,8 @@ export default function ProductPage() {
   const handleAddToWishlist = (product) => {
     const isInWishlist = wishlist.some((item) => item.id === product.id);
     if (isInWishlist) {
-      // Rimuovi il prodotto dalla wishlist
-      const updatedWishlist = wishlist.filter((item) => item.id !== product.id);
+      // Rimuovi solo l'articolo selezionato dalla wishlist
+      const updatedWishlist = wishlist.filter((item) => item.id === product.id);
       setWishlist(updatedWishlist);
     } else {
       // Aggiungi il prodotto alla wishlist

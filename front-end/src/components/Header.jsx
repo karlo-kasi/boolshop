@@ -288,15 +288,14 @@ export default function Header() {
                       </div>
                     </div>
                   ))}
-                  {/* Totale dell'ordine */}
-                  <div className="d-flex justify-content-between align-items-center mt-3">
-                    <h5 className="fw-bold">Totale Ordine:</h5>
-                    <h5 className="fw-bold">{calculateTotal()}€</h5>
-                  </div>
                 </div>
               )}
             </div>
-            <div className="custom-modal-footer">
+            <div className="custom-modal-footer d-flex justify-content-between">
+                  <div className="d-flex gap-2 justify-content-between align-items-center mt-3">
+                    <h5 className="fw-bold">Totale:</h5>
+                    <h5 className="fw-bold">{calculateTotal()}€</h5>
+                  </div>
               <Link to="/cart">
                 <button
                   type="button"
