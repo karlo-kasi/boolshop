@@ -83,6 +83,10 @@ export default function Header() {
     };
   }, [isModalOpen]);
 
+  const calculateTotal = () => {
+    return cartItems.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
+  };
+
   return (
     <>
       <header className="position-sticky top-0 z-3">
@@ -284,6 +288,11 @@ export default function Header() {
                       </div>
                     </div>
                   ))}
+                  {/* Totale dell'ordine */}
+                  <div className="d-flex justify-content-between align-items-center mt-3">
+                    <h5 className="fw-bold">Totale Ordine:</h5>
+                    <h5 className="fw-bold">{calculateTotal()}€</h5>
+                  </div>
                 </div>
               )}
             </div>
