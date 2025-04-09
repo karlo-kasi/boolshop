@@ -20,7 +20,7 @@ export default function NotFoundPage() {
           <img
             src={brokenPhone}
             alt="BrokenPhone.gif"
-            width={350}
+            width={400}
             className="rounded-circle brokenPhone"
           />
           <Link to="/">
