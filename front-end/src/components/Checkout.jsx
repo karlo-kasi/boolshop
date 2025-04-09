@@ -42,6 +42,10 @@ export default function Checkout({ onPaymentSuccess }) {
     city: "",
     zip: "",
     province: "",
+    billing_address: "",
+    billing_city: "",
+    billing_province: "",
+    billing_zip: "",
   });
   let [errors, setErrors] = useState({
     name: "",
@@ -51,11 +55,15 @@ export default function Checkout({ onPaymentSuccess }) {
     city: "",
     province: "",
     zip: "",
+    billing_address: "",
+    billing_city: "",
+    billing_province: "",
+    billing_zip: "",
     phone_number: "",
     acceptTerms: "",
   });
 
-  console.log(cart);
+  console.log(formData);
 
   const stripe = useStripe();
   const elements = useElements();
@@ -65,23 +73,6 @@ export default function Checkout({ onPaymentSuccess }) {
   const [paymentSuccess, setPaymentSuccess] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
-
-  //const submitOrder = async (dataToSubmit) => {
-  //    try {
-  //        const response = await axios.post("http://localhost:3000/cover/order", dataToSubmit, {
-  //            headers: { 'Content-Type': 'application/json' },
-  //        });
-  //        console.log("Order Response:", response.data);
-  //        // Azioni in caso di successo: svuotare il carrello, resettare il form, reindirizzare l'utente, ecc.
-  //        localStorage.removeItem("cartItems");
-  //        setCart([]);
-  //        setFormData(initalData);
-  //        navigate("/thank-you");
-  //    } catch (error) {
-  //        console.error("Errore nell'invio dell'ordine:", error);
-  //        setIsFormValid(false);
-  //    }
-  //};
 
   const validateForm = () => {
     const newErrors = {};
@@ -121,6 +112,25 @@ export default function Checkout({ onPaymentSuccess }) {
 
     if (formData.province === "") {
       newErrors.province = "Seleziona una provincia.";
+    }
+
+    if (formData.billing_address.trim().length < 5 && !formData.sameBillingAddress) {
+      newErrors.billing_address =
+        "L'indirizzo di fatturazione deve essere lungo almeno 5 caratteri.";
+    }
+
+    if (formData.billing_city.trim().length < 3 && !formData.sameBillingAddress) {
+      newErrors.billing_city =
+        "La città deve essere lunga almeno 3 caratteri.";
+    }
+
+    const billing_zipPattern = /^\d{5}$/;
+    if (!billing_zipPattern.test(formData.billing_zip.trim()) && !formData.sameBillingAddress) {
+      newErrors.billing_zip = "Il CAP deve essere lungo 5 cifre.";
+    }
+
+    if (formData.billing_province === "" && !formData.sameBillingAddress) {
+      newErrors.billing_province = "Seleziona una provincia.";
     }
 
     setErrors(newErrors);
@@ -865,8 +875,11 @@ export default function Checkout({ onPaymentSuccess }) {
                         onChange={handleChange}
                       />
                       {errors.billing_address && (
+                        <div className="invalid-feedback">{errors.billing_address}</div>
+                      )}
+                      {!errors.billing_address && serverErrors.billing_address && (
                         <div className="invalid-feedback">
-                          {errors.billing_address}
+                          {serverErrors.billing_address}
                         </div>
                       )}
                     </div>
@@ -887,8 +900,11 @@ export default function Checkout({ onPaymentSuccess }) {
                         required
                       />
                       {errors.billing_city && (
+                        <div className="invalid-feedback">{errors.billing_city}</div>
+                      )}
+                      {errors.billing_city && serverErrors.billing_city && (
                         <div className="invalid-feedback">
-                          {errors.billing_city}
+                          {serverErrors.billing_city}
                         </div>
                       )}
                     </div>
@@ -909,8 +925,11 @@ export default function Checkout({ onPaymentSuccess }) {
                         required
                       />
                       {errors.billing_zip && (
+                        <div className="invalid-feedback">{errors.billing_zip}</div>
+                      )}
+                      {errors.billing_zip && serverErrors.billing_zip && (
                         <div className="invalid-feedback">
-                          {errors.billing_zip}
+                          {serverErrors.billing_zip}
                         </div>
                       )}
                     </div>
@@ -1037,9 +1056,9 @@ export default function Checkout({ onPaymentSuccess }) {
                         <option value="VI">Vicenza (VI)</option>
                         <option value="VT">Viterbo (VT)</option>
                       </select>
-                      {errors.billing_province && (
+                      {errors.billing_province && serverErrors.billing_province && (
                         <div className="invalid-feedback">
-                          {errors.billing_province}
+                          {serverErrors.billing_province}
                         </div>
                       )}
                     </div>
