@@ -196,21 +196,29 @@ export default function CartPage() {
             <div className="modal-body">
               Sei sicuro di voler rimuovere questo prodotto dal carrello?
             </div>
-            <div className="modal-footer d-flex justify-content-between">
-              <button
+            <div className="modal-footer d-flex justify-content-between align-items-center">
+            <div className="">
+            <button
                 type="button"
                 className="press-hold-btn"
                 onClick={handleClose}
               >
                 Annulla
               </button>
-              <PressAndHoldButton
-                type="button"
-                className="btn btn-danger"
-                onHoldComplete={confirmDelete}
-              >
-                Rimuovi
-              </PressAndHoldButton>
+                <p></p>
+                </div>
+              <div className="d-flex flex-column align-items-center">
+                <PressAndHoldButton
+                  type="button"
+                  className="btn-wishlist btn-wishlist-red"
+                  onHoldComplete={confirmDelete}
+                >
+                  Rimuovi
+                </PressAndHoldButton>
+                <span class="pressSub text-center d-block">
+                  tieni premuto per rimuovere{" "}
+                </span>
+              </div>
             </div>
           </div>
         </div>
