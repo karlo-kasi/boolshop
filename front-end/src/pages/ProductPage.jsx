@@ -32,6 +32,7 @@ export default function ProductPage() {
   const { addToWishlist, wishlist, setWishlist } = useWishlist(); // Importiamo la wishlist
   const [showWishlistModal, setShowWishlistModal] = useState(false);
   const { addToCart: addToCartContext } = useCart();
+  const [isAlreadyInWhishlist, setIsAlreadyInWishlist] = useState(false);
 
   useEffect(() => {
     console.log("Product ID:", slug);
@@ -41,6 +42,12 @@ export default function ProductPage() {
       .then((response) => {
         if (response.data) {
           setProduct(response.data);
+          const existingItem = wishlist.find((item) => item.id === response.data.id);
+          if (existingItem) {
+            setIsAlreadyInWishlist(true);
+          } else {
+            setIsAlreadyInWishlist(false);
+          }
         } else {
           setError("Prodotto non trovato");
         }
@@ -88,17 +95,19 @@ export default function ProductPage() {
     }
   };
 
-  const handleAddToWishlist = (product) => {
-    const isInWishlist = wishlist.some((item) => item.id === product.id);
-    if (isInWishlist) {
-      // Rimuovi solo l'articolo selezionato dalla wishlist
-      const updatedWishlist = wishlist.filter((item) => item.id === product.id);
-      setWishlist(updatedWishlist);
+  const handleWhishlist = (product) => {
+    const existingItem = wishlist.find((item) => item.id === product.id);
+    if (existingItem) {
+      setIsAlreadyInWishlist(false);
+      const updatedItems = wishlist.filter(
+        (item) => item.id !== product.id
+      );
+      setWishlist(updatedItems);
     } else {
-      // Aggiungi il prodotto alla wishlist
+      setIsAlreadyInWishlist(true);
       addToWishlist(product);
-      setShowWishlistModal(true); // Apri la modale della wishlist
     }
+    setShowWishlistModal(true);
   };
 
   if (error) {
@@ -109,6 +118,7 @@ export default function ProductPage() {
     return <div>Caricamento...</div>;
   }
 
+  console.log(isAlreadyInWhishlist)
   return (
     <>
       {/* ROW SINGLE CARD */}
@@ -130,8 +140,8 @@ export default function ProductPage() {
             <QuantityCounter onQuantityChange={handleQuantityChange} />
             <div className="d-flex gap-4">
               <NavLink
-                className="text-black"
-                onClick={() => handleAddToWishlist(product)}
+                className={`${isAlreadyInWhishlist ? "text-danger" : "text-black"}`}
+                onClick={() => handleWhishlist(product)}
               >
                 <FaHeart
                   className={`heart-icon ${
