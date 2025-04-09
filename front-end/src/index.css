@@ -208,7 +208,7 @@ footer ul a {
   top: 14vh; /* Posiziona sotto l'Header */
   right: 20px;
   width: 90%;
-  max-width: 400px;
+  max-width: 450px;
   z-index: 1050;
   animation: slideDownCompact 0.4s ease-in-out;
 }
@@ -273,18 +273,6 @@ footer ul a {
   }
 }
 
-.btn-wishlist {
-  font-size: 0.7rem !important;
-  background-color: #fefefe !important;
-  color: #000000 !important;
-  border: 1px solid #8a9098 !important;
-  border-radius: 5px !important;
-  padding: 7px;
-  cursor: pointer !important;
-  text-align: center !important;
-  text-decoration: none !important;
-}
-
 .custom-btnCarmelo:hover {
   background-color: rgba(49, 131, 231, 0.715);
   color: #fff;
@@ -309,29 +297,7 @@ footer ul a {
   font-size: 0.7rem;
 }
 
-.btn-wishlist.hold-progress {
-  background-color: red !important;
-  color: white !important;
-  text-shadow: 2px 2px 5px #000000 !important;
-  transition: background-color 3s ease-in, color 1.3s ease-in,
-    text-shadow 3s ease-in !important;
-}
 
-.btn-wishlist.hold-progress-green {
-  background-color: green !important;
-  color: white !important;
-  text-shadow: 2px 2px 5px #000000 !important;
-  transition: background-color 3s ease-in, color 1.3s ease-in,
-    text-shadow 3s ease-in !important;
-}
-
-.btn-wishlist.hold-progress-red {
-  background-color: red !important;
-  color: white !important;
-  text-shadow: 2px 2px 5px #000000 !important;
-  transition: background-color 3s ease-in, color 1.3s ease-in,
-    text-shadow 3s ease-in !important;
-}
 
 .trash {
   width: 30px;
@@ -371,9 +337,8 @@ footer ul a {
   position: relative;
   overflow: hidden;
   cursor: pointer;
-  background: white;
+  background: #F2F2F2;
   border: 1px solid #8a9098;
-  padding: 8px 16px;
   font-size: 0.875rem;
   border-radius: 4px;
   transition: all 0.3s ease;
@@ -384,7 +349,7 @@ footer ul a {
   left: 0;
   top: 0;
   height: 100%;
-  background-color: rgb(177, 52, 64); /* Rosso più trasparente */
+  background-color: rgb(214, 63, 78); /* Rosso più trasparente */
   width: 0%;
   transition: width 0.1s linear;
   z-index: 0;
@@ -400,5 +365,11 @@ footer ul a {
 }
 
 .press-hold-btn.holding {
-  background-color: #fff5f5;
+  background-color: #fefefe;
+  color: white;
+  text-shadow: 0.6px 0.6px 2px #000000 ;
+}
+
+.pressSub{
+  font-size: 0.6rem ;
 }
