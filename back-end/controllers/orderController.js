@@ -7,8 +7,8 @@ function sendConfirmationEmail(name, email, orderId, total, arrayProducts) {
         host: 'sandbox.smtp.mailtrap.io',  // Server SMTP di Mailtrap
         port: 2525,                 // Porta SMTP            // Usa TLS
         auth: {
-            user: 'cf79ddc6a81dc7',    // Il tuo username di Mailtrap
-            pass: 'c1da937a604768'     // La tua password di Mailtrap
+            user: 'a4c6d90d79beb2',    // Il tuo username di Mailtrap
+            pass: '87232abbc07d92'     // La tua password di Mailtrap
         },
     });
 

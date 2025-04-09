@@ -8,8 +8,8 @@ async function sendEmailCoupon(email) {
     host: "sandbox.smtp.mailtrap.io",
     port: 2525,
     auth: {
-      user: "cf79ddc6a81dc7",
-      pass: "c1da937a604768",
+      user: "a4c6d90d79beb2",
+      pass: "87232abbc07d92",
     },
   });
 
