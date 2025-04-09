@@ -6,6 +6,7 @@ const PopupComponent = () => {
   const [email, setEmail] = useState("");
   const [accepted, setAccepted] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const hasSeenPopup = sessionStorage.getItem("hasSeenPopup");
@@ -24,6 +25,8 @@ const PopupComponent = () => {
       setErrorMessage("Accetta la privacy policy per continuare.");
       return;
     }
+
+    setLoading(true);
 
     try {
       const response = await fetch("http://localhost:3000/cover/register", {
@@ -48,6 +51,8 @@ const PopupComponent = () => {
       console.error("Errore:", error);
       setErrorMessage("Si è verificato un errore. Riprova più tardi.");
       setSuccessMessage(""); // Rimuovi eventuali messaggi di successo
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -116,9 +121,17 @@ const PopupComponent = () => {
               )}
               <button
                 type="submit"
-                className="btn btn-primary btn-lg w-100 rounded-0"
+                className="btn btn-primary btn-lg w-100 rounded-0 d-flex justify-content-center align-items-center"
+                disabled={loading}
               >
-                ISCRIVITI
+                {loading && (
+                  <span
+                    className="spinner-border spinner-border-sm me-2"
+                    role="status"
+                    aria-hidden="true"
+                  ></span>
+                )}
+                {loading ? "Attendi..." : "ISCRIVITI"}
               </button>
             </form>
           </div>
