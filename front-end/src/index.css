@@ -42,14 +42,16 @@ footer ul a {
 /* Button - Carmelo !!! Attenzione, questi Button sono presenti in ProductPage, CartPage */
 
 .custom-btnCarmelo {
-  background-color: #fefefe !important;
+margin-top: 220px;
+
+  /* background-color: #fefefe !important;
   color: #000000 !important;
   border: 1px solid #8a9098 !important;
   border-radius: 5px !important;
   padding: 7px;
   cursor: pointer !important;
   text-align: center !important;
-  text-decoration: none !important; /* Aggiungi questa regola dalla definizione duplicata */
+  text-decoration: none !important; Aggiungi questa regola dalla definizione duplicata */
 }
 
 /* .custom-btnCarmelo:hover {
@@ -372,4 +374,18 @@ footer ul a {
 
 .pressSub{
   font-size: 0.6rem ;
+}
+
+@keyframes trembling {
+  0% { transform: translate(0.5px, 0.5px) rotate(0deg); }
+  25% { transform: translate(-0.5px, -0.5px) rotate(-0.5deg); }
+  50% { transform: translate(0.5px, -0.5px) rotate(0.5deg); }
+  75% { transform: translate(-0.5px, 0.5px) rotate(-0.5deg); }
+  100% { transform: translate(0.5px, 0.5px) rotate(0deg); }
+}
+
+.brokenPhone {
+  position: absolute;
+  top: 280px;
+  animation: trembling 0.8s infinite;
 }

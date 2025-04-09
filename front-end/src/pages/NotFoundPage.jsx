@@ -20,11 +20,11 @@ export default function NotFoundPage() {
           <img
             src={brokenPhone}
             alt="BrokenPhone.gif"
-            width={250}
-            className="rounded-circle"
+            width={350}
+            className="rounded-circle brokenPhone"
           />
           <Link to="/">
-            <button className="custom-btnCarmelo">
+            <button className="custom-btnCarmelo btn btn-primary">
               Continua i tuoi acquisti
             </button>
           </Link>
