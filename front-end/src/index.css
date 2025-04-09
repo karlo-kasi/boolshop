@@ -372,6 +372,13 @@ margin-top: 300px;
   text-shadow: 0.6px 0.6px 2px #000000 ;
 }
 
+
+.nav-link-hover:hover,
+.nav-link-hover.active {
+  text-decoration: underline !important;
+  text-underline-offset: 7px !important;
+  text-decoration-color: blue !important;
+
 .pressSub{
   font-size: 0.6rem ;
 }
@@ -388,4 +395,5 @@ margin-top: 300px;
   position: absolute;
   top: 300px;
   animation: trembling 0.8s infinite;
+
 }
