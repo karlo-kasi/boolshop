@@ -123,3 +123,12 @@
     transform: translateY(0) rotateX(0) scale(1);
   }
 }
+
+@media (max-width: 576px) {
+  .free-shipping-banner {
+    font-size: 0.875rem; 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+  }
+}

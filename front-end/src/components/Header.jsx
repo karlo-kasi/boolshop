@@ -238,7 +238,7 @@ export default function Header() {
                   {cartItems.map((item) => (
                     <div key={item.id} className="container">
                       <div className="row justify-content-between align-items-center gap-2">
-                        <div className="col-md-3">
+                        <div className="col-3 col-md-3">
                           <Link onClick={closeModal} to={`/cover/${item.slug}`}>
                             <img
                               src={item.image}
