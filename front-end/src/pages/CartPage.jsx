@@ -9,6 +9,7 @@ import { FaRegTrashAlt } from "react-icons/fa"; // Importa l'icona
 import QuantityCounter from "../components/QuantityCounter";
 import OrderSummary from "../components/OrderSummary"; // Importa OrderSummary
 import { useCart } from "../context/CartContext";
+import PressAndHoldButton from "../components/PressAndHoldButton.jsx";
 
 export default function CartPage() {
   const {
@@ -17,6 +18,9 @@ export default function CartPage() {
     setCartItems,
     updateQuantity,
   } = useCart();
+
+  const [showModal, setShowModal] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
 
   useEffect(() => {
     const handleStorageChange = () => {
@@ -54,6 +58,24 @@ export default function CartPage() {
     },
     [removeFromCartContext]
   );
+
+  const handleRemoveClick = (item) => {
+    setItemToDelete(item);
+    setShowModal(true);
+  };
+
+  const confirmDelete = () => {
+    if (itemToDelete) {
+      removeFromCart(itemToDelete.id);
+      setItemToDelete(null);
+      setShowModal(false);
+    }
+  };
+
+  const handleClose = () => {
+    setShowModal(false);
+    setItemToDelete(null);
+  };
 
   const formatPrice = (price) => Number(price).toFixed(2);
 
@@ -110,8 +132,8 @@ export default function CartPage() {
                                 <button
                                   className="btn btn-transparent border-0"
                                   onClick={(e) => {
-                                    e.preventDefault(); // Previene il redirect quando si clicca su "Rimuovi"
-                                    removeFromCart(item.id);
+                                    e.preventDefault();
+                                    handleRemoveClick(item);
                                   }}
                                 >
                                   Rimuovi
@@ -135,6 +157,71 @@ export default function CartPage() {
           formatPrice={formatPrice}
           isCartEmpty={cartItems.length === 0}
         />
+      </div>
+
+      {/* Modal di conferma */}
+      <div
+        className={`modal ${showModal ? "show d-block" : ""}`}
+        tabIndex="-1"
+        style={{
+          backgroundColor: "rgba(0,0,0,0.5)",
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 1050,
+        }}
+      >
+        <div
+          className="modal-dialog"
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            margin: 0,
+            minWidth: "300px",
+          }}
+        >
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Conferma rimozione</h5>
+              <button
+                type="button"
+                className="btn-close"
+                onClick={handleClose}
+              ></button>
+            </div>
+            <div className="modal-body">
+              Sei sicuro di voler rimuovere questo prodotto dal carrello?
+            </div>
+            <div className="modal-footer d-flex justify-content-between align-items-center">
+            <div className="">
+            <button
+                type="button"
+                className="press-hold-btn"
+                onClick={handleClose}
+              >
+                Annulla
+              </button>
+                <p></p>
+                </div>
+              <div className="d-flex flex-column align-items-center">
+                <PressAndHoldButton
+                  type="button"
+                  className="btn-wishlist btn-wishlist-red"
+                  onHoldComplete={confirmDelete}
+                >
+                  Rimuovi
+                </PressAndHoldButton>
+                <span class="pressSub text-center d-block">
+                  tieni premuto per rimuovere{" "}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

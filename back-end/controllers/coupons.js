@@ -8,15 +8,28 @@ async function sendEmailCoupon(email) {
     host: "sandbox.smtp.mailtrap.io",
     port: 2525,
     auth: {
-      user: "c4b706acf77fab",
-      pass: "26b215ce533dec",
+      user: "cf79ddc6a81dc7",
+      pass: "c1da937a604768",
     },
   });
 
   let htmlContent = `
-    <p>Grazie per esserti registrato su BoolShop!</p>
-    <p>Usa il codice sconto <strong>cover10</strong> per ottenere uno sconto del 10% sul tuo prossimo ordine.</p>
-    <p>Buono shopping!</p>
+    <div style="max-width: 600px; margin: 0 auto; padding: 20px; border-radius: 12px; background-color: #f9f9f9; font-family: sans-serif; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+      <h2 style="color: #2c3e50;">Il tuo codice sconto BoolShop!</h2>
+      <p style="font-size: 16px; color: #333;">
+        Grazie per esserti iscritto alla nostra newsletter, potrai ricevere notifiche su nuovi articoli!
+        In più, ecco un codice sconto del <strong>10%</strong> sul tuo prossimo acquisto!
+      </p>
+      <div style="margin: 20px 10px; padding: 12px; background-color: #e1f5e9; border: 1px dashed #2ecc71; text-align: center; font-size: 24px; font-weight: bold; color: #27ae60; border-radius: 8px;">
+        cover10
+      </div>
+      <p style="font-size: 20px; color: #333; text-align: center">Buono shopping!</p>
+      <div class="footer" style="margin-top: 20px; text-align: center; font-size: 14px; color: #777;">
+        <p>Se hai domande o hai bisogno di assistenza, non esitare a contattarci.</p>
+        <p>BoolShop - Il tuo negozio online di fiducia.</p>
+        <img src="http://localhost:3000/boolshop-logo.svg" alt="Logo BoolShop" style="width: 100px; height: auto; margin-top: 10px; text-align: center" />
+      </div>
+    </div>
   `;
 
   let mailOptions = {

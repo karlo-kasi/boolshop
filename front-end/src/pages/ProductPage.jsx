@@ -29,7 +29,7 @@ export default function ProductPage() {
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1); // Stato per la quantità
   const { openModal } = useModal(); // Usa il contesto
-  const { addToWishlist, wishlist } = useWishlist(); // Importiamo la wishlist
+  const { addToWishlist, wishlist, setWishlist } = useWishlist(); // Importiamo la wishlist
   const [showWishlistModal, setShowWishlistModal] = useState(false);
   const { addToCart: addToCartContext } = useCart();
 
@@ -89,8 +89,16 @@ export default function ProductPage() {
   };
 
   const handleAddToWishlist = (product) => {
-    addToWishlist(product);
-    setShowWishlistModal(true); // Apri la modale della wishlist
+    const isInWishlist = wishlist.some((item) => item.id === product.id);
+    if (isInWishlist) {
+      // Rimuovi solo l'articolo selezionato dalla wishlist
+      const updatedWishlist = wishlist.filter((item) => item.id === product.id);
+      setWishlist(updatedWishlist);
+    } else {
+      // Aggiungi il prodotto alla wishlist
+      addToWishlist(product);
+      setShowWishlistModal(true); // Apri la modale della wishlist
+    }
   };
 
   if (error) {
@@ -125,7 +133,12 @@ export default function ProductPage() {
                 className="text-black"
                 onClick={() => handleAddToWishlist(product)}
               >
-                <FaHeart className="heart-icon" size={25} />
+                <FaHeart
+                  className={`heart-icon ${
+                    wishlist.some((item) => item.id === product.id) ? "text-danger" : ""
+                  }`}
+                  size={25}
+                />
               </NavLink>
             </div>
           </div>

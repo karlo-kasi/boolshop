@@ -7,12 +7,16 @@ import { useModal } from "../context/ModalContext";
 import { useWishlist } from "../context/WishlistContext";
 import WishlistModal from "./WishlistModal";
 import { useCart } from "../context/CartContext";
+import { FaBars, FaTimes } from 'react-icons/fa';
 
 export default function Header() {
   const [showSearchModal, setShowSearchModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState("");
   const navigate = useNavigate(); // Usato per navigare alla pagina dei risultati di ricerca
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const modalRef = useRef(null);
 
   const handleSearchClick = () => {
     setShowSearchModal(true);
@@ -62,20 +66,53 @@ export default function Header() {
     setShowWishlistModal(true); // Imposta lo stato per aprire la modale Wishlist
   };
 
+  useEffect(() => {
+    function handleOutsideClick(event) {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        closeModal(); // Chiude la modale se clicchi fuori
+      }
+    }
+  
+    if (isModalOpen) {
+      document.addEventListener("mousedown", handleOutsideClick);
+    }
+  
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [isModalOpen]);
+
+  const calculateTotal = () => {
+    return cartItems.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
+  };
+
   return (
     <>
       <header className="position-sticky top-0 z-3">
         <nav className="navbar navbar-light bg-light">
           <div className="container d-flex flex-wrap justify-content-between align-items-center px-6">
-            <div>
-              <Link className="navbar-brand" to={"/"}>
+            <div className="d-flex align-items-center">
+              {/* Mobile Hamburger Icon */}
+              <div className="d-flex d-lg-none ms-auto">
+                <button
+                  className="btn"
+                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                >
+                  {isMobileMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+                </button>
+              </div>
+              <Link className="navbar-brand d-none d-lg-flex" to={"/"}>
                 <img
                   className="logo"
                   src="../boolshop-logo.svg"
                   alt="boolshop"
                 />
               </Link>
+              <NavLink className={"d-block d-lg-none"} to={"/search"}>
+                <FaSearch className="fs-3 text-black" />
+              </NavLink>
             </div>
+
 
             <div className="d-none d-lg-flex gap-2">
               <NavLink
@@ -104,8 +141,47 @@ export default function Header() {
               </NavLink>
             </div>
 
+            <Link className="navbar-brand d-flex d-lg-none" to={"/"}>
+              <img
+                className="logo"
+                src="../public/boolshop-logo.svg"
+                alt="boolshop"
+              />
+            </Link>
+
+
+
+
+            {/* Mobile Menu */}
+            <div
+              className={`position-absolute top-100 start-0 w-100 bg-white shadow-sm d-lg-none p-3 z-3 mobile-menu ${isMobileMenuOpen ? "slide-down" : "slide-up"
+                }`}
+            >
+              <Link
+                to="/"
+                className="d-block mt-2 mb-3 text-decoration-none text-black"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Home
+              </Link>
+              <Link
+                to="/search"
+                className="d-block mb-3 text-decoration-none text-black"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Prodotti
+              </Link>
+              <Link
+                to="/about"
+                className="d-block text-decoration-none text-black"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Chi Siamo
+              </Link>
+            </div>
+
             <div className="d-flex gap-3">
-              <NavLink to={"/search"}>
+              <NavLink className={"d-none d-lg-block"} to={"/search"}>
                 <FaSearch className="fs-3 text-black" />
               </NavLink>
               <NavLink onClick={handleWishlistClick}>
@@ -135,7 +211,7 @@ export default function Header() {
       {/* MODALE CARRELLO */}
       {isModalOpen && (
         <div className="custom-modal">
-          <div className="custom-modal-dialog">
+          <div ref={modalRef} className="custom-modal-dialog">
             <div className="custom-modal-header d-flex justify-content-between align-items-center">
               <p className="title-modal fs-3">Carrello</p>
               <button
@@ -230,7 +306,11 @@ export default function Header() {
                 </div>
               )}
             </div>
-            <div className="custom-modal-footer">
+            <div className="custom-modal-footer d-flex justify-content-between">
+                  <div className="d-flex gap-2 justify-content-between align-items-center mt-3">
+                    <h5 className="fw-bold">Totale:</h5>
+                    <h5 className="fw-bold">{calculateTotal()}€</h5>
+                  </div>
               <Link to="/cart">
                 <button
                   type="button"
@@ -252,3 +332,4 @@ export default function Header() {
     </>
   );
 }
+
