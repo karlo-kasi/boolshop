@@ -77,11 +77,13 @@ export default function Header() {
               </Link>
             </div>
 
-            <div className="d-none d-lg-flex gap-2">
+            <div className="d-none d-lg-flex gap-5">
               <NavLink
                 to="/"
                 className={({ isActive }) =>
-                  `btn fw-bold fs-5 ${isActive ? "text-primary" : "text-dark"}`
+                  `fw-bold fs-5 text-dark text-decoration-none nav-link-hover ${
+                    isActive ? "active" : ""
+                  }`
                 }
               >
                 Home
@@ -89,7 +91,9 @@ export default function Header() {
               <NavLink
                 to="/search"
                 className={({ isActive }) =>
-                  `btn fw-bold fs-5 ${isActive ? "text-primary" : "text-dark"}`
+                  `fw-bold fs-5 text-dark text-decoration-none nav-link-hover ${
+                    isActive ? "active" : ""
+                  }`
                 }
               >
                 Prodotti
@@ -97,7 +101,9 @@ export default function Header() {
               <NavLink
                 to="/about"
                 className={({ isActive }) =>
-                  `btn fw-bold fs-5 ${isActive ? "text-primary" : "text-dark"}`
+                  `fw-bold fs-5 text-dark text-decoration-none nav-link-hover ${
+                    isActive ? "active" : ""
+                  }`
                 }
               >
                 Chi Siamo
