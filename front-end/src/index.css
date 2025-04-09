@@ -365,3 +365,40 @@ footer ul a {
   opacity: 0;
   pointer-events: none;
 }
+
+/* Press and Hold Button */
+.press-hold-btn {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  background: white;
+  border: 1px solid #8a9098;
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.press-hold-progress {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background-color: rgb(177, 52, 64); /* Rosso più trasparente */
+  width: 0%;
+  transition: width 0.1s linear;
+  z-index: 0;
+}
+
+.press-hold-btn span {
+  position: relative;
+  z-index: 1;
+}
+
+.press-hold-btn:active {
+  transform: scale(0.98);
+}
+
+.press-hold-btn.holding {
+  background-color: #fff5f5;
+}
