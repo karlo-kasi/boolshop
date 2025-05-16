@@ -79,7 +79,7 @@ Il front-end è sviluppato con React e utilizza Vite per il bundling e lo svilup
 
 ### 1. Gestione Prodotti
 
-- Gli utenti possono visualizzare tutti i prodotti disponibili.
+- Gli utenti possono visualizzare tutti i prodotti disponibili.![ ("./readme/view-products.gif))](view-products.gif)
 - È possibile cercare prodotti per nome o descrizione e ordinarli per prezzo, nome o data di creazione.
 
 ### 2. Creazione Ordini
