@@ -2,6 +2,27 @@
 
 BoolShop è un'applicazione full-stack progettata per gestire un negozio online. Il progetto include un back-end basato su Node.js con Express e un front-end sviluppato con React e Vite. L'applicazione consente agli utenti di cercare prodotti, effettuare ordini, gestire pagamenti e ricevere conferme via email.
 
+## Funzionalità Principali
+
+### 1. Gestione Prodotti
+
+- Gli utenti possono visualizzare tutti i prodotti disponibili.![ ("/assets/view-products.gif)](view-products.gif)
+- È possibile cercare prodotti per nome o descrizione e ordinarli per prezzo, nome o data di creazione.![("/assets/search.gif)](search.gif)
+
+### 2. Creazione Ordini
+
+- Gli utenti possono effettuare ordini fornendo i dettagli richiesti.
+- Gli ordini vengono salvati nel database e viene inviata un'email di conferma.
+
+### 3. Pagamenti
+
+- I pagamenti vengono gestiti tramite Stripe.
+- L'API crea un intent di pagamento e restituisce un client secret per completare la transazione.
+
+### 4. Invio Email
+
+- Utilizza Mailtrap per inviare email di conferma ordine con un riepilogo dettagliato.
+
 ## Struttura del Progetto
 
 La struttura del progetto è organizzata in due principali directory:
@@ -74,33 +95,3 @@ Il front-end è sviluppato con React e utilizza Vite per il bundling e lo svilup
 #### `eslint.config.js`
 
 - Configura le regole di linting per mantenere uno stile di codice coerente.
-
-## Funzionalità Principali
-
-### 1. Gestione Prodotti
-
-- Gli utenti possono visualizzare tutti i prodotti disponibili.![ ("./readme/view-products.gif)](view-products.gif)
-- È possibile cercare prodotti per nome o descrizione e ordinarli per prezzo, nome o data di creazione.![("./readme/search.gif)](search.gif)
-
-### 2. Creazione Ordini
-
-- Gli utenti possono effettuare ordini fornendo i dettagli richiesti.
-- Gli ordini vengono salvati nel database e viene inviata un'email di conferma.
-
-### 3. Pagamenti
-
-- I pagamenti vengono gestiti tramite Stripe.
-- L'API crea un intent di pagamento e restituisce un client secret per completare la transazione.
-
-### 4. Invio Email
-
-- Utilizza Mailtrap per inviare email di conferma ordine con un riepilogo dettagliato.
-
-## Configurazione
-
-### Back-End
-
-1. Clona il repository.
-2. Installa le dipendenze:
-   ```sh
-   npm install
